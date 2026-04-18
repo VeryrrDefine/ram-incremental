@@ -9,7 +9,6 @@ import {
 import { hardReset, player } from "./player";
 
 const blockDataCache: Map<string, Block> = new Map();
-export type GameMap = [x: number, y: number, block: string][];
 
 function writeToCache(block: Block, x: string) {
   blockDataCache.set(x, block);
@@ -77,6 +76,17 @@ export function blockDataToBlock(x: string) {
         color = "#000000";
         contentDynamic() {
           return player.points.toFixed(3);
+        }
+        textcolor = "#ffffff";
+      })();
+    }, x);
+  }
+  if (x == "RAM") {
+    return newBlockAndCache(() => {
+      return new (class extends Block {
+        color = "#000000";
+        contentDynamic() {
+          return "8 KB";
         }
         textcolor = "#ffffff";
       })();

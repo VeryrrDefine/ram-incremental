@@ -1,4 +1,4 @@
-import type { GameMap } from "./parsemap";
+import type { GameMap } from "./map";
 
 function initialPlayer() {
   return {
