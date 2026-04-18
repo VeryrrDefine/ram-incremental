@@ -105,7 +105,7 @@ export function blockDataToBlock(x: string) {
       return new (class extends Block {
         color = "#000000";
         contentDynamic() {
-          return "8 KB";
+          return (player.ram / 1024).toFixed(3) + "\nKB";
         }
         textcolor = "#ffffff";
       })();

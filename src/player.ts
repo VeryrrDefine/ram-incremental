@@ -9,10 +9,13 @@ function initialPlayer() {
     configurationOrder: 0,
     addArrowButton: true,
     replaces: [] as GameMap,
+    replaces_Universe: [[]] as GameMap[],
+    universe: -1, // -1: Main Universe, 0: Sub universe
     features: [] as string[],
     points: 0,
     saveCreateTime: Date.now(),
     lastTick: Date.now(),
+    ram: 8192,
   };
 }
 

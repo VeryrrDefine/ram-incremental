@@ -8,7 +8,7 @@ export class Block {
   solid() {
     return false;
   }
-  onTouch(): [remove: boolean] {
+  onTouch(): [remove: boolean, replaceTo?: string] {
     return [false];
   }
   contentDynamic?(): string;
@@ -40,9 +40,25 @@ export function genDoor(x: string) {
   bl.content = "门";
   bl.textcolor = "#000000";
   bl.data = x;
-
-  bl.solid = () => true;
-
+  //TP?PSEUDO?17?23?1?1
+  bl.solid = () => {
+    if (bl.data == "1327" && player.ram >= 9216) {
+      return false;
+    }
+    if (bl.data == "1723" && player.ram >= 12288) {
+      return false;
+    }
+    return true;
+  };
+  bl.onTouch = () => {
+    if (bl.data == "1327" && player.ram >= 9216) {
+      return [true];
+    }
+    if (bl.data == "1723" && player.ram >= 12288) {
+      return [true, "TP?PSEUDO?17?23?0"];
+    }
+    return [false];
+  };
   return bl;
 }
 
@@ -64,15 +80,20 @@ export function genFeature(x: string[]) {
   return bl;
 }
 
-export function genTP(x: string[]) {
+export function genTP(x: string[], pseudo2 = false) {
+  let pseudo = x[1] == "PSEUDO" || pseudo2;
   let bl = new Block();
-  bl.color = "rgba(0, 0, 255, 1)";
-  bl.content = x[1] || "传送门";
-  bl.data = [x[2], x[3]];
-  bl.textcolor = "#ffffff";
+  bl.color = pseudo ? "#000000" : "rgba(0, 0, 255, 1)";
+  bl.content = x[1] || (pseudo ? "" : "传送门");
+  bl.data = [x[2], x[3], x[4]];
+  bl.textcolor = pseudo ? "#000000" : "#ffffff";
   bl.onTouch = function () {
     player.x = +bl.data[0];
     player.y = +bl.data[1];
+    console.log(bl.data[2]);
+    if (bl.data[2]) {
+      player.universe = +bl.data[2];
+    }
     return [false];
   };
   return bl;

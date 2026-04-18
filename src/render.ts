@@ -89,7 +89,7 @@ export function renderGame() {
 
   // 显示坐标信息
   ctx.fillStyle = "#008cff";
-  ctx.fillText(`player ${player.x},${player.y}`, 0, 30);
+  ctx.fillText(`player ${player.x},${player.y},${player.universe}`, 0, 30);
 
   // 右下角菜单图标
   ctx.drawImage(assets, 0, 0, 32, 32, 720 - 32, 720 - 32, 32, 32);

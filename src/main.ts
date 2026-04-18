@@ -4,7 +4,8 @@ import { player } from "./gameState";
 import { initRenderer, renderGame } from "./render";
 import { handleClick, tryMove } from "./interaction";
 import { save } from "./player";
-import { map } from "./map";
+import { map, map_parallel } from "./map";
+import { loop } from "./loop";
 
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setInterval(() => renderGame(), 50);
   setInterval(() => save(), 1000);
-  // 可添加 logicCycle 逻辑（目前未使用）
+  setInterval(() => loop(), 50);
 });
 
 document.addEventListener("keydown", (e) => {
@@ -52,3 +53,5 @@ document.addEventListener("keydown", (e) => {
 window.map = map;
 // @ts-ignore
 window.player = player;
+// @ts-ignore
+window.par = map_parallel;

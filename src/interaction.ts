@@ -2,6 +2,7 @@
 import { player, addMapBlock } from "./gameState";
 import { canvasToWorld, isInRect, GRIDSIZE } from "./geometry";
 import { getBlock, passable } from "./collision"; // 下面定义
+import { getReplaceMapOfUniverse } from "./universe";
 
 // 移动逻辑
 export function tryMove(dx: number, dy: number) {
@@ -10,11 +11,20 @@ export function tryMove(dx: number, dy: number) {
   if (passable(newX, newY)) {
     player.x = newX;
     player.y = newY;
+  } else {
+    return;
   }
   const block = getBlock(player.x, player.y);
-  if (block?.onTouch?.()[0]) {
-    player.replaces.push([player.x, player.y, "NULL"]);
+  let universe = player.universe;
+  let touch = block?.onTouch?.() ?? [false];
+  if (touch[0]) {
+    getReplaceMapOfUniverse(universe).push([
+      player.x,
+      player.y,
+      touch[1] || "NULL",
+    ]);
   }
+  if (player.features.includes("collram")) player.ram += 1;
 }
 
 // 点击处理
@@ -48,9 +58,11 @@ export function handleClick(canvasX: number, canvasY: number) {
     if (isInRect(canvasX, canvasY, 652, 652, 668, 668)) {
       // @ts-ignore
       player[key] = !player[key];
+      return;
     } else if (isInRect(canvasX, canvasY, 688, 652, 704, 668)) {
       player.configurationOrder =
         (player.configurationOrder + 1) % configurations.length;
+      return;
     }
   }
 
@@ -61,6 +73,6 @@ export function handleClick(canvasX: number, canvasY: number) {
       Math.floor(canvasX / GRIDSIZE),
       Math.floor(canvasY / GRIDSIZE),
     );
-    addMapBlock(worldX, worldY, "WALL");
+    addMapBlock(worldX, worldY, "WALL", player.universe);
   }
 }
