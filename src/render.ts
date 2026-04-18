@@ -1,9 +1,11 @@
 // render.ts
-import { canvasToWorld, GRIDSIZE, worldToCanvas } from "./geometry";
+import { canvasToWorld, GRIDSIZE, isInRect, worldToCanvas } from "./geometry";
 import { getBlock } from "./collision"; // 后面会定义
 import { player } from "./gameState";
-import { Block, PLAYERBLOCK } from "./blocks";
+import { Block, genTextBlock, PLAYERBLOCK } from "./blocks";
 import { NOTIFY } from "./notify";
+
+const nothingness = genTextBlock("那边什么都没有\n别看了");
 
 let ctx: CanvasRenderingContext2D;
 let assets: HTMLImageElement;
@@ -54,10 +56,17 @@ export function renderGame() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, 2000, 2000);
 
+  let antiCheckafter = isInRect(player.x, player.y, 6, 10, 11, 12);
   // 绘制 9x9 地图块
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       const [wx, wy] = canvasToWorld(player.x, player.y, i, j);
+      if (wx >= 13 && antiCheckafter) {
+        if (wx == 13 && wy == 11) {
+          drawBlock(nothingness, i * GRIDSIZE, j * GRIDSIZE);
+        }
+        continue;
+      }
       const block = getBlock(wx, wy);
       if (block) drawBlock(block, i * GRIDSIZE, j * GRIDSIZE);
     }
