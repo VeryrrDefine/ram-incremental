@@ -1,18 +1,11 @@
 import { Block, PLAYERBLOCK, WALL } from "./blocks";
 import { blockDataToBlock, type GameMap } from "./parsemap";
+import { player, save } from "./player";
 import "./style.css";
 // import "./deduct.ts";
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;
 let ctx: CanvasRenderingContext2D;
-let player = {
-  x: 1,
-  y: 1,
-  openedMenu: false,
-  editing: false,
-  configurationOrder: 0,
-  addArrowButton: true,
-};
 
 const GRIDSIZE = 80;
 let mouseX = 0;
@@ -50,7 +43,6 @@ const map: GameMap = [
   [5, 2, "WALL"],
   [6, 2, "WALL"],
   [7, 2, "WALL"],
-  [8, 2, "WALL"],
   [9, 2, "WALL"],
   [10, 2, "WALL"],
   [12, 2, "WALL"],
@@ -91,8 +83,89 @@ const map: GameMap = [
   [20, 0, "WALL"],
   [20, 2, "WALL"],
   [20, 1, "DOOR?RIGHT"],
+  [12, 6, "WALL"],
+  [12, 7, "WALL"],
+  [12, 8, "WALL"],
+  [14, 6, "WALL"],
+  [14, 7, "WALL"],
+  [14, 8, "WALL"],
+  [12, 9, "WALL"],
+  [12, 10, "WALL"],
+  [14, 9, "WALL"],
+  [15, 9, "WALL"],
+  [16, 9, "WALL"],
+  [17, 9, "WALL"],
+  [12, 11, "WALL"],
+  [12, 12, "WALL"],
+  [12, 13, "WALL"],
+  [12, 14, "WALL"],
+  [12, 15, "WALL"],
+  [13, -3, "TEXT?寻找物品以打开此门"],
+  [19, 1, "TEXT?寻找物品以打开此门"],
+  [13, 10, "FEAT?获得1点数?point"],
+  [9, 3, "WALL"],
+  [9, 4, "WALL"],
+  [9, 5, "WALL"],
+  [9, 7, "WALL"],
+  [9, 6, "WALL"],
+  [7, 3, "WALL"],
+  [7, 4, "WALL"],
+  [7, 5, "WALL"],
+  [7, 6, "WALL"],
+  [7, 7, "WALL"],
+  [7, 8, "WALL"],
+  [7, 9, "WALL"],
+  [9, 8, "WALL"],
+  [9, 9, "WALL"],
+  [10, 9, "WALL"],
+  [11, 9, "WALL"],
+  [6, 9, "WALL"],
+  [5, 9, "WALL"],
+  [5, 10, "WALL"],
+  [5, 11, "WALL"],
+  [5, 12, "WALL"],
+  [5, 13, "WALL"],
+  [6, 13, "WALL"],
+  [7, 13, "WALL"],
+  [8, 13, "WALL"],
+  [9, 13, "WALL"],
+  [10, 13, "WALL"],
+  [11, 13, "WALL"],
+  [11, 8, "WALL"],
+  [10, 8, "WALL"],
+  [10, 7, "WALL"],
+  [11, 7, "WALL"],
+  [11, 6, "WALL"],
+  [10, 6, "WALL"],
+  [10, 5, "WALL"],
+  [11, 5, "WALL"],
+  [11, 4, "WALL"],
+  [10, 4, "WALL"],
+  [10, 3, "WALL"],
+  [11, 3, "WALL"],
+  [8, 2, "TEXT?下方可以去设置"],
+  [6, 12, "HARDRESET"],
+  [-55, -56, "TEXT?确认硬重置？"],
+  [-57, -57, "WALL"],
+  [-57, -56, "WALL"],
+  [-57, -55, "WALL"],
+  [-56, -55, "WALL"],
+  [-56, -54, "WALL"],
+  [-55, -54, "WALL"],
+  [-54, -54, "WALL"],
+  [-54, -55, "WALL"],
+  [-53, -55, "WALL"],
+  [-53, -56, "WALL"],
+  [-53, -57, "WALL"],
+  [-54, -57, "WALL"],
+  [-55, -57, "WALL"],
+  [-56, -57, "WALL"],
+  [-54, -56, "TP?不?6?11"],
+  [-55, -55, "HARDRESET2"],
 ];
 function getBlock(x: number, y: number) {
+  let blockData2 = player.replaces.filter((t) => t[0] == x && t[1] == y);
+  if (blockData2.length >= 1) return blockDataToBlock(blockData2.at(-1)![2]);
   let blockData = map.filter((t) => t[0] == x && t[1] == y);
   if (blockData.length == 0) return null;
   return blockDataToBlock(blockData[0][2]);
@@ -287,6 +360,12 @@ function direction(x: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight") {
       if (passable(player.x, player.y - 1)) player.y -= 1;
       break;
   }
+  let block = getBlock(player.x, player.y);
+  if (block) {
+    if (block.onTouch()[0]) {
+      player.replaces.push([player.x, player.y, "NULL"]);
+    }
+  }
 }
 document.addEventListener("DOMContentLoaded", function () {
   canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
@@ -323,3 +402,5 @@ document.addEventListener("keydown", function (e) {
 
 window.map = map;
 window.player = player;
+
+setInterval(save, 1000);
