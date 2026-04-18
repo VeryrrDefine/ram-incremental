@@ -11,6 +11,7 @@ export class Block {
   onTouch(): [remove: boolean] {
     return [false];
   }
+  contentDynamic?(): string;
 }
 export const WALL = new Block();
 WALL.color = "#ffffff";

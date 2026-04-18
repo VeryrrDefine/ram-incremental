@@ -71,4 +71,15 @@ export function blockDataToBlock(x: string) {
       })();
     }, x);
   }
+  if (x == "POINTS") {
+    return newBlockAndCache(() => {
+      return new (class extends Block {
+        color = "#000000";
+        contentDynamic() {
+          return player.points.toFixed(3);
+        }
+        textcolor = "#ffffff";
+      })();
+    }, x);
+  }
 }

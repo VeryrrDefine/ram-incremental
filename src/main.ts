@@ -32,7 +32,7 @@ const map: GameMap = [
   [3, 0, "WALL"],
   [2, 0, "WALL"],
   [1, 0, "WALL"],
-  [2, 1, "TEXT?欢迎来到test-game"],
+  [2, 1, "TEXT?欢迎来到\ntest-game"],
   [2, 2, "TEXT?按上下左右键移动"],
   [3, 2, "TEXT?白色方块是墙"],
   [3, 1, "TEXT?黑色方块可以通行"],
@@ -162,6 +162,13 @@ const map: GameMap = [
   [-56, -57, "WALL"],
   [-54, -56, "TP?不?6?11"],
   [-55, -55, "HARDRESET2"],
+  [14, 10, "POINTS"],
+  [13, 11, "WALL"],
+  [14, 11, "WALL"],
+  [15, 11, "WALL"],
+  [16, 11, "WALL"],
+  [17, 11, "WALL"],
+  [15, 10, "TEXT?点数是游戏内\n的主要资源"],
 ];
 function getBlock(x: number, y: number) {
   let blockData2 = player.replaces.filter((t) => t[0] == x && t[1] == y);
@@ -186,17 +193,26 @@ function drawText(x: number, y: number, str: string) {
   let text = str;
   let curheight = HEIGHT;
 
-  let width = ctx.measureText(text).width;
+  let parts = text.split("\n");
+  let width = Math.max(...parts.map((x) => ctx.measureText(x).width));
   while (width > GRIDSIZE) {
     curheight -= 0.5;
     ctx.font = `${curheight}px sans-serif`;
-    width = ctx.measureText(text).width;
+    width = Math.max(...parts.map((x) => ctx.measureText(x).width));
   }
-  ctx.fillText(
-    text,
-    x + (GRIDSIZE - width) / 2,
-    y + (GRIDSIZE - HEIGHT) / 2 + HEIGHT - 3,
-  );
+  for (let i = 0; i < parts.length; i++) {
+    ctx.fillText(
+      parts[i],
+      x + (GRIDSIZE - width) / 2,
+      y +
+        (GRIDSIZE - HEIGHT) / 2 +
+        HEIGHT -
+        3 +
+        i * HEIGHT -
+        (parts.length - 1) * HEIGHT * 0.5,
+    );
+  }
+
   ctx.font = `${HEIGHT}px sans-serif`;
 }
 function drawNumber(x: number, y: number, num: number) {
@@ -206,7 +222,9 @@ function drawBlock(block: Block, x: number, y: number) {
   ctx.fillStyle = block.color;
   ctx.fillRect(x, y, GRIDSIZE, GRIDSIZE);
   ctx.fillStyle = block.textcolor;
-  drawText(x, y, block.content);
+  if (block.contentDynamic) {
+    drawText(x, y, block.contentDynamic());
+  } else drawText(x, y, block.content);
   ctx.fillStyle = "#000000";
   // drawNumber(x, y, 9.6e97);
 }
