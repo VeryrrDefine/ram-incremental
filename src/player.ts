@@ -12,6 +12,7 @@ function initialPlayer() {
     features: [] as string[],
     points: 0,
     saveCreateTime: Date.now(),
+    lastTick: Date.now(),
   };
 }
 

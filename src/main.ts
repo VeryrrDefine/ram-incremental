@@ -73,7 +73,7 @@ const map: GameMap = [
   [17, 0, "WALL"],
   [14, 5, "WALL"],
   [12, 5, "WALL"],
-  [13, 1, "TEXT?这里是一个十字路口"],
+  [13, 1, "TEXT?这里是一个\n十字路口"],
   [13, 2, "TEXT?先去下方"],
   [13, -4, "DOOR?UP"],
   [18, 0, "WALL"],
@@ -100,8 +100,8 @@ const map: GameMap = [
   [12, 13, "WALL"],
   [12, 14, "WALL"],
   [12, 15, "WALL"],
-  [13, -3, "TEXT?寻找物品以打开此门"],
-  [19, 1, "TEXT?寻找物品以打开此门"],
+  [13, -3, "TEXT?寻找物品\n以打开此门"],
+  [19, 1, "TEXT?寻找物品\n以打开此门"],
   [13, 10, "FEAT?获得1点数?point"],
   [9, 3, "WALL"],
   [9, 4, "WALL"],
@@ -169,6 +169,40 @@ const map: GameMap = [
   [16, 11, "WALL"],
   [17, 11, "WALL"],
   [15, 10, "TEXT?点数是游戏内\n的主要资源"],
+  [18, 9, "WALL"],
+  [19, 9, "WALL"],
+  [19, 10, "WALL"],
+  [19, 11, "WALL"],
+  [19, 12, "WALL"],
+  [19, 13, "WALL"],
+  [17, 12, "WALL"],
+  [17, 13, "WALL"],
+  [17, 14, "WALL"],
+  [19, 14, "WALL"],
+  [19, 15, "WALL"],
+  [17, 15, "WALL"],
+  [17, 16, "WALL"],
+  [19, 16, "WALL"],
+  [19, 17, "WALL"],
+  [17, 17, "WALL"],
+  [17, 18, "WALL"],
+  [19, 18, "WALL"],
+  [19, 19, "WALL"],
+  [17, 19, "WALL"],
+  [17, 20, "WALL"],
+  [19, 20, "WALL"],
+  [19, 21, "WALL"],
+  [17, 21, "WALL"],
+  [17, 22, "WALL"],
+  [19, 22, "WALL"],
+  [17, 23, "WALL"],
+  [17, 24, "WALL"],
+  [17, 25, "WALL"],
+  [17, 26, "WALL"],
+  [19, 23, "WALL"],
+  [19, 24, "WALL"],
+  [19, 25, "WALL"],
+  [19, 26, "WALL"],
 ];
 function getBlock(x: number, y: number) {
   let blockData2 = player.replaces.filter((t) => t[0] == x && t[1] == y);
@@ -188,7 +222,7 @@ function numberTostring(num: number): string {
   if (num == Infinity) return "∞";
   return num.toFixed(3);
 }
-const HEIGHT = 20;
+const HEIGHT = 21;
 function drawText(x: number, y: number, str: string) {
   let text = str;
   let curheight = HEIGHT;
@@ -215,9 +249,9 @@ function drawText(x: number, y: number, str: string) {
 
   ctx.font = `${HEIGHT}px sans-serif`;
 }
-function drawNumber(x: number, y: number, num: number) {
-  return drawText(x, y, numberTostring(num));
-}
+// function drawNumber(x: number, y: number, num: number) {
+//   return drawText(x, y, numberTostring(num));
+// }
 function drawBlock(block: Block, x: number, y: number) {
   ctx.fillStyle = block.color;
   ctx.fillRect(x, y, GRIDSIZE, GRIDSIZE);
@@ -257,7 +291,11 @@ function absPlayer(
 ): [number, number] {
   return [cax - 4 + plx, cay - 4 + ply];
 }
+function logicCycle() {
+  let diff = (Date.now() - player.lastTick) / 1000;
 
+  player.lastTick = Date.now();
+}
 function lifeCycle() {
   ctx.fillStyle = "#000000";
   ctx.strokeStyle = "#ffffff";
@@ -398,7 +436,7 @@ document.addEventListener("DOMContentLoaded", function () {
       Math.floor(mouseY / GRIDSIZE),
     );
   });
-  canvas.addEventListener("click", (e) => {
+  canvas.addEventListener("click", () => {
     clicked(mouseX, mouseY);
   });
   console.log(canvas);
@@ -406,6 +444,10 @@ document.addEventListener("DOMContentLoaded", function () {
   ctx = canvas.getContext("2d")!;
   ctx.font = `${HEIGHT}px sans-serif`;
   setInterval(lifeCycle, 50);
+
+  setInterval(save, 1000);
+
+  setInterval(logicCycle, 50);
 });
 document.addEventListener("keydown", function (e) {
   switch (e.key) {
@@ -418,7 +460,7 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
+// @ts-ignore
 window.map = map;
+// @ts-ignore
 window.player = player;
-
-setInterval(save, 1000);
