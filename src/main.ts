@@ -8,7 +8,6 @@ import { map } from "./map";
 
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;
-
 document.addEventListener("DOMContentLoaded", () => {
   canvas = document.querySelector("canvas")!;
   assets = document.querySelector("img")!;

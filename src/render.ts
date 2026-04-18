@@ -3,6 +3,7 @@ import { canvasToWorld, GRIDSIZE, worldToCanvas } from "./geometry";
 import { getBlock } from "./collision"; // 后面会定义
 import { player } from "./gameState";
 import { Block, PLAYERBLOCK } from "./blocks";
+import { NOTIFY } from "./notify";
 
 let ctx: CanvasRenderingContext2D;
 let assets: HTMLImageElement;
@@ -109,5 +110,14 @@ export function renderGame() {
     ctx.drawImage(assets, 32, 64, 64, 64, 0, 576, 64, 64); // left
     ctx.drawImage(assets, 160, 0, 64, 64, 64, 576, 64, 64); // down
     ctx.drawImage(assets, 96, 0, 64, 64, 128, 576, 64, 64); // right
+  }
+
+  if (NOTIFY.expires > Date.now()) {
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(200, 20, 360, 40);
+    ctx.fillStyle = "#000";
+    ctx.font = "30px sans-serif";
+    let measure = ctx.measureText(NOTIFY.content);
+    ctx.fillText(NOTIFY.content, 200 + (360 - measure.width) / 2, 20 + 30);
   }
 }

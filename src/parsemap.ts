@@ -6,6 +6,7 @@ import {
   genTP,
   WALL,
 } from "./blocks";
+import { NOTIFY } from "./notify";
 import { hardReset, player } from "./player";
 
 const blockDataCache: Map<string, Block> = new Map();
@@ -32,8 +33,26 @@ export function blockDataToBlock(x: string) {
     return writeToCache(genDoorBlock(x.slice(5)), x);
   }
   if (x.startsWith("FEAT")) {
-    return writeToCache(genFeature(x.split("?")), x);
+    let t = x.split("?");
+    if (t[0] === "FEAT") return writeToCache(genFeature(t), x);
+    else {
+      if (t[2] == "runprog") {
+        return newBlockAndCache(() => {
+          return new (class extends Block {
+            color = "#00ffffff";
+            content = t[1];
+            textcolor = "#000000";
+            onTouch(): [remove: boolean] {
+              NOTIFY.expires = Date.now() + 1000;
+              NOTIFY.content = "运行程序失败";
+              return [false];
+            }
+          })();
+        }, x);
+      }
+    }
   }
+
   if (x.startsWith("TP")) {
     return writeToCache(genTP(x.split("?")), x);
   }
