@@ -401,17 +401,40 @@ function clicked(mouseX: number, mouseY: number) {
     map.push([mouseXb, mouseYb, "WALL"]);
   }
 }
-function direction(x: "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight") {
+function direction(
+  x:
+    | "ArrowUp"
+    | "ArrowDown"
+    | "ArrowLeft"
+    | "ArrowRight"
+    | "A"
+    | "W"
+    | "S"
+    | "D"
+    | "a"
+    | "w"
+    | "s"
+    | "d",
+) {
   switch (x) {
     case "ArrowRight":
+    case "D":
+
+    case "d":
       if (passable(player.x + 1, player.y)) player.x += 1;
       break;
     case "ArrowDown":
+    case "S":
+    case "s":
       if (passable(player.x, player.y + 1)) player.y += 1;
       break;
+    case "A":
     case "ArrowLeft":
+    case "a":
       if (passable(player.x - 1, player.y)) player.x -= 1;
       break;
+    case "W":
+    case "w":
     case "ArrowUp":
       if (passable(player.x, player.y - 1)) player.y -= 1;
       break;
@@ -455,8 +478,18 @@ document.addEventListener("keydown", function (e) {
     case "ArrowDown":
     case "ArrowLeft":
     case "ArrowUp":
+    case "A":
+    case "W":
+    case "S":
+    case "D":
+    case "a":
+    case "w":
+    case "s":
+    case "d":
       direction(e.key);
       break;
+    default:
+      console.log(e.key);
   }
 });
 
