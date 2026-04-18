@@ -12,6 +12,7 @@ export const map: GameMap = [
   [8, 2, "TEXT?下方可以去设置"],
   [-55, -56, "TEXT?确认硬重置？"],
   [15, 10, "TEXT?点数是游戏内\n的主要资源"],
+  [14, 12, "TEXT?程序需要\n足够多的\nRAM来运行"],
   [13, 7, "FEAT?获得未知程序1?plotbegin"],
   [17, 7, "FEAT2?运行未知程序1?runprog"],
   [13, -4, "DOOR?UP"],
