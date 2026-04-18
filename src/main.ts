@@ -176,7 +176,6 @@ const map: GameMap = [
   [19, 12, "WALL"],
   [19, 13, "WALL"],
   [17, 12, "WALL"],
-  [17, 13, "WALL"],
   [17, 14, "WALL"],
   [19, 14, "WALL"],
   [19, 15, "WALL"],
@@ -203,6 +202,12 @@ const map: GameMap = [
   [19, 24, "WALL"],
   [19, 25, "WALL"],
   [19, 26, "WALL"],
+  [16, 16, "WALL"],
+  [15, 16, "WALL"],
+  [14, 16, "WALL"],
+  [12, 16, "WALL"],
+  [13, 16, "WALL"],
+  // [18, 13, "FEAT?解锁拜谢?mpa1"],
 ];
 function getBlock(x: number, y: number) {
   let blockData2 = player.replaces.filter((t) => t[0] == x && t[1] == y);
