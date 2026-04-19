@@ -16,6 +16,7 @@ function initialPlayer() {
     saveCreateTime: Date.now(),
     lastTick: Date.now(),
     ram: 8192,
+    upgrades: {} as Record<string, number>,
   };
 }
 

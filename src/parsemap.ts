@@ -8,6 +8,7 @@ import {
 } from "./blocks";
 import { NOTIFY } from "./notify";
 import { hardReset, player } from "./player";
+import { UPGRADES } from "./upgrades";
 
 const blockDataCache: Map<string, Block> = new Map();
 
@@ -56,6 +57,30 @@ export function blockDataToBlock(x: string) {
   if (x.startsWith("TP")) {
     return writeToCache(genTP(x.split("?")), x);
   }
+  if (x == "EXPORT") {
+    return newBlockAndCache(() => {
+      return new (class extends Block {
+        color = "rgba(255, 0, 230, 1)";
+        content = "导出";
+        textcolor = "#000000";
+        solid() {
+          return false;
+        }
+      })();
+    }, x);
+  }
+  if (x == "IMPORT") {
+    return newBlockAndCache(() => {
+      return new (class extends Block {
+        color = "rgba(0, 255, 76, 1)";
+        content = "导入";
+        textcolor = "#000000";
+        solid() {
+          return false;
+        }
+      })();
+    }, x);
+  }
   if (x == "HARDRESET") {
     return newBlockAndCache(() => {
       return new (class extends Block {
@@ -89,6 +114,28 @@ export function blockDataToBlock(x: string) {
       })();
     }, x);
   }
+  if (x.startsWith("UPGRADE")) {
+    let part = x.slice(8);
+    return newBlockAndCache(() => {
+      return new (class extends Block {
+        color = "#00ff51ff";
+        textcolor = "#000000";
+        contentDynamic(): string {
+          return (
+            UPGRADES[part].content +
+            "\n" +
+            "价格:" +
+            UPGRADES[part].cost() +
+            UPGRADES[part].currency
+          );
+        }
+        onTouch(): [remove: boolean, replaceTo?: string] {
+          UPGRADES[part].onBuy();
+          return [false];
+        }
+      })();
+    }, x);
+  }
   if (x == "POINTS") {
     return newBlockAndCache(() => {
       return new (class extends Block {
@@ -100,6 +147,7 @@ export function blockDataToBlock(x: string) {
       })();
     }, x);
   }
+
   if (x == "RAM") {
     return newBlockAndCache(() => {
       return new (class extends Block {
