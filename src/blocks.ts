@@ -42,19 +42,19 @@ export function genDoor(x: string) {
   bl.data = x;
   //TP?PSEUDO?17?23?1?1
   bl.solid = () => {
-    if (bl.data == "1327" && player.ram >= 9216) {
+    if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
       return false;
     }
-    if (bl.data == "1723" && player.ram >= 12288) {
+    if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
       return false;
     }
     return true;
   };
   bl.onTouch = () => {
-    if (bl.data == "1327" && player.ram >= 9216) {
+    if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
       return [true];
     }
-    if (bl.data == "1723" && player.ram >= 12288) {
+    if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
       return [true, "TP?PSEUDO?17?23?0"];
     }
     return [false];

@@ -17,9 +17,9 @@ export const map: GameMap = [
   [18, 23, "FEAT?开始运行\nRAM收集程序?collram"],
   [18, 24, "TEXT?RAM收集程序\n会在你移动1步\n时获得1Byte\n的RAM总量"],
   [18, 25, "TEXT?后续还会解锁\n更多增加\nRAM的方法"],
-  [14, 27, "TEXT?左边的门需要\n9 KB的RAM\n才能通过"],
+  [14, 27, "TEXT?左边的门需要\n8.25 KB的RAM\n才能通过"],
   [15, 27, "TEXT?需要移动1024步"],
-  [12, 23, "TEXT?到达12 KB RAM后\n即可打开右边的门"],
+  [12, 23, "TEXT?到达9.5 KB RAM后\n即可打开右边的门"],
   [14, 23, "TEXT?右边的门看似无用\n但实际上......"],
   [17, 7, "FEAT2?运行未知程序1?runprog"],
   [13, -4, "DOOR?UP"],
@@ -251,8 +251,6 @@ export const map: GameMap = [
 ];
 export const map_parallel: GameMap[] = [
   [
-    [17, 23, "TP?PSEUDO?17?23?-1"],
-
     [17, 23, "TP?PSEUDO?17?23?-1"],
     [17, 22, "WALL"],
     [17, 21, "WALL"],
