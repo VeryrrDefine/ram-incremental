@@ -8,12 +8,12 @@ export function displayNumber(x: number) {
   return x.toFixed(3);
 }
 
-export function displayRAM(x: number) {
+export function displayRAM(x: number, withln = true) {
   if (x > 1073741824) {
-    return displayNumber(x / 1073741824) + "\nGB";
+    return displayNumber(x / 1073741824) + (withln ? "\n" : "") + "GB";
   }
   if (x > 1048576) {
-    return displayNumber(x / 1048576) + "\nMB";
+    return displayNumber(x / 1048576) + (withln ? "\n" : "") + "MB";
   }
-  return displayNumber(x / 1024) + "\nKB";
+  return displayNumber(x / 1024) + (withln ? "\n" : "") + "KB";
 }

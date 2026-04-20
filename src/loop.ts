@@ -17,6 +17,16 @@ export function ramGain() {
   return base;
 }
 
+export function pointGain() {
+  let base = 0;
+  if (player.upgrades["16_7"]) {
+    base += player.upgrades["16_7"] ?? 0;
+  }
+  if (player.upgrades["20_8"]) {
+    base *= Math.max(1, Math.log10(Math.max(player.ram, 1)));
+  }
+  return base;
+}
 export function loop() {
   let ticks = (Date.now() - player.lastTick) / 1000;
   if (ticks < 0) {
@@ -24,7 +34,8 @@ export function loop() {
     ticks = (Date.now() - player.lastTick) / 1000;
   }
   if (player.upgrades["16_7"]) {
-    player.points += (player.upgrades["16_7"] ?? 0) * ticks;
+    let pGain = pointGain();
+    player.points += pGain * ticks;
   }
   let gain = ramGain();
   if (gain) {

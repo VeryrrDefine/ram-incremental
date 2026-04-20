@@ -129,7 +129,9 @@ export function blockDataToBlock(x: string) {
             (cost == 1 / 0
               ? "已购买"
               : "价格:" +
-                displayNumber(UPGRADES[part].cost()) +
+                (UPGRADES[part].currency == "RAM"
+                  ? displayRAM(cost, false)
+                  : displayNumber(cost)) +
                 UPGRADES[part].currency)
           );
         }
