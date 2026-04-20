@@ -153,6 +153,12 @@ export function blockDataToBlock(x: string) {
       return new (class extends Block {
         color = "#000000";
         contentDynamic() {
+          if (player.ram > 1073741824) {
+            return (player.ram / 1073741824).toFixed(3) + "\nGB";
+          }
+          if (player.ram > 1048576) {
+            return (player.ram / 1048576).toFixed(3) + "\nMB";
+          }
           return (player.ram / 1024).toFixed(3) + "\nKB";
         }
         textcolor = "#ffffff";
