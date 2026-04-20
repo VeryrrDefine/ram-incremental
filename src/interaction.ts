@@ -12,6 +12,12 @@ export function tryMove(dx: number, dy: number) {
     player.x = newX;
     player.y = newY;
   } else {
+    const block = getBlock(newX, newY);
+
+    if (!block) return;
+    if (block.solidInteractionable()) {
+      block.onTouch();
+    }
     return;
   }
   const block = getBlock(player.x, player.y);

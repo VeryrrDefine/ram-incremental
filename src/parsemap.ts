@@ -2,6 +2,7 @@ import {
   Block,
   genDoor as genDoorBlock,
   genFeature,
+  genNPC,
   genTextBlock,
   genTP,
   WALL,
@@ -11,13 +12,13 @@ import { NOTIFY } from "./notify";
 import { hardReset, player } from "./player";
 import { UPGRADES } from "./upgrades";
 
-const blockDataCache: Map<string, Block> = new Map();
+const blockDataCache: Map<string, Block | null> = new Map();
 
 function writeToCache(block: Block, x: string) {
   blockDataCache.set(x, block);
   return block;
 }
-function newBlockAndCache(block: () => Block, x: string) {
+function newBlockAndCache(block: () => Block | null, x: string) {
   let q = block();
   blockDataCache.set(x, q);
   return q;
@@ -164,5 +165,8 @@ export function blockDataToBlock(x: string) {
         textcolor = "#ffffff";
       })();
     }, x);
+  }
+  if (x.startsWith("NPC?")) {
+    return newBlockAndCache(() => genNPC(x.slice(4)), x);
   }
 }

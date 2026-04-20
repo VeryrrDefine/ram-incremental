@@ -1,3 +1,4 @@
+import { NOTIFY } from "./notify";
 import { player } from "./player";
 
 export class Block {
@@ -10,6 +11,9 @@ export class Block {
   }
   onTouch(): [remove: boolean, replaceTo?: string] {
     return [false];
+  }
+  solidInteractionable() {
+    return false;
   }
   contentDynamic?(): string;
 }
@@ -103,4 +107,23 @@ export function genTP(x: string[], pseudo2 = false) {
     return [false];
   };
   return bl;
+}
+
+export function genNPC(x: string) {
+  if (x == "22_-8_U0") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "NPC";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+  return null;
 }
