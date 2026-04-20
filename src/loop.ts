@@ -11,6 +11,9 @@ export function ramGain() {
   if (player.upgrades["19_7"]) {
     base += player.points ** 0.5;
   }
+  if (player.upgrades["20_7"]) {
+    base += Math.max(1, (player.ram / 1024) ** 0.3);
+  }
   return base;
 }
 

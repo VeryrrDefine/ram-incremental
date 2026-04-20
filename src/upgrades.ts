@@ -41,13 +41,13 @@ export const UPGRADES = {
     currency: "点数",
   },
   "20_7": {
-    content: "基于总点数\n增加RAM总量\n每秒获取",
+    content: "基于RAM总量\n增加RAM总量\n每秒获取",
     cost() {
       return player.upgrades["20_7"] ? 1 / 0 : 30720;
     },
     onBuy() {
       if (UPGRADES["20_7"].cost() <= player.ram) {
-        player.ram -= 30720;
+        player.ram -= 22528;
         player.upgrades["20_7"] = 1;
       }
     },

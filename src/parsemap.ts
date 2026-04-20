@@ -6,6 +6,7 @@ import {
   genTP,
   WALL,
 } from "./blocks";
+import { displayNumber, displayRAM } from "./display";
 import { NOTIFY } from "./notify";
 import { hardReset, player } from "./player";
 import { UPGRADES } from "./upgrades";
@@ -128,7 +129,7 @@ export function blockDataToBlock(x: string) {
             (cost == 1 / 0
               ? "已购买"
               : "价格:" +
-                UPGRADES[part].cost().toFixed(3) +
+                displayNumber(UPGRADES[part].cost()) +
                 UPGRADES[part].currency)
           );
         }
@@ -144,7 +145,7 @@ export function blockDataToBlock(x: string) {
       return new (class extends Block {
         color = "#000000";
         contentDynamic() {
-          return player.points.toFixed(3);
+          return displayNumber(player.points);
         }
         textcolor = "#ffffff";
       })();
@@ -156,13 +157,7 @@ export function blockDataToBlock(x: string) {
       return new (class extends Block {
         color = "#000000";
         contentDynamic() {
-          if (player.ram > 1073741824) {
-            return (player.ram / 1073741824).toFixed(3) + "\nGB";
-          }
-          if (player.ram > 1048576) {
-            return (player.ram / 1048576).toFixed(3) + "\nMB";
-          }
-          return (player.ram / 1024).toFixed(3) + "\nKB";
+          return displayRAM(player.ram);
         }
         textcolor = "#ffffff";
       })();
