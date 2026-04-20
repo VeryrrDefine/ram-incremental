@@ -367,7 +367,9 @@ export const map_parallel: GameMap[] = [
     [16, 7, "UPGRADE?16_7"],
     [17, 7, "UPGRADE?17_7"],
     [19, 7, "UPGRADE?19_7"],
+    [20, 7, "UPGRADE?20_7"],
     [17, 5, "POINTS"],
     [19, 5, "RAM"],
+    [18, 11, "TEXT?右边打开此门\n需要1 MB内存\n即 1024 KB"],
   ],
 ];

@@ -48,6 +48,9 @@ export function genDoor(x: string) {
     if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
       return false;
     }
+    if (bl.data == "1913_U0" && player.ram >= 1048576) {
+      return false;
+    }
     return true;
   };
   bl.onTouch = () => {
@@ -56,6 +59,9 @@ export function genDoor(x: string) {
     }
     if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
       return [true, "TP?PSEUDO?17?23?0"];
+    }
+    if (bl.data == "1913_U0" && player.ram >= 1048576) {
+      return [true];
     }
     return [false];
   };

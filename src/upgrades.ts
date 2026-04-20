@@ -4,7 +4,7 @@ export const UPGRADES = {
   "16_7": {
     content: "每秒点数+1",
     cost() {
-      return 2 ** (player.upgrades["16_7"] ?? 0);
+      return ((player.upgrades["16_7"] ?? 0) + 1) ** 2;
     },
     onBuy() {
       if (UPGRADES["16_7"].cost() <= player.points) {
@@ -17,7 +17,7 @@ export const UPGRADES = {
   "17_7": {
     content: "每秒RAM总量+1B",
     cost() {
-      return 2 ** (player.upgrades["17_7"] ?? 0);
+      return ((player.upgrades["17_7"] ?? 0) + 1) ** 2.3;
     },
     onBuy() {
       if (UPGRADES["17_7"].cost() <= player.points) {
@@ -39,5 +39,18 @@ export const UPGRADES = {
       }
     },
     currency: "点数",
+  },
+  "20_7": {
+    content: "基于总点数\n增加RAM总量\n每秒获取",
+    cost() {
+      return player.upgrades["20_7"] ? 1 / 0 : 30720;
+    },
+    onBuy() {
+      if (UPGRADES["20_7"].cost() <= player.ram) {
+        player.ram -= 30720;
+        player.upgrades["20_7"] = 1;
+      }
+    },
+    currency: "RAM",
   },
 } as any;

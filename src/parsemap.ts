@@ -121,12 +121,15 @@ export function blockDataToBlock(x: string) {
         color = "#00ff51ff";
         textcolor = "#000000";
         contentDynamic(): string {
+          let cost = UPGRADES[part].cost();
           return (
             UPGRADES[part].content +
             "\n" +
-            "价格:" +
-            UPGRADES[part].cost() +
-            UPGRADES[part].currency
+            (cost == 1 / 0
+              ? "已购买"
+              : "价格:" +
+                UPGRADES[part].cost().toFixed(3) +
+                UPGRADES[part].currency)
           );
         }
         onTouch(): [remove: boolean, replaceTo?: string] {
