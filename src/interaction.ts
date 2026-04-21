@@ -3,9 +3,11 @@ import { player, addMapBlock } from "./gameState";
 import { canvasToWorld, isInRect, GRIDSIZE } from "./geometry";
 import { getBlock, passable } from "./collision"; // 下面定义
 import { getReplaceMapOfUniverse } from "./universe";
+import { TEMP } from "./temp";
 
 // 移动逻辑
 export function tryMove(dx: number, dy: number) {
+  if (TEMP.interact) return;
   const newX = player.x + dx;
   const newY = player.y + dy;
   if (passable(newX, newY)) {

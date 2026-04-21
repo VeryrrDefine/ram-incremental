@@ -1,3 +1,4 @@
+import { DIALOGUE } from "./dialogue";
 import type { GameMap } from "./map";
 
 function initialPlayer() {
@@ -23,6 +24,7 @@ function initialPlayer() {
 export let player = initialPlayer();
 const SAVE_ID = "test-game-2";
 export function save() {
+  if (DIALOGUE.conversation) return;
   localStorage.setItem(SAVE_ID, JSON.stringify(player));
 }
 

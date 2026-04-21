@@ -1,3 +1,4 @@
+import { DIALOGUE } from "./dialogue";
 import { NOTIFY } from "./notify";
 import { player } from "./player";
 
@@ -110,11 +111,37 @@ export function genTP(x: string[], pseudo2 = false) {
 }
 
 export function genNPC(x: string) {
+  if (x == "20_-8_U0") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "NPC";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        DIALOGUE.messages = [
+          "- 你好，我只是一个普通的NPC",
+          "- 左边有个门，我开不了。",
+          "- 如果你帮我开启，我会奖励你",
+        ];
+        DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
   if (x == "22_-8_U0") {
     return new (class extends Block {
       color = "#fff700ff";
       content = "NPC";
       onTouch(): [remove: boolean, replaceTo?: string] {
+        DIALOGUE.messages = [
+          "- 你好，我只是一个普通的NPC",
+          "- 我的右边有扇门，只要你能帮我完成\n一个任务，就能开启。",
+        ];
+        DIALOGUE.startConversation();
         return [false];
       }
       solid(): boolean {

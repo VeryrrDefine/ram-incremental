@@ -7,6 +7,7 @@ import { save } from "./player";
 import { map, map_parallel } from "./map";
 import { loop } from "./loop";
 import { mouse } from "./mouse";
+import { DIALOGUE } from "./dialogue";
 
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;
@@ -32,6 +33,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("keydown", (e) => {
   const key = e.key;
+  if (DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600) {
+    if (e.key == "Shift") {
+      DIALOGUE.endConversation();
+      return;
+    }
+    if (e.key == "Enter") {
+      if (DIALOGUE.conversation + 1 > DIALOGUE.messages.length) {
+        DIALOGUE.endConversation();
+      } else {
+        DIALOGUE.conversation++;
+      }
+      return;
+    }
+  }
   const moveMap = {
     ArrowUp: [0, -1],
     w: [0, -1],

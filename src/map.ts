@@ -451,6 +451,7 @@ export const map_parallel: GameMap[] = [
     [16, -4, "WALL"],
     [16, -3, "WALL"],
     [17, -3, "WALL"],
+    [20, -8, "NPC?20_-8_U0"],
     [22, -8, "NPC?22_-8_U0"],
   ],
 ];

@@ -6,6 +6,8 @@ import { Block, genTextBlock, PLAYERBLOCK } from "./blocks";
 import { NOTIFY } from "./notify";
 import { mouse } from "./mouse";
 import { FONT } from "./font";
+import { DIALOGUE } from "./dialogue";
+import { TEMP } from "./temp";
 
 const nothingness = genTextBlock("那边什么都没有\n别看了");
 
@@ -53,8 +55,6 @@ function drawBlock(block: Block, x: number, y: number) {
   const content = block.contentDynamic ? block.contentDynamic() : block.content;
   drawText(x, y, content);
 }
-
-let t = Date.now() + 500;
 export function renderGame() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, 2000, 2000);
@@ -93,7 +93,7 @@ export function renderGame() {
   // 显示坐标信息
   ctx.fillStyle = "#008cff";
   ctx.fillText(
-    `player ${player.x},${player.y},${player.universe}|${mouse.mouseX},${mouse.mouseY}`,
+    `player ${player.x},${player.y},${player.universe}|${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}`,
     0,
     30,
   );
@@ -127,23 +127,35 @@ export function renderGame() {
     ctx.drawImage(assets, 160, 0, 64, 64, 64, 576, 64, 64); // down
     ctx.drawImage(assets, 96, 0, 64, 64, 128, 576, 64, 64); // right
   }
-  let dialogueTick = Date.now() - t;
-  if (dialogueTick >= 600) {
-    ctx.fillRect(20, 500, 680, 200);
-    ctx.fillStyle = "#000";
-    ctx.fillRect(24, 504, 672, 192);
-    ctx.fillStyle = "#fff";
-    ctx.font = "37px " + FONT;
-    ctx.fillText("- Test dialogue", 32, 545);
-    ctx.font = "10px " + FONT;
-    let right2 = ctx.measureText("Press enter to next, shift to skip");
-    ctx.fillText("Press enter to next, shift to skip", 689 - right2.width, 690);
-  } else if (dialogueTick >= 0) {
-    let heightPercent = dialogueTick / 600;
-    ctx.fillRect(20, 500, 680, 200 * heightPercent);
-    ctx.fillStyle = "#000";
-    if (200 * heightPercent - 8 > 0) {
-      ctx.fillRect(24, 504, 672, 200 * heightPercent - 8);
+  if (DIALOGUE.conversation) {
+    let dialogueTick = Date.now() - DIALOGUE.UItick;
+    if (dialogueTick >= 600) {
+      ctx.fillRect(20, 500, 680, 200);
+      ctx.fillStyle = "#000";
+      ctx.fillRect(24, 504, 672, 192);
+      ctx.fillStyle = "#fff";
+      ctx.font = "37px " + FONT;
+      let msg = DIALOGUE.messages[DIALOGUE.conversation - 1];
+      let msgs = msg.split("\n");
+      for (let i = 0; i < msgs.length; i++) {
+        ctx.fillText(msgs[i], 32, 545 + i * 39);
+      }
+      ctx.font = "10px " + FONT;
+      let right2 = ctx.measureText(
+        "Press enter to next, shift to skip all dialogue",
+      );
+      ctx.fillText(
+        "Press enter to next, shift to skip all dialogue",
+        689 - right2.width,
+        690,
+      );
+    } else if (dialogueTick >= 0) {
+      let heightPercent = dialogueTick / 600;
+      ctx.fillRect(20, 500, 680, 200 * heightPercent);
+      ctx.fillStyle = "#000";
+      if (200 * heightPercent - 8 > 0) {
+        ctx.fillRect(24, 504, 672, 200 * heightPercent - 8);
+      }
     }
   }
   if (NOTIFY.expires > Date.now()) {
