@@ -130,6 +130,7 @@ export function renderGame() {
   if (DIALOGUE.conversation) {
     let dialogueTick = Date.now() - DIALOGUE.UItick;
     if (dialogueTick >= 600) {
+      ctx.fillStyle = "#fff700";
       ctx.fillRect(20, 500, 680, 200);
       ctx.fillStyle = "#000";
       ctx.fillRect(24, 504, 672, 192);
@@ -151,6 +152,7 @@ export function renderGame() {
       );
     } else if (dialogueTick >= 0) {
       let heightPercent = dialogueTick / 600;
+      ctx.fillStyle = "#fff700";
       ctx.fillRect(20, 500, 680, 200 * heightPercent);
       ctx.fillStyle = "#000";
       if (200 * heightPercent - 8 > 0) {

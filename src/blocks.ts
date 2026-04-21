@@ -47,6 +47,12 @@ export function genDoor(x: string) {
   bl.data = x;
   //TP?PSEUDO?17?23?1?1
   bl.solid = () => {
+    if (bl.data == "19_-4_U0") {
+      if (player.features.includes("19_-4_U0")) {
+        return false;
+      }
+      return true;
+    }
     if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
       return false;
     }
@@ -59,6 +65,19 @@ export function genDoor(x: string) {
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "19_-4_U0") {
+      if (player.features.includes("19_-4_U0")) {
+        player.features.push("19_-4_U0_OPENED");
+        return [true];
+      }
+      DIALOGUE.messages = [
+        "+ 这里有一个门。",
+        "+ 上面写着: 辛巴巴八路比呀\n+ 以及“该门需要400 KB 开启”。",
+      ];
+      DIALOGUE.startConversation();
+      player.features.push("19_-4_U0");
+      return [false];
+    }
     if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
       return [true];
     }
@@ -69,6 +88,12 @@ export function genDoor(x: string) {
       return [true];
     }
     return [false];
+  };
+  bl.solidInteractionable = () => {
+    if (bl.data == "19_-4_U0") {
+      return true;
+    }
+    return false;
   };
   return bl;
 }
@@ -116,11 +141,25 @@ export function genNPC(x: string) {
       color = "#fff700ff";
       content = "NPC";
       onTouch(): [remove: boolean, replaceTo?: string] {
-        DIALOGUE.messages = [
-          "- 你好，我只是一个普通的NPC",
-          "- 左边有个门，我开不了。",
-          "- 如果你帮我开启，我会奖励你",
-        ];
+        if (player.features.includes("19_-4_U0_OPENED_2")) return [false];
+        if (
+          player.features.includes("19_-4_U0_OPENED") &&
+          !player.features.includes("19_-4_U0_OPENED_2")
+        ) {
+          DIALOGUE.messages = [
+            "- 谢谢你...",
+            "+ 你获得了0.001 点数。\n+ 这NPC身价这么低？",
+          ];
+          DIALOGUE.startConversation();
+          player.points += 0.001;
+          player.features.push("19_-4_U0_OPENED_2");
+        } else {
+          DIALOGUE.messages = [
+            "- 你好，我只是一个普通的NPC",
+            "- 左边有个门，我开不了。",
+            "- 如果你帮我开启，我会给你报酬",
+          ];
+        }
         DIALOGUE.startConversation();
         return [false];
       }
