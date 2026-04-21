@@ -82,10 +82,10 @@ document.addEventListener("keydown", (e) => {
   if (move) tryMove(move[0], move[1]);
 });
 
-// 调试用
-// @ts-ignore
-window.map = map;
-// @ts-ignore
-window.player = player;
-// @ts-ignore
-window.par = map_parallel;
+// // 调试用
+// // @ts-ignore
+// window.map = map;
+// // @ts-ignore
+// window.player = player;
+// // @ts-ignore
+// window.par = map_parallel;
