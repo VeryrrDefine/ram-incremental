@@ -4,6 +4,8 @@ import { getBlock } from "./collision"; // 后面会定义
 import { player } from "./gameState";
 import { Block, genTextBlock, PLAYERBLOCK } from "./blocks";
 import { NOTIFY } from "./notify";
+import { mouse } from "./mouse";
+import { FONT } from "./font";
 
 const nothingness = genTextBlock("那边什么都没有\n别看了");
 
@@ -13,7 +15,7 @@ let assets: HTMLImageElement;
 export function initRenderer(canvas: HTMLCanvasElement, img: HTMLImageElement) {
   ctx = canvas.getContext("2d")!;
   assets = img;
-  ctx.font = `21px sans-serif`; // HEIGHT = 21
+  ctx.font = `21px ${FONT}`; // HEIGHT = 21
 }
 
 const HEIGHT = 21;
@@ -25,7 +27,7 @@ function drawText(x: number, y: number, str: string) {
   let width = Math.max(...parts.map((x) => ctx.measureText(x).width));
   while (width > GRIDSIZE) {
     curheight -= 0.5;
-    ctx.font = `${curheight}px sans-serif`;
+    ctx.font = `${curheight}px  ${FONT}`;
     width = Math.max(...parts.map((x) => ctx.measureText(x).width));
   }
   for (let i = 0; i < parts.length; i++) {
@@ -41,7 +43,7 @@ function drawText(x: number, y: number, str: string) {
     );
   }
 
-  ctx.font = `${HEIGHT}px sans-serif`;
+  ctx.font = `${HEIGHT}px  ${FONT}`;
 }
 
 function drawBlock(block: Block, x: number, y: number) {
@@ -52,6 +54,7 @@ function drawBlock(block: Block, x: number, y: number) {
   drawText(x, y, content);
 }
 
+let t = Date.now() + 500;
 export function renderGame() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, 2000, 2000);
@@ -89,14 +92,18 @@ export function renderGame() {
 
   // 显示坐标信息
   ctx.fillStyle = "#008cff";
-  ctx.fillText(`player ${player.x},${player.y},${player.universe}`, 0, 30);
+  ctx.fillText(
+    `player ${player.x},${player.y},${player.universe}|${mouse.mouseX},${mouse.mouseY}`,
+    0,
+    30,
+  );
 
   // 右下角菜单图标
   ctx.drawImage(assets, 0, 0, 32, 32, 720 - 32, 720 - 32, 32, 32);
 
   // 菜单 UI
   if (player.openedMenu) {
-    ctx.font = "10px sans-serif";
+    ctx.font = "10px " + FONT;
     ctx.fillStyle = "#8a8a8a";
     ctx.fillRect(650, 600, 68, 86);
     ctx.fillStyle = "#fff";
@@ -120,12 +127,30 @@ export function renderGame() {
     ctx.drawImage(assets, 160, 0, 64, 64, 64, 576, 64, 64); // down
     ctx.drawImage(assets, 96, 0, 64, 64, 128, 576, 64, 64); // right
   }
-
+  let dialogueTick = Date.now() - t;
+  if (dialogueTick >= 600) {
+    ctx.fillRect(20, 500, 680, 200);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(24, 504, 672, 192);
+    ctx.fillStyle = "#fff";
+    ctx.font = "37px " + FONT;
+    ctx.fillText("- Test dialogue", 32, 545);
+    ctx.font = "10px " + FONT;
+    let right2 = ctx.measureText("Press enter to next, shift to skip");
+    ctx.fillText("Press enter to next, shift to skip", 689 - right2.width, 690);
+  } else if (dialogueTick >= 0) {
+    let heightPercent = dialogueTick / 600;
+    ctx.fillRect(20, 500, 680, 200 * heightPercent);
+    ctx.fillStyle = "#000";
+    if (200 * heightPercent - 8 > 0) {
+      ctx.fillRect(24, 504, 672, 200 * heightPercent - 8);
+    }
+  }
   if (NOTIFY.expires > Date.now()) {
     ctx.fillStyle = "#fff";
     ctx.fillRect(200, 20, 360, 40);
     ctx.fillStyle = "#000";
-    ctx.font = "30px sans-serif";
+    ctx.font = "30px " + FONT;
     let measure = ctx.measureText(NOTIFY.content);
     ctx.fillText(NOTIFY.content, 200 + (360 - measure.width) / 2, 20 + 30);
   }

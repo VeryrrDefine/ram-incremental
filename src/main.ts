@@ -6,6 +6,7 @@ import { handleClick, tryMove } from "./interaction";
 import { save } from "./player";
 import { map, map_parallel } from "./map";
 import { loop } from "./loop";
+import { mouse } from "./mouse";
 
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;
@@ -19,6 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.addEventListener("mousemove", (e) => {
     mouseX = e.offsetX;
     mouseY = e.offsetY;
+    mouse.mouseX = e.offsetX;
+    mouse.mouseY = e.offsetY;
   });
   canvas.addEventListener("click", () => handleClick(mouseX, mouseY));
 
