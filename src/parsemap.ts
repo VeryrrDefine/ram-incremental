@@ -9,7 +9,6 @@ import {
 } from "./blocks";
 import { DIALOGUE } from "./dialogue";
 import { displayNumber, displayRAM } from "./display";
-import { NOTIFY } from "./notify";
 import { hardReset, player } from "./player";
 import { UPGRADES } from "./upgrades";
 

@@ -1,5 +1,4 @@
 import { DIALOGUE } from "./dialogue";
-import { NOTIFY } from "./notify";
 import { player } from "./player";
 
 export class Block {
