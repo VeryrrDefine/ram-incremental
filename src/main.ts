@@ -1,10 +1,8 @@
 // main.ts
 import "./style.css";
-import { player } from "./gameState";
 import { initRenderer, renderGame } from "./render";
 import { handleClick, tryMove } from "./interaction";
 import { save } from "./player";
-import { map, map_parallel } from "./map";
 import { loop } from "./loop";
 import { mouse } from "./mouse";
 import { DIALOGUE } from "./dialogue";
