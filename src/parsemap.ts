@@ -7,6 +7,7 @@ import {
   genTP,
   WALL,
 } from "./blocks";
+import { DIALOGUE } from "./dialogue";
 import { displayNumber, displayRAM } from "./display";
 import { NOTIFY } from "./notify";
 import { hardReset, player } from "./player";
@@ -46,8 +47,21 @@ export function blockDataToBlock(x: string) {
             content = t[1];
             textcolor = "#000000";
             onTouch(): [remove: boolean] {
-              NOTIFY.expires = Date.now() + 1000;
-              NOTIFY.content = "运行程序失败";
+              DIALOGUE.messages = ["- 运行程序失败"];
+              DIALOGUE.startConversation();
+              return [false];
+            }
+          })();
+        }, x);
+      }
+      if (t[2] == "nevergonnagiveyouup") {
+        return newBlockAndCache(() => {
+          return new (class extends Block {
+            color = "#00ffffff";
+            content = t[1];
+            textcolor = "#000000";
+            onTouch(): [remove: boolean] {
+              location.href = "https://www.bilibili.com/video/BV1UT42167xb";
               return [false];
             }
           })();

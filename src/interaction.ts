@@ -4,6 +4,7 @@ import { canvasToWorld, isInRect, GRIDSIZE } from "./geometry";
 import { getBlock, passable } from "./collision"; // 下面定义
 import { getReplaceMapOfUniverse } from "./universe";
 import { TEMP } from "./temp";
+import { configurations } from "./configurations";
 
 // 移动逻辑
 export function tryMove(dx: number, dy: number) {
@@ -56,11 +57,6 @@ export function handleClick(canvasX: number, canvasY: number) {
   }
 
   if (player.openedMenu) {
-    const configurations = [
-      ["Editing", "editing"],
-      ["Openmenu", "openedMenu"],
-      ["ArrowButton", "addArrowButton"],
-    ];
     const idx = player.configurationOrder;
     const [_, key] = configurations[idx];
     if (isInRect(canvasX, canvasY, 652, 652, 668, 668)) {

@@ -136,6 +136,28 @@ export function genTP(x: string[], pseudo2 = false) {
 }
 
 export function genNPC(x: string) {
+  if (x == "15_-5_U0") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "作者";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        DIALOGUE.messages = [
+          "- 您好！！！我是这个游戏\n- 的作者！！！/bx/bx/bx",
+          "- 肥肠感谢您能玩到这里！！！",
+          "- 不出意外的话新手教程就结束了。",
+          "- 左上角有个传送门，可以继续玩。",
+        ];
+        DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
   if (x == "20_-8_U0") {
     return new (class extends Block {
       color = "#fff700ff";
@@ -178,7 +200,8 @@ export function genNPC(x: string) {
       onTouch(): [remove: boolean, replaceTo?: string] {
         DIALOGUE.messages = [
           "- 你好，我只是一个普通的NPC",
-          "- 我的右边有扇门，只要你能帮我完成\n一个任务，就能开启。",
+          "- 我的右边有扇门，\n- 只要你能给我100 TB RAM，\n- 就能开启。",
+          "+ 这NPC这么贪婪吗？\n+ 还是说后面有大宝藏？",
         ];
         DIALOGUE.startConversation();
         return [false];

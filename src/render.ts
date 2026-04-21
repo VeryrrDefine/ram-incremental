@@ -8,6 +8,7 @@ import { mouse } from "./mouse";
 import { FONT } from "./font";
 import { DIALOGUE } from "./dialogue";
 import { TEMP } from "./temp";
+import { configurations } from "./configurations";
 
 const nothingness = genTextBlock("那边什么都没有\n别看了");
 
@@ -56,6 +57,7 @@ function drawBlock(block: Block, x: number, y: number) {
   drawText(x, y, content);
 }
 export function renderGame() {
+  ctx.font = `21px ${FONT}`; // HEIGHT = 21
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, 2000, 2000);
 
@@ -107,11 +109,7 @@ export function renderGame() {
     ctx.fillStyle = "#8a8a8a";
     ctx.fillRect(650, 600, 68, 86);
     ctx.fillStyle = "#fff";
-    const configurations = [
-      ["Editing", "editing"],
-      ["Openmenu", "openedMenu"],
-      ["ArrowButton", "addArrowButton"],
-    ];
+
     const conf = configurations[player.configurationOrder];
     // @ts-ignore
     ctx.fillText(conf[0] + (player[conf[1]] ? "1" : "0"), 650, 610);
@@ -143,10 +141,10 @@ export function renderGame() {
       }
       ctx.font = "10px " + FONT;
       let right2 = ctx.measureText(
-        "Press enter to next, shift to skip all dialogue",
+        "按Enter或点击继续对话，按Shift或双击结束对话",
       );
       ctx.fillText(
-        "Press enter to next, shift to skip all dialogue",
+        "按Enter或点击继续对话，按Shift或双击结束对话",
         689 - right2.width,
         690,
       );

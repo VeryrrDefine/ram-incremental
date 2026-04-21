@@ -24,27 +24,43 @@ document.addEventListener("DOMContentLoaded", () => {
     mouse.mouseX = e.offsetX;
     mouse.mouseY = e.offsetY;
   });
-  canvas.addEventListener("click", () => handleClick(mouseX, mouseY));
+  canvas.addEventListener("click", () => {
+    nextConversation();
 
+    handleClick(mouseX, mouseY);
+  });
+
+  canvas.addEventListener("dblclick", () => {
+    skipConversation();
+  });
   setInterval(() => renderGame(), 50);
   setInterval(() => save(), 1000);
   setInterval(() => loop(), 50);
 });
 
+function nextConversation() {
+  if (!(DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600)) return;
+  if (DIALOGUE.conversation + 1 > DIALOGUE.messages.length) {
+    DIALOGUE.endConversation();
+  } else {
+    DIALOGUE.conversation++;
+  }
+  return;
+}
+function skipConversation() {
+  if (!(DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600)) return;
+  DIALOGUE.endConversation();
+  return;
+}
+
 document.addEventListener("keydown", (e) => {
   const key = e.key;
   if (DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600) {
     if (e.key == "Shift") {
-      DIALOGUE.endConversation();
-      return;
+      skipConversation();
     }
     if (e.key == "Enter") {
-      if (DIALOGUE.conversation + 1 > DIALOGUE.messages.length) {
-        DIALOGUE.endConversation();
-      } else {
-        DIALOGUE.conversation++;
-      }
-      return;
+      nextConversation();
     }
   }
   const moveMap = {
