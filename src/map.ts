@@ -355,7 +355,7 @@ export const map: GameMap = [
   [273, 37, "WALL"],
   [273, 38, "WALL"],
   [273, 39, "WALL"],
-  [277, 40, "WALL"],
+  [277, 40, "DOOR?JAIL_PLAYER"],
   [272, 33, "TEXT?监狱1号"],
   [274, 39, "TEXT?姓名：未知"],
   [275, 39, "TEXT?剩余NaN年"],
@@ -387,6 +387,14 @@ export const map: GameMap = [
   [281, 35, "WALL"],
   [281, 36, "WALL"],
   [277, 35, "NPC?John_Baixie"],
+  [271, 37, "WALL"],
+  [271, 38, "WALL"],
+  [271, 39, "WALL"],
+  [271, 40, "WALL"],
+  [272, 40, "WALL"],
+  [272, 39, "WALL"],
+  [272, 38, "WALL"],
+  [272, 37, "WALL"],
 ];
 export const map_parallel: GameMap[] = [
   [

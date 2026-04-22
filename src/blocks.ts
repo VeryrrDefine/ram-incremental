@@ -66,9 +66,41 @@ export function genDoor(x: string) {
     if (bl.data == "RIGHT" && player.items.doorkey_1) {
       return false;
     }
+    if (
+      bl.data == "JAIL_PLAYER" &&
+      player.features.includes("JAIL_PLAYER_1") &&
+      player.ram >= 153600
+    ) {
+      return false;
+    }
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "JAIL_PLAYER") {
+      if (!player.features.includes("JAIL_PLAYER_1")) {
+        DIALOGUE.messages = [
+          "+ 这个门太难开了。",
+          "+ 我至少需要150 KB才能破开...",
+          "- 又有人被抓进去了？",
+          "+ 谁？",
+          "- 我是John Baixie。",
+          "- F**k, 2880分钟前有个人，\n- 说我买了黑市里的东西，\n- 把我抓了",
+          "- 他们还说什么，\n- AntiDim19728，\n- 还没等我解释就把我抓进去了",
+          "+ ......",
+        ];
+        player.features.push("JAIL_PLAYER_1");
+      } else if (player.ram <= 153600) {
+        DIALOGUE.messages = [
+          "+ 这个门太难开了。",
+          "+ 我至少需要150 KB才能破开...",
+        ];
+      } else {
+        player.ram -= 145408;
+        return [true];
+      }
+      DIALOGUE.startConversation();
+      return [false];
+    }
     if (bl.data == "RIGHT" && player.items.doorkey_1) {
       player.items.doorkey_1 = 0;
       return [true];
@@ -98,7 +130,7 @@ export function genDoor(x: string) {
     return [false];
   };
   bl.solidInteractionable = () => {
-    if (bl.data == "19_-4_U0") {
+    if (bl.data == "19_-4_U0" || bl.data == "JAIL_PLAYER") {
       return true;
     }
     return false;
