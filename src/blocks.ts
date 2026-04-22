@@ -1,5 +1,7 @@
 import { DIALOGUE } from "./dialogue";
 import { player } from "./player";
+import { Endless_e19728_trap, Endless_e19728_trap2 } from "./plot";
+import { TEMP } from "./temp";
 
 export class Block {
   color = "#ffff00";
@@ -47,7 +49,7 @@ export function genDoor(x: string) {
   //TP?PSEUDO?17?23?1?1
   bl.solid = () => {
     if (bl.data == "19_-4_U0") {
-      if (player.features.includes("19_-4_U0")) {
+      if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
         return false;
       }
       return true;
@@ -61,11 +63,18 @@ export function genDoor(x: string) {
     if (bl.data == "1913_U0" && player.ram >= 204800) {
       return false;
     }
+    if (bl.data == "RIGHT" && player.items.doorkey_1) {
+      return false;
+    }
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "RIGHT" && player.items.doorkey_1) {
+      player.items.doorkey_1 = 0;
+      return [true];
+    }
     if (bl.data == "19_-4_U0") {
-      if (player.features.includes("19_-4_U0")) {
+      if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
         player.features.push("19_-4_U0_OPENED");
         return [true];
       }
@@ -115,6 +124,21 @@ export function genFeature(x: string[]) {
   return bl;
 }
 
+export function genItem(x: string[]) {
+  let bl = new Block();
+  bl.color = "#00ffffff";
+  bl.content = x[1];
+  bl.data = x[2];
+  bl.textcolor = "#000000";
+  bl.onTouch = function () {
+    if (!player.items[bl.data]) {
+      player.items[bl.data] = 1;
+    } else player.items[bl.data] += 1;
+    return [true];
+  };
+  return bl;
+}
+
 export function genTP(x: string[], pseudo2 = false) {
   let pseudo = x[1] == "PSEUDO" || pseudo2;
   let bl = new Block();
@@ -134,7 +158,80 @@ export function genTP(x: string[], pseudo2 = false) {
   return bl;
 }
 
+export function genEvent(x: string) {
+  if (x == "25_1") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (!player.features.includes("25_1")) {
+          DIALOGUE.messages = [
+            "- 你好。",
+            "+ 你是谁？",
+            "- 我是Endless_e19728。",
+            "- 右边是一片美好的地方。",
+            "- 如果你想去，我可以帮你。",
+            "+ 好的，谢谢。",
+          ];
+          DIALOGUE.startConversation();
+          player.features.push("25_1");
+        }
+        return [false];
+      }
+    })();
+  }
+  if (x == "37_1") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (!player.features.includes("37_1")) {
+          TEMP.interact = 1;
+          player.features.push("37_1");
+          setTimeout(Endless_e19728_trap2, 500);
+          setTimeout(Endless_e19728_trap, 1000);
+        }
+        return [false];
+      }
+    })();
+  }
+  return null;
+}
 export function genNPC(x: string) {
+  if (x == "John_Baixie") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "John Baixie";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+  if (x == "Endless_e19728") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "Endless_\ne19728";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        // DIALOGUE.messages = ["- 你好。"];
+        // DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
   if (x == "15_-5_U0") {
     return new (class extends Block {
       color = "#fff700ff";

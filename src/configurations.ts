@@ -1,5 +1,5 @@
 export const configurations = [
-  //   ["Editing", "editing"],
+  ["Editing", "editing"],
   ["Openmenu", "openedMenu"],
   ["ArrowButton", "addArrowButton"],
 ];

@@ -44,5 +44,32 @@ export function loop() {
   if (gain) {
     player.ram += ramGain() * ticks;
   }
+  if (player.features.includes("25_1") && player.x == 26 && player.y == 1) {
+    player.replaces.push([25, -1, "NULL"]);
+    player.replaces.push([25, 1, "NPC?Endless_e19728"]);
+  }
+  if (player.features.includes("25_1") && player.x == 27 && player.y == 1) {
+    player.replaces.push([25, 1, "NULL"]);
+    player.replaces.push([26, 1, "NPC?Endless_e19728"]);
+  }
+  if (player.features.includes("25_1") && player.y == 1)
+    for (let i = 28; i <= 36; i++) {
+      if (player.x == i) {
+        player.replaces.push([i - 2, 1, "NULL"]);
+        player.replaces.push([i - 1, 1, "NPC?Endless_e19728"]);
+      }
+    }
+
+  let block_Replaces: string[] = [];
+  for (let i = player.replaces.length - 1; i >= 0; i--) {
+    let repl = player.replaces[i];
+    // debugger;
+    let mid = repl[0] + "," + repl[1];
+    if (block_Replaces.includes(mid)) {
+      player.replaces.splice(i, 1);
+    } else {
+      block_Replaces.push(mid);
+    }
+  }
   player.lastTick = Date.now();
 }

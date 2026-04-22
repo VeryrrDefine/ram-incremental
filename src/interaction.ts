@@ -5,12 +5,23 @@ import { getBlock, passable } from "./collision"; // 下面定义
 import { getReplaceMapOfUniverse } from "./universe";
 import { TEMP } from "./temp";
 import { configurations } from "./configurations";
+import { openItem, useItem1, useItem2 } from "./items";
+import { itemsUI } from "./ui";
+import { ctx } from "./render";
 
 // 移动逻辑
 export function tryMove(dx: number, dy: number) {
   if (TEMP.interact) return;
+  // Limit player go left on ploting
+  if (
+    (dx == -1 || dy == -1) &&
+    player.features.includes("25_1") &&
+    !player.features.includes("25_1_done")
+  )
+    return;
   const newX = player.x + dx;
   const newY = player.y + dy;
+
   if (passable(newX, newY)) {
     player.x = newX;
     player.y = newY;
@@ -48,6 +59,13 @@ export function handleClick(canvasX: number, canvasY: number) {
     player.openedMenu = !player.openedMenu;
     return;
   }
+  if (
+    isInRect(canvasX, canvasY, 672, 0, 720, 48) &&
+    player.features.includes("item")
+  ) {
+    openItem();
+    return;
+  }
 
   if (player.addArrowButton) {
     if (isInRect(canvasX, canvasY, 64, 512, 128, 576)) tryMove(0, -1);
@@ -56,6 +74,23 @@ export function handleClick(canvasX: number, canvasY: number) {
     else if (isInRect(canvasX, canvasY, 128, 576, 192, 640)) tryMove(1, 0);
   }
 
+  if (TEMP.openeditem) {
+    let t = itemsUI(ctx).but;
+    for (let i = 0; i < t.length; i++) {
+      if (
+        isInRect(
+          canvasX,
+          canvasY,
+          t[i][0],
+          t[i][1],
+          t[i][0] + t[i][2],
+          t[i][1] + t[i][3],
+        )
+      ) {
+        useItem1(t[i][4]);
+      }
+    }
+  }
   if (player.openedMenu) {
     const idx = player.configurationOrder;
     const [_, key] = configurations[idx];

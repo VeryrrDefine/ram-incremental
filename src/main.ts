@@ -61,6 +61,10 @@ document.addEventListener("keydown", (e) => {
       nextConversation();
     }
   }
+  if ((e.key == "I" || e.key == "i") && player.features.includes("item")) {
+    openItem();
+    return;
+  }
   const moveMap = {
     ArrowUp: [0, -1],
     w: [0, -1],
@@ -80,7 +84,11 @@ document.addEventListener("keydown", (e) => {
   if (move) tryMove(move[0], move[1]);
 });
 
-// // 调试用
-// import { player } from "./player";
-// // @ts-ignore
-// window.player = player;
+// 调试用
+import { player } from "./player";
+// @ts-ignore
+window.player = player;
+import { map } from "./map";
+import { openItem } from "./items";
+// @ts-ignore
+window.map = map;

@@ -9,10 +9,13 @@ import { FONT } from "./font";
 import { DIALOGUE } from "./dialogue";
 import { TEMP } from "./temp";
 import { configurations } from "./configurations";
+import { displayNumber, displayRAM } from "./display";
+import { ITEMS } from "./items";
+import { itemsUI } from "./ui";
 
 const nothingness = genTextBlock("那边什么都没有\n别看了");
 
-let ctx: CanvasRenderingContext2D;
+export let ctx: CanvasRenderingContext2D;
 let assets: HTMLImageElement;
 
 export function initRenderer(canvas: HTMLCanvasElement, img: HTMLImageElement) {
@@ -100,6 +103,14 @@ export function renderGame() {
     30,
   );
 
+  if (player.features.includes("item")) {
+    ctx.drawImage(assets, 0, 128, 48, 48, 720 - 48, 0, 48, 48);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "15px " + FONT;
+    let meas = ctx.measureText("Items");
+    ctx.fillText("Items", 720 - 48 + (48 - meas.width) / 2, 28);
+  }
+
   // 右下角菜单图标
   ctx.drawImage(assets, 0, 0, 32, 32, 720 - 32, 720 - 32, 32, 32);
 
@@ -124,6 +135,47 @@ export function renderGame() {
     ctx.drawImage(assets, 32, 64, 64, 64, 0, 576, 64, 64); // left
     ctx.drawImage(assets, 160, 0, 64, 64, 64, 576, 64, 64); // down
     ctx.drawImage(assets, 96, 0, 64, 64, 128, 576, 64, 64); // right
+  }
+  if (TEMP.openeditem) {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(48, 48, 624, 624);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(50, 50, 620, 620);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "20px " + FONT;
+    let rows = [
+      "Player Status",
+      "Points: " + displayNumber(player.points),
+      "RAM: " + displayRAM(player.ram),
+      "Last Save: " + new Date(TEMP.lastSave).toUTCString(),
+    ];
+    for (let i = 0; i < rows.length; i++) {
+      ctx.fillText(rows[i], 48, 48 + 20 * (i + 1));
+    }
+
+    let q = itemsUI(ctx);
+    let u = q.ui;
+    // let w = q.but;
+    // ctx.fillStyle = "#ff0000";
+    // for (let i = 0; i < w.length; i++) {
+    //   ctx.fillRect(w[i][0], w[i][1], w[i][2], w[i][3]);
+    // }
+    ctx.fillStyle = "#ffffff";
+    for (let i = 0; i < u.length; i++) {
+      ctx.fillText(u[i][0], u[i][1], u[i][2]);
+    }
+    // rows = [];
+
+    // for (let j = 0; j < ITEMS.length; j++) {
+    //   if (player.items[ITEMS[j]]) {
+    //     rows.push(`${ITEMS[j]}: ${player.items[ITEMS[j]]}`);
+    //   }
+    // }
+    // for (let i = 0; i < rows.length; i++) {
+    //   let meas = ctx.measureText(rows[i]);
+    //   ctx.fillText(rows[i], 48, 320 + 20 * (i + 1));
+    //   ctx.fillText("Use", 48 + meas.width + 10, 320 + 20 * (i + 1));
+    // }
   }
   if (DIALOGUE.conversation) {
     let dialogueTick = Date.now() - DIALOGUE.UItick;
@@ -157,6 +209,11 @@ export function renderGame() {
         ctx.fillRect(24, 504, 672, 200 * heightPercent - 8);
       }
     }
+  }
+
+  if (TEMP.endless_e19728_animation) {
+    ctx.fillStyle = "rgba(0, 0, 0, " + TEMP.endless_e19728_animation / 5 + ")";
+    ctx.fillRect(0, 0, 720, 720);
   }
   if (NOTIFY.expires > Date.now()) {
     ctx.fillStyle = "#fff";

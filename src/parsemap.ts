@@ -1,7 +1,9 @@
 import {
   Block,
   genDoor as genDoorBlock,
+  genEvent,
   genFeature,
+  genItem,
   genNPC,
   genTextBlock,
   genTP,
@@ -35,10 +37,19 @@ export function blockDataToBlock(x: string) {
   if (x.startsWith("DOOR")) {
     return writeToCache(genDoorBlock(x.slice(5)), x);
   }
+  if (x.startsWith("ITEM")) {
+    let t = x.split("?");
+    if (t[0] === "ITEM") return writeToCache(genItem(t), x);
+  }
   if (x.startsWith("FEAT")) {
     let t = x.split("?");
     if (t[0] === "FEAT") return writeToCache(genFeature(t), x);
     else {
+      if (t[0] == "FEAT3") {
+        return newBlockAndCache(() => {
+          return genEvent(t[2]);
+        }, x);
+      }
       if (t[2] == "runprog") {
         return newBlockAndCache(() => {
           return new (class extends Block {
