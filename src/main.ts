@@ -81,9 +81,6 @@ document.addEventListener("keydown", (e) => {
 });
 
 // // 调试用
-// // @ts-ignore
-// window.map = map;
+// import { player } from "./player";
 // // @ts-ignore
 // window.player = player;
-// // @ts-ignore
-// window.par = map_parallel;
