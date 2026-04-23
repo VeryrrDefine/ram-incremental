@@ -15,7 +15,7 @@ export function Endless_e19728_trap() {
     "+ 你家队长点数那么少？\n+ 我都有" +
       displayNumber(player.points) +
       " 点数了。",
-    "+ 什么？ 马上斩杀！",
+    "- 什么？ 马上斩杀！",
     // "%STILL INTERACTION",
   ];
   DIALOGUE.stillInteraction = true;
