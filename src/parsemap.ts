@@ -12,6 +12,8 @@ import {
 import { DIALOGUE } from "./dialogue";
 import { displayNumber, displayRAM } from "./display";
 import { hardReset, player } from "./player";
+import { bed1_dreaming_1 } from "./plot";
+import { TEMP } from "./temp";
 import { UPGRADES } from "./upgrades";
 
 const blockDataCache: Map<string, Block | null> = new Map();
@@ -72,6 +74,26 @@ export function blockDataToBlock(x: string) {
             textcolor = "#000000";
             onTouch(): [remove: boolean] {
               location.href = "https://www.bilibili.com/video/BV1UT42167xb";
+              return [false];
+            }
+          })();
+        }, x);
+      }
+      if (t[2] == "bed1") {
+        return newBlockAndCache(() => {
+          return new (class extends Block {
+            color = "#00ffffff";
+            content = t[1];
+            textcolor = "#000000";
+            onTouch(): [remove: boolean] {
+              if (player.features.includes("bed1_dreaming")) return [false];
+              DIALOGUE.stillInteraction = true;
+              DIALOGUE.messages = ["+ 睡觉..."];
+              DIALOGUE.startConversation();
+              player.features.push("bed1_dreaming");
+              DIALOGUE.afterConversation = function () {
+                bed1_dreaming_1();
+              };
               return [false];
             }
           })();

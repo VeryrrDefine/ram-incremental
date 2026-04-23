@@ -24,6 +24,7 @@ function initialPlayer() {
     } as Record<string, number>,
     thief_points: 0,
     thief_rams: 0,
+    playername: "Player",
   };
 }
 

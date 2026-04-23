@@ -1,6 +1,14 @@
+import { delay } from "./await";
 import { DIALOGUE } from "./dialogue";
 import { player } from "./player";
-import { Endless_e19728_trap, Endless_e19728_trap2 } from "./plot";
+import {
+  bed1_dreaming_1,
+  Endless_e19728_trap,
+  Endless_e19728_trap2,
+  jail_breaking_door,
+  jail_breaking_door_282_40,
+  seeing_Endless_e19728,
+} from "./plot";
 import { TEMP } from "./temp";
 
 export class Block {
@@ -31,6 +39,9 @@ POINT_GENERATOR.content = "Point generator";
 export const PLAYERBLOCK = new Block();
 PLAYERBLOCK.color = "#008cffff";
 PLAYERBLOCK.content = "Player";
+PLAYERBLOCK.contentDynamic = function () {
+  return player.playername;
+};
 
 export function genTextBlock(x: string) {
   let bl = new Block();
@@ -76,6 +87,49 @@ export function genDoor(x: string) {
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "282_40") {
+      DIALOGUE.messages = ["+ 帮别人“越狱”，emmm\n+ 算不算...?", "+ 管他呢"];
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.afterConversation = function () {
+        jail_breaking_door_282_40();
+      };
+
+      DIALOGUE.startConversation();
+      return [false];
+    }
+    if (bl.data == "279_44" && player.features.includes("bed1_dreaming")) {
+      if (player.features.includes("JAIL_PLAYER_KILLED2")) {
+        DIALOGUE.messages = [
+          "+ Endless_e19728解决了。",
+          "+ 不过AntiDim19728手下应该还有人。",
+          "+ 把这个门解决掉先。",
+          "+ 这个是监狱的“加固门”，用RAM解决\n+ 可以得到很多点数...",
+        ];
+        DIALOGUE.stillInteraction = true;
+        DIALOGUE.afterConversation = function () {
+          jail_breaking_door();
+        };
+
+        DIALOGUE.startConversation();
+        return [false];
+      } else {
+        DIALOGUE.messages = [
+          "- 例行检查。",
+          "- 你最好知道你是谁。",
+          "+ ......",
+          "- 你怎么出来了？\n- 不应该在里面吗？",
+          "+ (不好)\n。",
+          "- 去见Endless_e19728，待会儿就会来。",
+          "+ (...)",
+        ];
+        DIALOGUE.stillInteraction = true;
+        DIALOGUE.afterConversation = function () {
+          seeing_Endless_e19728();
+        };
+        DIALOGUE.startConversation();
+      }
+      return [false];
+    }
     if (bl.data == "JAIL_PLAYER") {
       if (!player.features.includes("JAIL_PLAYER_1")) {
         DIALOGUE.messages = [
@@ -130,7 +184,14 @@ export function genDoor(x: string) {
     return [false];
   };
   bl.solidInteractionable = () => {
-    if (bl.data == "19_-4_U0" || bl.data == "JAIL_PLAYER") {
+    if (
+      bl.data == "19_-4_U0" ||
+      bl.data == "JAIL_PLAYER" ||
+      bl.data == "282_40"
+    ) {
+      return true;
+    }
+    if (bl.data == "279_44" && player.features.includes("bed1_dreaming")) {
       return true;
     }
     return false;
@@ -189,8 +250,57 @@ export function genTP(x: string[], pseudo2 = false) {
   };
   return bl;
 }
-
+function validateName(x: string) {
+  if (x.length <= 2) return false;
+  let lowerc = x.toLowerCase();
+  if (lowerc.includes("anti")) return false;
+  if (lowerc.includes("dim")) return false;
+  if (lowerc.includes("197")) return false;
+  if (lowerc.includes("728")) return false;
+  if (lowerc.includes("endless")) return false;
+  if (lowerc.includes("RBNR")) return false;
+  if (lowerc.includes("RBNR")) return false;
+  if (lowerc.includes("棍母")) return false;
+  if (lowerc.includes("滚木")) return false;
+  if (lowerc.includes("num")) return false;
+  if (lowerc.includes("rorum")) return false;
+  if (lowerc.includes("damo")) return false;
+  if (lowerc.includes("frost")) return false;
+  if (lowerc.includes("david") && lowerc.includes("loves")) return false;
+  if (lowerc.includes("etoh") && lowerc.includes("loves")) return false;
+  if (lowerc.length >= 13) return false;
+  return true;
+}
 export function genEvent(x: string) {
+  if (x == "whoami") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "Who am I?";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        let mynameis = prompt("My name is...", "Player");
+        if (!mynameis) return [false];
+        if (!validateName(mynameis)) return [false];
+        player.playername = mynameis;
+        return [false];
+      }
+    })();
+  }
+  if (x == "iknow") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      contentDynamic(): string {
+        if (player.playername === "Player") return "";
+        return "I know.";
+      }
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (player.playername === "Player") return [false];
+        bed1_dreaming_1(false);
+        return [false];
+      }
+    })();
+  }
   if (x == "25_1") {
     return new (class extends Block {
       color = "#00000000";
@@ -236,6 +346,62 @@ export function genNPC(x: string) {
     return new (class extends Block {
       color = "#fff700ff";
       content = "John Baixie";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        DIALOGUE.stillInteraction = true;
+        DIALOGUE.messages = ["- 谢谢。"];
+        DIALOGUE.afterConversation = async function () {
+          player.x = 279;
+          await delay(100);
+          player.y = 36;
+          await delay(200);
+          player.replaces.push([277, 35, "NULL"]);
+          player.replaces.push([278, 35, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([278, 35, "NULL"]);
+          player.replaces.push([279, 35, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([279, 35, "NULL"]);
+          player.replaces.push([280, 35, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([280, 35, "NULL"]);
+          player.replaces.push([280, 36, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([280, 36, "NULL"]);
+          player.replaces.push([280, 37, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([280, 37, "NULL"]);
+          player.replaces.push([280, 38, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([280, 38, "NULL"]);
+          player.replaces.push([280, 39, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([280, 39, "NULL"]);
+          player.replaces.push([281, 39, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([281, 39, "NULL"]);
+          player.replaces.push([282, 39, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([282, 39, "NULL"]);
+          player.replaces.push([282, 40, "NPC?John_Baixie"]);
+          await delay(300);
+          player.replaces.push([282, 40, "NULL"]);
+          TEMP.interact = 0;
+        };
+        DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+  if (x == "guard1") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "???";
       onTouch(): [remove: boolean, replaceTo?: string] {
         return [false];
       }
@@ -298,7 +464,7 @@ export function genNPC(x: string) {
         ) {
           DIALOGUE.messages = [
             "- 谢谢你...",
-            "+ 你获得了0.001 点数。\n+ 这NPC身价这么低？",
+            "+ (你获得了0.001 点数。)\n+ 这NPC身价这么低？",
           ];
           DIALOGUE.startConversation();
           player.points += 0.001;

@@ -76,7 +76,27 @@ export function renderGame() {
         continue;
       }
       const block = getBlock(wx, wy);
-      if (block) drawBlock(block, i * GRIDSIZE, j * GRIDSIZE);
+      if (block) {
+        drawBlock(block, i * GRIDSIZE, j * GRIDSIZE);
+        for (let q = 0; q < TEMP.attack_effect.length; q++) {
+          if (
+            TEMP.attack_effect[q][0] == wx &&
+            TEMP.attack_effect[q][1] == wy
+          ) {
+            if (Date.now() - TEMP.attack_effect[q][2] >= 1000) break;
+            ctx.fillStyle =
+              "rgba(255,0,0," +
+              (Date.now() - TEMP.attack_effect[q][2]) / 1000 +
+              ")";
+            ctx.fillRect(i * GRIDSIZE, j * GRIDSIZE, GRIDSIZE, GRIDSIZE);
+          }
+          /**
+             * 
+        ctx.fillStyle = "rgba(255,0,0,0.5)";
+        ctx.fillRect(i * GRIDSIZE, j * GRIDSIZE, GRIDSIZE, GRIDSIZE);
+             */
+        }
+      }
     }
   }
 
@@ -98,7 +118,7 @@ export function renderGame() {
   // 显示坐标信息
   ctx.fillStyle = "#008cff";
   ctx.fillText(
-    `player ${player.x},${player.y},${player.universe}|${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}`,
+    `player ${player.x},${player.y},${player.universe}|${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|${canvasToWorld(player.x, player.y, Math.floor(mouse.mouseX / 80), Math.floor(mouse.mouseY / 80)).join(",")}`,
     0,
     30,
   );

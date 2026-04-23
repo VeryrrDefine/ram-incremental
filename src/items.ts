@@ -3,14 +3,14 @@ import { hardReset, save } from "./player";
 import { TEMP } from "./temp";
 
 export function openItem() {
-  if (DIALOGUE.conversation) return;
+  if (TEMP.interact == 1) return;
   if (TEMP.openeditem) {
     TEMP.openeditem = false;
     TEMP.interact = 0;
     return;
   }
   TEMP.openeditem = true;
-  TEMP.interact = 1;
+  TEMP.interact = 2;
 }
 
 export const ITEMS = ["purplecrystal"];

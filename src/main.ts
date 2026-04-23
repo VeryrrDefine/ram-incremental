@@ -50,7 +50,7 @@ function skipConversation() {
   DIALOGUE.endConversation();
   return;
 }
-
+let lastMove = Date.now();
 document.addEventListener("keydown", (e) => {
   const key = e.key;
   if (DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600) {
@@ -65,6 +65,8 @@ document.addEventListener("keydown", (e) => {
     openItem();
     return;
   }
+  if (Date.now() - lastMove < 100) return;
+  lastMove = Date.now();
   const moveMap = {
     ArrowUp: [0, -1],
     w: [0, -1],
