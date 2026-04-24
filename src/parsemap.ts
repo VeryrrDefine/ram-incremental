@@ -32,6 +32,17 @@ export function blockDataToBlock(x: string) {
   if (x === "NULL") return null;
   if (blockDataCache.has(x)) return blockDataCache.get(x);
 
+  if (x.startsWith("COLORFUL")) {
+    return newBlockAndCache(function () {
+      return new (class extends Block {
+        color = x.slice(9);
+        content: string = "";
+        solid(): boolean {
+          return true;
+        }
+      })();
+    }, x);
+  }
   if (x.startsWith("TEXT")) {
     return writeToCache(genTextBlock(x.slice(5)), x);
   }

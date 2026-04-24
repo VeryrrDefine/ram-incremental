@@ -12,10 +12,11 @@ export function openItem() {
   TEMP.interact = 2;
 }
 
-export const ITEMS = ["purplecrystal"];
+export const ITEMS = ["purplecrystal", "generator"];
 
 export let informations: any = {
   purplecrystal: "使用后存档将被硬重置",
+  generator: "可生产点数，RAM",
 };
 
 export function useItem2(item: string) {

@@ -4,6 +4,7 @@ import { map as staticMap } from "./map";
 import { getMapOfUniverse } from "./universe";
 export let dynamicMap = staticMap; // 允许运行时修改（如编辑模式）
 
+export let asMap: any = [];
 // 辅助：更新地图（例如编辑模式添加方块）
 export function addMapBlock(
   x: number,
@@ -12,4 +13,8 @@ export function addMapBlock(
   universe: number,
 ) {
   getMapOfUniverse(universe).push([x, y, type]);
+  asMap.push([x, y, type]);
 }
+
+// @ts-ignore
+window.asMap = asMap;

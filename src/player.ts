@@ -31,7 +31,7 @@ function initialPlayer() {
 export let player = initialPlayer();
 const SAVE_ID = "test-game-2";
 export function save(info?: string) {
-  if (TEMP.interact && info !== "force") return;
+  if (TEMP.interact == 1 && info !== "force") return;
   localStorage.setItem(SAVE_ID, JSON.stringify(player));
   TEMP.lastSave = Date.now();
 }
