@@ -123,17 +123,6 @@ export function renderGame() {
     let meas = ctx.measureText("Items");
     ctx.fillText("Items", 720 - 48 + (48 - meas.width) / 2, 28);
   }
-
-  // 右下角菜单图标
-  // ctx.drawImage(assets.image, 0, 0, 32, 32, 720 - 32, 720 - 32, 32, 32);
-
-  // // 方向按钮
-  // if (player.addArrowButton) {
-  //   ctx.drawImage(assets.image, 32, 0, 64, 64, 64, 512, 64, 64); // up
-  //   ctx.drawImage(assets.image, 32, 64, 64, 64, 0, 576, 64, 64); // left
-  //   ctx.drawImage(assets.image, 160, 0, 64, 64, 64, 576, 64, 64); // down
-  //   ctx.drawImage(assets.image, 96, 0, 64, 64, 128, 576, 64, 64); // right
-  // }
   if (TEMP.openeditem) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(48, 48, 624, 624);
