@@ -3,7 +3,6 @@ import { canvasToWorld, GRIDSIZE, isInRect, worldToCanvas } from "./geometry";
 import { getBlock } from "./collision"; // 后面会定义
 import { player } from "./gameState";
 import { Block, genTextBlock, PLAYERBLOCK } from "./blocks";
-import { NOTIFY } from "./notify";
 import { FONT } from "./font";
 import { DIALOGUE } from "./dialogue";
 import { TEMP } from "./temp";

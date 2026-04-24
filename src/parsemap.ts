@@ -13,7 +13,6 @@ import { DIALOGUE } from "./dialogue";
 import { displayNumber, displayRAM } from "./display";
 import { hardReset, player } from "./player";
 import { bed1_dreaming_1 } from "./plot";
-import { TEMP } from "./temp";
 import { UPGRADES } from "./upgrades";
 
 const blockDataCache: Map<string, Block | null> = new Map();

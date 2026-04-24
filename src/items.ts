@@ -1,4 +1,3 @@
-import { DIALOGUE } from "./dialogue";
 import { hardReset, save } from "./player";
 import { TEMP } from "./temp";
 
