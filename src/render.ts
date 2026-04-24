@@ -4,23 +4,20 @@ import { getBlock } from "./collision"; // 后面会定义
 import { player } from "./gameState";
 import { Block, genTextBlock, PLAYERBLOCK } from "./blocks";
 import { NOTIFY } from "./notify";
-import { mouse } from "./mouse";
 import { FONT } from "./font";
 import { DIALOGUE } from "./dialogue";
 import { TEMP } from "./temp";
-import { configurations } from "./configurations";
 import { displayNumber, displayRAM } from "./display";
-import { ITEMS } from "./items";
-import { itemsUI } from "./ui";
+import { drawUI, itemsUI, UI } from "./ui";
+import { assets } from "./assets";
 
 const nothingness = genTextBlock("那边什么都没有\n别看了");
 
 export let ctx: CanvasRenderingContext2D;
-let assets: HTMLImageElement;
 
 export function initRenderer(canvas: HTMLCanvasElement, img: HTMLImageElement) {
   ctx = canvas.getContext("2d")!;
-  assets = img;
+  assets.image = img;
   ctx.font = `21px ${FONT}`; // HEIGHT = 21
 }
 
@@ -115,16 +112,12 @@ export function renderGame() {
   ctx.lineTo(cx * GRIDSIZE, 720);
   ctx.stroke();
 
-  // 显示坐标信息
-  ctx.fillStyle = "#008cff";
-  ctx.fillText(
-    `player ${player.x},${player.y},${player.universe}|${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|${canvasToWorld(player.x, player.y, Math.floor(mouse.mouseX / 80), Math.floor(mouse.mouseY / 80)).join(",")}`,
-    0,
-    30,
-  );
+  for (const ui of UI) {
+    drawUI(ui, ctx);
+  }
 
   if (player.features.includes("item")) {
-    ctx.drawImage(assets, 0, 128, 48, 48, 720 - 48, 0, 48, 48);
+    ctx.drawImage(assets.image, 0, 128, 48, 48, 720 - 48, 0, 48, 48);
     ctx.fillStyle = "#ffffff";
     ctx.font = "15px " + FONT;
     let meas = ctx.measureText("Items");
@@ -132,30 +125,15 @@ export function renderGame() {
   }
 
   // 右下角菜单图标
-  ctx.drawImage(assets, 0, 0, 32, 32, 720 - 32, 720 - 32, 32, 32);
+  // ctx.drawImage(assets.image, 0, 0, 32, 32, 720 - 32, 720 - 32, 32, 32);
 
-  // 菜单 UI
-  if (player.openedMenu) {
-    ctx.font = "10px " + FONT;
-    ctx.fillStyle = "#8a8a8a";
-    ctx.fillRect(650, 600, 68, 86);
-    ctx.fillStyle = "#fff";
-
-    const conf = configurations[player.configurationOrder];
-    // @ts-ignore
-    ctx.fillText(conf[0] + (player[conf[1]] ? "1" : "0"), 650, 610);
-    ctx.drawImage(assets, 0, 32, 16, 16, 652, 652, 16, 16);
-    ctx.drawImage(assets, 0, 48, 16, 16, 670, 652, 16, 16);
-    ctx.drawImage(assets, 16, 32, 16, 16, 688, 652, 16, 16);
-  }
-
-  // 方向按钮
-  if (player.addArrowButton) {
-    ctx.drawImage(assets, 32, 0, 64, 64, 64, 512, 64, 64); // up
-    ctx.drawImage(assets, 32, 64, 64, 64, 0, 576, 64, 64); // left
-    ctx.drawImage(assets, 160, 0, 64, 64, 64, 576, 64, 64); // down
-    ctx.drawImage(assets, 96, 0, 64, 64, 128, 576, 64, 64); // right
-  }
+  // // 方向按钮
+  // if (player.addArrowButton) {
+  //   ctx.drawImage(assets.image, 32, 0, 64, 64, 64, 512, 64, 64); // up
+  //   ctx.drawImage(assets.image, 32, 64, 64, 64, 0, 576, 64, 64); // left
+  //   ctx.drawImage(assets.image, 160, 0, 64, 64, 64, 576, 64, 64); // down
+  //   ctx.drawImage(assets.image, 96, 0, 64, 64, 128, 576, 64, 64); // right
+  // }
   if (TEMP.openeditem) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(48, 48, 624, 624);
@@ -235,12 +213,12 @@ export function renderGame() {
     ctx.fillStyle = "rgba(0, 0, 0, " + TEMP.endless_e19728_animation / 5 + ")";
     ctx.fillRect(0, 0, 720, 720);
   }
-  if (NOTIFY.expires > Date.now()) {
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(200, 20, 360, 40);
-    ctx.fillStyle = "#000";
-    ctx.font = "30px " + FONT;
-    let measure = ctx.measureText(NOTIFY.content);
-    ctx.fillText(NOTIFY.content, 200 + (360 - measure.width) / 2, 20 + 30);
-  }
+  // if (NOTIFY.expires > Date.now()) {
+  //   ctx.fillStyle = "#fff";
+  //   ctx.fillRect(200, 20, 360, 40);
+  //   ctx.fillStyle = "#000";
+  //   ctx.font = "30px " + FONT;
+  //   let measure = ctx.measureText(NOTIFY.content);
+  //   ctx.fillText(NOTIFY.content, 200 + (360 - measure.width) / 2, 20 + 30);
+  // }
 }
