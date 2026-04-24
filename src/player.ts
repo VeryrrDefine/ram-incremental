@@ -25,6 +25,7 @@ function initialPlayer() {
     thief_points: 0,
     thief_rams: 0,
     playername: "Player",
+    generatorOpen: false,
   };
 }
 

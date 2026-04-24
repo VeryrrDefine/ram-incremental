@@ -85,46 +85,50 @@ export function drawUI(x: UIopt, ctx: CanvasRenderingContext2D) {
 }
 
 export type UIopt =
-  | {
-      type: "text";
-      left: number;
-      bottom: number;
-      text(): string;
-      fore?: string;
-      back?: string;
-      size: string;
-    }
+  | ((
+      | {
+          type: "text";
+          left: number;
+          bottom: number;
+          text(): string;
+          fore?: string;
+          back?: string;
+          size: string;
+        }
+      | {
+          type: "rect";
+          left: number;
+          top: number;
+          right: number;
+          bottom: number;
+          fore: string;
+        }
+      | {
+          type: "rect";
+          left: number;
+          top: number;
+          width: number;
+          height: number;
+          fore: string;
+        }
+      | {
+          type: "image";
+          image_left: number;
+          image_top: number;
+          image_width: number;
+          image_height: number;
+          canvas_left: number;
+          canvas_top: number;
+          canvas_width?: number;
+          canvas_height?: number;
+        }
+    ) & {
+      onClick?(): void;
+    })
   | {
       type: "group";
       condition(): boolean;
       group(): UIopt[];
-    }
-  | {
-      type: "rect";
-      left: number;
-      top: number;
-      right: number;
-      bottom: number;
-      fore: string;
-    }
-  | {
-      type: "rect";
-      left: number;
-      top: number;
-      width: number;
-      height: number;
-      fore: string;
-    }
-  | {
-      type: "image";
-      image_left: number;
-      image_top: number;
-      image_width: number;
-      image_height: number;
-      canvas_left: number;
-      canvas_top: number;
-      canvas_width?: number;
-      canvas_height?: number;
     };
 export const UI = [
   {
@@ -253,6 +257,41 @@ ${canvasToWorld(
           image_height: 64,
           canvas_left: 128,
           canvas_top: 576,
+        },
+      ];
+    },
+  },
+  {
+    type: "group",
+    condition() {
+      return player.generatorOpen;
+    },
+    group() {
+      return [
+        {
+          type: "rect",
+          fore: "#fff",
+          left: 32,
+          top: 32,
+          right: 688,
+          bottom: 688,
+        },
+        {
+          type: "rect",
+          fore: "#000",
+          left: 34,
+          top: 34,
+          right: 686,
+          bottom: 686,
+        },
+        {
+          type: "image",
+          image_left: 48,
+          image_top: 128,
+          image_width: 48,
+          image_height: 48,
+          canvas_left: 34,
+          canvas_top: 34,
         },
       ];
     },

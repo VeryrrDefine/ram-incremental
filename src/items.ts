@@ -1,4 +1,4 @@
-import { hardReset, save } from "./player";
+import { hardReset, player, save } from "./player";
 import { TEMP } from "./temp";
 
 export function openItem() {
@@ -21,7 +21,13 @@ export let informations: any = {
 
 export function useItem2(item: string) {
   if (item == "purplecrystal") {
-    hardReset();
+    if (confirm("确实要硬重置！？？"))
+      if (confirm("确实要硬重置！？？？")) hardReset();
+  }
+  if (item == "generator") {
+    player.generatorOpen = true;
+    TEMP.interact = 0;
+    TEMP.openeditem = false;
   }
 }
 export function useItem1(item: string) {

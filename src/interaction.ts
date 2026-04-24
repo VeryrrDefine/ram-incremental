@@ -73,7 +73,6 @@ export function handleClick(canvasX: number, canvasY: number) {
     else if (isInRect(canvasX, canvasY, 64, 576, 128, 640)) tryMove(0, 1);
     else if (isInRect(canvasX, canvasY, 128, 576, 192, 640)) tryMove(1, 0);
   }
-
   if (TEMP.openeditem) {
     let t = itemsUI(ctx).but;
     for (let i = 0; i < t.length; i++) {

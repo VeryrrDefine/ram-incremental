@@ -87,6 +87,15 @@ export function genDoor(x: string) {
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "293_44") {
+      DIALOGUE.messages = [
+        "+ 这个门上写着\n+ “涉*关押区...”",
+        "+ 我需要至少20.000 TB打开...",
+      ];
+
+      DIALOGUE.startConversation();
+      return [false];
+    }
     if (bl.data == "282_40") {
       DIALOGUE.messages = ["+ 帮别人“越狱”，emmm\n+ 算不算...?", "+ 管他呢"];
       DIALOGUE.stillInteraction = true;
@@ -187,7 +196,8 @@ export function genDoor(x: string) {
     if (
       bl.data == "19_-4_U0" ||
       bl.data == "JAIL_PLAYER" ||
-      bl.data == "282_40"
+      bl.data == "282_40" ||
+      bl.data == "293_44"
     ) {
       return true;
     }
