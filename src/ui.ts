@@ -1,6 +1,8 @@
 import { assets } from "./assets";
 import { configurations } from "./configurations";
 import { DIALOGUE } from "./dialogue";
+import { buyDimensions, dimensionCost, dimensionMult } from "./dimension";
+import { displayNumber, displayRAM } from "./display";
 import { canvasToWorld } from "./geometry";
 import { tryMove } from "./interaction";
 import { informations, ITEMS, useItem1 } from "./items";
@@ -325,6 +327,57 @@ ${canvasToWorld(
           canvas_top: 34,
           onClick() {
             player.generatorOpen = false;
+          },
+        },
+        {
+          type: "text",
+          rect: new Rect(216, 50, 200, 30),
+          text() {
+            return displayRAM(player.ram, false);
+          },
+          align: "left",
+          size: 21,
+        },
+        {
+          type: "group",
+          condition() {
+            return true;
+          },
+          group(): UIopt[] {
+            let res: UIopt[] = [];
+            for (let i = 0; i < 4; i++) {
+              let r1 = new Rect(48, 60 + i * 23, 600, 100);
+              res.push({
+                type: "text",
+                rect: r1,
+                text() {
+                  return (
+                    "RAM Dim. " +
+                    i +
+                    "   +" +
+                    displayNumber(player.dimensions[i][0]) +
+                    ` *${displayNumber(dimensionMult(i))} [${displayNumber(player.dimensions[i][1])}]`
+                  );
+                },
+                fore: "#ffffff",
+                size: 21,
+                align: "left",
+              });
+              res.push({
+                type: "text",
+                rect: r1,
+                text() {
+                  return "[Cost: " + displayRAM(dimensionCost(i), false) + "]";
+                },
+                fore: "#ffffff",
+                size: 21,
+                align: "right",
+                onClick() {
+                  buyDimensions(i);
+                },
+              });
+            }
+            return res;
           },
         },
       ];
