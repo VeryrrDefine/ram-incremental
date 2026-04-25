@@ -7,7 +7,7 @@ import { FONT } from "./font";
 import { DIALOGUE } from "./dialogue";
 import { TEMP } from "./temp";
 import { displayNumber, displayRAM } from "./display";
-import { drawUI, itemsUI, UI } from "./ui";
+import { drawUI, UI } from "./ui";
 import { assets } from "./assets";
 import { TextDrawer } from "./text";
 import { Rect } from "./rect";
@@ -117,10 +117,6 @@ export function renderGame() {
   ctx.lineTo(cx * GRIDSIZE, 720);
   ctx.stroke();
 
-  for (const ui of UI) {
-    drawUI(ui, ctx);
-  }
-
   if (player.features.includes("item")) {
     ctx.drawImage(assets.image, 0, 128, 48, 48, 720 - 48, 0, 48, 48);
     ctx.fillStyle = "#ffffff";
@@ -128,6 +124,7 @@ export function renderGame() {
     let meas = ctx.measureText("Items");
     ctx.fillText("Items", 720 - 48 + (48 - meas.width) / 2, 28);
   }
+
   if (TEMP.openeditem) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(48, 48, 624, 624);
@@ -144,30 +141,9 @@ export function renderGame() {
     for (let i = 0; i < rows.length; i++) {
       ctx.fillText(rows[i], 48, 48 + 20 * (i + 1));
     }
-
-    let q = itemsUI(ctx);
-    let u = q.ui;
-    // let w = q.but;
-    // ctx.fillStyle = "#ff0000";
-    // for (let i = 0; i < w.length; i++) {
-    //   ctx.fillRect(w[i][0], w[i][1], w[i][2], w[i][3]);
-    // }
-    ctx.fillStyle = "#ffffff";
-    for (let i = 0; i < u.length; i++) {
-      ctx.fillText(u[i][0], u[i][1], u[i][2]);
-    }
-    // rows = [];
-
-    // for (let j = 0; j < ITEMS.length; j++) {
-    //   if (player.items[ITEMS[j]]) {
-    //     rows.push(`${ITEMS[j]}: ${player.items[ITEMS[j]]}`);
-    //   }
-    // }
-    // for (let i = 0; i < rows.length; i++) {
-    //   let meas = ctx.measureText(rows[i]);
-    //   ctx.fillText(rows[i], 48, 320 + 20 * (i + 1));
-    //   ctx.fillText("Use", 48 + meas.width + 10, 320 + 20 * (i + 1));
-    // }
+  }
+  for (const ui of UI) {
+    drawUI(ui, ctx);
   }
   if (DIALOGUE.conversation) {
     let dialogueTick = Date.now() - DIALOGUE.UItick;
