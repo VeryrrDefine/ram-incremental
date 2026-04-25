@@ -26,7 +26,7 @@ const HEIGHT = 21;
 function drawText(x: number, y: number, str: string, fs: string) {
   let drawer = new TextDrawer(str, 21, fs, "center");
   drawer.autoChangeSize = true;
-  drawer.drawInRect_ontoCtx(new Rect(x, y, GRIDSIZE, GRIDSIZE), ctx);
+  drawer.drawInRect(new Rect(x, y, GRIDSIZE, GRIDSIZE), ctx);
 
   // let text = str;
   // let curheight = HEIGHT;

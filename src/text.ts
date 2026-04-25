@@ -43,7 +43,7 @@ export class TextDrawer {
   /**
    * 在Rect里绘制文字,并画到ctx上
    */
-  drawInRect_ontoCtx(rect: Rect, ctx: CanvasRenderingContext2D): void {
+  drawInRect(rect: Rect, ctx: CanvasRenderingContext2D): void {
     /**
      * 文字高度
      */
