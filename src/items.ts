@@ -1,4 +1,4 @@
-import { hardReset, player, save } from "./player";
+import { hardReset, player } from "./player";
 import { TEMP } from "./temp";
 
 export function openItem() {

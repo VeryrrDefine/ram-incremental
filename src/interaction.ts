@@ -4,7 +4,6 @@ import { canvasToWorld, isInRect, GRIDSIZE } from "./geometry";
 import { getBlock, passable } from "./collision"; // 下面定义
 import { getReplaceMapOfUniverse } from "./universe";
 import { TEMP } from "./temp";
-import { configurations } from "./configurations";
 import { openItem } from "./items";
 import { executeUI, UI } from "./ui";
 import { ctx } from "./render";
