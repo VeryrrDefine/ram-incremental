@@ -21,14 +21,4 @@ export function canvasToWorld(
   return [canvasCol - 4 + playerX, canvasRow - 4 + playerY];
 }
 
-/** 点是否在矩形区域内 */
-export function isInRect(
-  px: number,
-  py: number,
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-): boolean {
-  return px >= x1 && px <= x2 && py >= y1 && py <= y2;
-}
+export { isInRect } from "./rect.ts";
