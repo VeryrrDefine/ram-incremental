@@ -9,6 +9,8 @@ import { TEMP } from "./temp";
 import { displayNumber, displayRAM } from "./display";
 import { drawUI, itemsUI, UI } from "./ui";
 import { assets } from "./assets";
+import { TextDrawer } from "./text";
+import { Rect } from "./rect";
 
 const nothingness = genTextBlock("那边什么都没有\n别看了");
 
@@ -21,29 +23,33 @@ export function initRenderer(canvas: HTMLCanvasElement, img: HTMLImageElement) {
 }
 
 const HEIGHT = 21;
-function drawText(x: number, y: number, str: string) {
-  let text = str;
-  let curheight = HEIGHT;
+function drawText(x: number, y: number, str: string, fs: string) {
+  let drawer = new TextDrawer(str, 21, fs, "center");
+  drawer.autoChangeSize = true;
+  drawer.drawInRect_ontoCtx(new Rect(x, y, GRIDSIZE, GRIDSIZE), ctx);
 
-  let parts = text.split("\n");
-  let width = Math.max(...parts.map((x) => ctx.measureText(x).width));
-  while (width > GRIDSIZE) {
-    curheight -= 0.5;
-    ctx.font = `${curheight}px  ${FONT}`;
-    width = Math.max(...parts.map((x) => ctx.measureText(x).width));
-  }
-  for (let i = 0; i < parts.length; i++) {
-    ctx.fillText(
-      parts[i],
-      x + (GRIDSIZE - width) / 2,
-      y +
-        (GRIDSIZE - HEIGHT) / 2 +
-        HEIGHT -
-        3 +
-        i * HEIGHT -
-        (parts.length - 1) * HEIGHT * 0.5,
-    );
-  }
+  // let text = str;
+  // let curheight = HEIGHT;
+
+  // let parts = text.split("\n");
+  // let width = Math.max(...parts.map((x) => ctx.measureText(x).width));
+  // while (width > GRIDSIZE) {
+  //   curheight -= 0.5;
+  //   ctx.font = `${curheight}px  ${FONT}`;
+  //   width = Math.max(...parts.map((x) => ctx.measureText(x).width));
+  // }
+  // for (let i = 0; i < parts.length; i++) {
+  //   ctx.fillText(
+  //     parts[i],
+  //     x + (GRIDSIZE - width) / 2,
+  //     y +
+  //       (GRIDSIZE - HEIGHT) / 2 +
+  //       HEIGHT -
+  //       3 +
+  //       i * HEIGHT -
+  //       (parts.length - 1) * HEIGHT * 0.5,
+  //   );
+  // }
 
   ctx.font = `${HEIGHT}px  ${FONT}`;
 }
@@ -53,7 +59,7 @@ function drawBlock(block: Block, x: number, y: number) {
   ctx.fillRect(x, y, GRIDSIZE, GRIDSIZE);
   ctx.fillStyle = block.textcolor;
   const content = block.contentDynamic ? block.contentDynamic() : block.content;
-  drawText(x, y, content);
+  drawText(x, y, content, block.textcolor);
 }
 export function renderGame() {
   ctx.font = `21px ${FONT}`; // HEIGHT = 21

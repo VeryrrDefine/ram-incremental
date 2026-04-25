@@ -1,0 +1,101 @@
+import { FONT } from "./font";
+import { Rect } from "./rect";
+
+export type Align = "left" | "center" | "right";
+/**
+ * 文字UI组件,垂直居中
+ */
+export class TextDrawer {
+  /**
+   * 文字
+   */
+  text: string;
+  /**
+   * 排列方式
+   */
+  align: Align;
+  /**
+   * 基础文字大小，实际绘画会不一致
+   */
+  fontSize: number;
+
+  /**
+   * 文字颜色
+   */
+  fore: string;
+
+  /**
+   * 是否改变结果绘制大小
+   */
+  autoChangeSize: boolean = true;
+
+  constructor(
+    text: string,
+    fontSize: number,
+    fore: string,
+    align: Align = "left",
+  ) {
+    this.text = text;
+    this.align = align;
+    this.fontSize = fontSize;
+    this.fore = fore;
+  }
+  /**
+   * 在Rect里绘制文字,并画到ctx上
+   */
+  drawInRect_ontoCtx(rect: Rect, ctx: CanvasRenderingContext2D): void {
+    /**
+     * 文字高度
+     */
+    let textHeight = this.fontSize;
+    /**
+     * 将文字按换行符分成小部分
+     */
+    let parts = this.text.split("\n");
+    if (this.autoChangeSize) {
+      /**
+       * 文字限制的高度
+       */
+      let limitWidth = rect.width;
+      /**
+       * 所有part中文字的最大宽度
+       */
+      let resultWidth = Math.max(...parts.map((x) => ctx.measureText(x).width));
+      while (resultWidth > limitWidth) {
+        textHeight -= 0.5;
+        ctx.font = `${textHeight}px ${FONT}`;
+        resultWidth = Math.max(...parts.map((x) => ctx.measureText(x).width));
+      }
+    }
+    /**
+     * 绘画Rect列表
+     */
+    const partRects: Rect[] = [];
+    //partRects紧靠在rect的中间
+    for (let i = 0; i < parts.length; i++) {
+      /**绘画时的rect */
+      let base = new Rect(0, 0, ctx.measureText(parts[i]).width, textHeight);
+
+      switch (this.align) {
+        case "center":
+          base.centerx = rect.centerx;
+          break;
+        case "left":
+          base.left = rect.left;
+          break;
+        case "right":
+          base.right = rect.right;
+          break;
+      }
+
+      base.centery =
+        rect.centery - textHeight * ((parts.length - 1) / 2) + textHeight * i;
+      partRects.push(base);
+    }
+    ctx.fillStyle = this.fore;
+    for (let i = 0; i < parts.length; i++) {
+      // 一个个画，并使用-5微调
+      ctx.fillText(parts[i], partRects[i].left, partRects[i].bottom - 5);
+    }
+  }
+}
