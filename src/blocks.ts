@@ -43,12 +43,15 @@ PLAYERBLOCK.contentDynamic = function () {
   return player.playername;
 };
 
+export class TextBlock extends Block {
+  constructor(x: string) {
+    super();
+    ((this.color = "#000000"), (this.content = x));
+    this.textcolor = "#ffffff";
+  }
+}
 export function genTextBlock(x: string) {
-  let bl = new Block();
-  bl.color = "#000000";
-  bl.content = x;
-  bl.textcolor = "#ffffff";
-  return bl;
+  return new TextBlock(x);
 }
 
 export function genDoor(x: string) {
@@ -57,7 +60,6 @@ export function genDoor(x: string) {
   bl.content = "门";
   bl.textcolor = "#000000";
   bl.data = x;
-  //TP?PSEUDO?17?23?1?1
   bl.solid = () => {
     if (bl.data == "19_-4_U0") {
       if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
