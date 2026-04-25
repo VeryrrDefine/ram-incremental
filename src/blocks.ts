@@ -98,7 +98,7 @@ export function genDoor(x: string) {
       DIALOGUE.startConversation();
       return [false];
     }
-    if (bl.data == "282_40") {
+    if (bl.data == "282_40" && player.ram >= 31465472) {
       DIALOGUE.messages = ["+ 帮别人“越狱”，emmm\n+ 算不算...?", "+ 管他呢"];
       DIALOGUE.stillInteraction = true;
       DIALOGUE.afterConversation = function () {
