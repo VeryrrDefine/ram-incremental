@@ -6,7 +6,7 @@ import { save } from "./player";
 import { loop } from "./loop";
 import { mouse } from "./mouse";
 import { DIALOGUE } from "./dialogue";
-import { BATTLE } from "./battle";
+// import { BATTLE } from "./battle";
 
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;

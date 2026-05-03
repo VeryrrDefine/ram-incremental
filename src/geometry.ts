@@ -29,7 +29,7 @@ export function stepsLinear(
   to: number,
   time: number,
 ) {
-  return new Promise((res, rej2) => {
+  return new Promise((res) => {
     if (time <= 0) setFunc(to);
     let cur = from;
     let ticks = Math.floor(time / 50);
@@ -37,9 +37,8 @@ export function stepsLinear(
       cur += (to - from) / ticks;
       setFunc(cur);
     }, 50);
-    let timo = 0;
 
-    timo = setTimeout(() => {
+    setTimeout(() => {
       clearInterval(q);
       setFunc(to);
     }, time);
