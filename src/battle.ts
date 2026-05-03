@@ -47,6 +47,8 @@ export const BATTLE = {
   },
   async startBattle() {
     TEMP.interact = 1;
+    TEMP.newspapercontent = 0;
+    player.generatorOpen = false;
     BATTLE.enemyram = enemies[BATTLE.enemyid].totalRam;
     BATTLE.enemyTotalram = enemies[BATTLE.enemyid].totalRam;
     BATTLE.enemyName = enemies[BATTLE.enemyid].name;

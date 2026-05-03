@@ -203,24 +203,31 @@ export function Endless_e19728_trap2() {
 }
 
 export async function Endless_e19728_trap4() {
+  await delay(1000);
+  player.features.push("293_32");
+  player.replaces.push([293, 31, "WALL"]);
+  player.replaces.push([293, 33, "WALL"]);
+  await delay(1000);
+
   DIALOGUE.messages = ["- 很明显，", "- 有人越狱了。"];
   DIALOGUE.stillInteraction = true;
   DIALOGUE.startConversation();
   await DIALOGUE.waitUntilDialogueDone();
   await delay(1000);
+  player.replaces.push([293, 28, "NPC?Endless_e308"]);
+  await delay(1000);
+  player.replaces.push([293, 28, "NULL"]);
   player.replaces.push([293, 29, "NPC?Endless_e308"]);
   await delay(1000);
   player.replaces.push([293, 29, "NULL"]);
   player.replaces.push([293, 30, "NPC?Endless_e308"]);
   await delay(1000);
-  player.replaces.push([293, 30, "NULL"]);
-  player.replaces.push([293, 31, "NPC?Endless_e308"]);
-  await delay(1000);
   DIALOGUE.messages = [
     "- 你就是把Endless_e19728\n- 打似的那个？。",
     "+ 对，怎么了？",
     "- 你还有脸说“怎么了？”",
-    "- 信不信我和你",
+    "- 你要么被判亖形，要么被我打亖",
+    "+ ...",
   ];
   DIALOGUE.stillInteraction = true;
   DIALOGUE.startConversation();

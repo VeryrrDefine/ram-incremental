@@ -381,22 +381,31 @@ export function genEvent(x: string) {
       }
     })();
   }
+  if (x == "293_32") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (!player.features.includes("293_32")) {
+          TEMP.interact = 1;
+
+          Endless_e19728_trap4();
+        }
+        return [false];
+      }
+    })();
+  }
   if (x == "293_33") {
     return new (class extends Block {
       color = "#00000000";
       textcolor: string = "#ffffff";
       content = "t";
       onTouch(): [remove: boolean, replaceTo?: string] {
-        if (!player.features.includes("293_33")) {
-          TEMP.interact = 1;
-          player.features.push("293_33");
-          player.replaces.push([293, 34, "WALL"]);
-          player.replaces.push([294, 33, "WALL"]);
-          player.replaces.push([293, 32, "WALL"]);
-          player.replaces.push([292, 33, "WALL"]);
-          setTimeout(Endless_e19728_trap4, 500);
-        }
-        return [false];
+        TEMP.interact = 1;
+        DIALOGUE.messages = ["+ 不对啊，现在是几月几日？", "+ 现在是几点？"];
+        DIALOGUE.startConversation();
+        return [true];
       }
     })();
   }

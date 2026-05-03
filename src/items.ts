@@ -12,11 +12,12 @@ export function openItem() {
   TEMP.interact = 2;
 }
 
-export const ITEMS = ["purplecrystal", "generator"];
+export const ITEMS = ["purplecrystal", "generator", "newspaper"];
 
 export let informations: any = {
   purplecrystal: "使用后存档将被硬重置",
   generator: "可生产RAM",
+  newspaper: "一张...纸？",
 };
 
 export function useItem2(item: string) {
@@ -26,6 +27,11 @@ export function useItem2(item: string) {
   }
   if (item == "generator") {
     player.generatorOpen = true;
+    TEMP.interact = 0;
+    TEMP.openeditem = false;
+  }
+  if (item == "newspaper") {
+    TEMP.newspapercontent = 1;
     TEMP.interact = 0;
     TEMP.openeditem = false;
   }

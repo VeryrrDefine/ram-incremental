@@ -430,6 +430,28 @@ export const UI = [
       ];
     },
   },
+  {
+    type: "group",
+    condition() {
+      return TEMP.newspapercontent != 0;
+    },
+    group() {
+      return [
+        {
+          type: "image",
+          image_left: 224,
+          image_top: 0,
+          image_width: 610,
+          image_height: 630,
+          canvas_left: 32,
+          canvas_top: 32,
+          onClick() {
+            TEMP.newspapercontent = 0;
+          },
+        },
+      ];
+    },
+  },
   // items
   {
     type: "group",
@@ -626,6 +648,7 @@ export const UI = [
       ];
     },
   },
+
   {
     type: "text",
     size: 21,
