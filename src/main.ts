@@ -90,9 +90,9 @@ document.addEventListener("keydown", (e) => {
 // 调试用
 import { player } from "./player";
 // @ts-ignore
-window.player = player;
+// window.player = player;
 import { map } from "./map";
 import { openItem } from "./items";
 // @ts-ignore
-window.map = map;
+// window.map = map;
 // setTimeout(BATTLE.startBattle, 100);

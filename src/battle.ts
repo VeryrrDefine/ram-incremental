@@ -107,12 +107,12 @@ export const BATTLE = {
   },
 };
 
-declare global {
-  interface Window {
-    BATTLE: typeof BATTLE;
-    TEMP: typeof TEMP;
-  }
-}
-window.BATTLE = BATTLE;
+// declare global {
+//   interface Window {
+//     BATTLE: typeof BATTLE;
+//     TEMP: typeof TEMP;
+//   }
+// }
+// window.BATTLE = BATTLE;
 
-window.TEMP = TEMP;
+// window.TEMP = TEMP;
