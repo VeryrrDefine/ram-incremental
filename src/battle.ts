@@ -1,11 +1,12 @@
 import { delay } from "./await";
+import { displayNumber } from "./display";
 import { stepsLinear } from "./geometry";
 import { player } from "./player";
 import { TEMP } from "./temp";
 export const battle_tips = [
-  "When you 砰砰砰 with\nenemy, you sometimes attacks with 暴击(15%).\nIt will help you win this battle.",
-  "When enemy 砰砰砰 with\nyou, enemy sometimes attacks with 暴击(10%)。\nIt will help you lost this battle.",
-  "The game won't hard reset when you lost.\nYou just reload the game.",
+  "当你攻击敌人时，你有15%的概率会施展暴击。\n这会帮你赢得这场战斗。",
+  "当你攻击敌人时，你有10%的概率会施展暴击。\n这会帮你输掉这场战斗。",
+  "当你失败时，你不会被硬重置，只需要重新加载游戏。",
 ];
 export const BATTLE = {
   playerAttackTick: 0,
@@ -49,9 +50,15 @@ export const BATTLE = {
     if (BATTLE.enemyram >= 8192) {
       BATTLE.enemyAttack();
     } else {
-      TEMP.battle_tips = "You win! Click to complete.";
+      let pt = BATTLE.enemyPointGain();
+      player.points += pt;
+      TEMP.battle_tips =
+        "你赢了！ 你获得了" + displayNumber(pt) + " 点数.\n点击继续。";
       BATTLE.win = true;
     }
+  },
+  enemyPointGain() {
+    return 1e9 + Math.random() * 1e9;
   },
   async enemyAttack() {
     await delay(300 + Math.random() * 500);
@@ -74,7 +81,7 @@ export const BATTLE = {
       BATTLE.interact = 0;
     } else {
       TEMP.battle_tips =
-        "You lost. The game will reload after 5 seconds.\n(Not obliverate like RBNR)";
+        "你失败了。 该游戏会在5秒后重新加载。\n（不像RBNR抹杀那样）";
       await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
       location.reload();
     }
