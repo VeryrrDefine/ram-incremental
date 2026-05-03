@@ -90,10 +90,16 @@ export function genDoor(x: string) {
   };
   bl.onTouch = () => {
     if (bl.data == "293_44") {
-      DIALOGUE.messages = [
-        "+ 这个门上写着\n+ “涉*关押区...”",
-        "+ 我需要至少20.000 TB打开...",
-      ];
+      if (player.ram >= 21990232555520) {
+        DIALOGUE.messages = ["+ 没做完"];
+
+        DIALOGUE.startConversation();
+        return [false];
+      } else
+        DIALOGUE.messages = [
+          "+ 这个门上写着\n+ “涉*关押区...”",
+          "+ 我需要至少20.000 TB打开...",
+        ];
 
       DIALOGUE.startConversation();
       return [false];
