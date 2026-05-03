@@ -592,7 +592,7 @@ export const UI = [
           type: "text",
           rect: new Rect(0, 600, 720, 120),
           text() {
-            return `玩家 ${player.playername}${BATTLE.playerAttackTick ? "[" + (BATTLE.playerAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.ram, false)}/${displayRAM(player.ram, false)}`;
+            return `玩家 ${player.playername}${BATTLE.playerAttackTick ? "[" + (BATTLE.playerAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.ram, false)}/${BATTLE.failed ? displayRAM(Decimal.dZero, false) : displayRAM(player.ram, false)}`;
           },
           fore: "#fff",
           align: "center",

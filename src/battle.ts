@@ -20,7 +20,7 @@ export const enemies = [
   },
   {
     name: "Endless_e308",
-    totalRam: new Decimal(8.98846567431158e307),
+    totalRam: new Decimal("e1.425e8"),
   },
 ];
 export const BATTLE = {
@@ -33,6 +33,7 @@ export const BATTLE = {
   enemyid: 0,
   interact: 0,
   win: false,
+  failed: false,
   afterBattle() {},
   async winBattle() {
     if (BATTLE.win) {
@@ -95,6 +96,9 @@ export const BATTLE = {
     let atk = BATTLE.calculateEnemyAttack();
     TEMP.attack_ram = atk;
     BATTLE.ram = BATTLE.ram.sub(atk).clampMin(0);
+    if (BATTLE.ram.lt(8192)) {
+      BATTLE.failed = true;
+    }
     await stepsLinear((x) => (TEMP.battle_animation = x), 400, 500, 1112);
     TEMP.battle_animation = 100;
     if (BATTLE.ram.gte(8192)) {
@@ -103,6 +107,7 @@ export const BATTLE = {
       TEMP.battle_tips =
         "你失败了。 该游戏会在5秒后重新加载。\n（不像RBNR抹杀那样）";
       await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
+      BATTLE.failed = true;
       location.reload();
     }
   },
