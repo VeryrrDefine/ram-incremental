@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js";
 import { delay } from "./await";
 import { BATTLE } from "./battle";
 import { DIALOGUE } from "./dialogue";
@@ -90,8 +91,8 @@ export function jail_breaking_door() {
   TEMP.attack_effect.push([279, 44, Date.now()]);
   setTimeout(function () {
     player.replaces.push([279, 44, "NULL"]);
-    player.ram -= 134_217_728;
-    player.points += 1.293e9;
+    player.ram = player.ram.sub(134_217_728);
+    player.points = player.points.add(1.293e9);
     DIALOGUE.messages = [
       "+ (你获得了 1.293e9 点数.\n+ 你消耗了 128.00 MB RAM.)",
       "+ 点数好多。",
@@ -105,8 +106,8 @@ export function jail_breaking_door_282_40() {
   TEMP.attack_effect.push([282, 40, Date.now()]);
   setTimeout(function () {
     player.replaces.push([282, 40, "NULL"]);
-    player.ram -= 31457280;
-    player.points += 3.4e8 + 0.0001;
+    player.ram = player.ram.sub(31457280);
+    player.points = player.points.add(3.4e8 + 0.0001);
     DIALOGUE.messages = [
       "+ 你获得了 3.400e8 点数.\n+ 你消耗了 30.00 MB RAM.",
       "- 你把门拆了？那么强？谢谢。",
@@ -121,8 +122,8 @@ export function jail_breaking_door_282_40() {
 }
 export function seeing_Endless_e19728_2() {
   player.replaces.push([279, 45, "NULL"]);
-  player.ram -= 2_182_917_128;
-  player.points += 12.002;
+  player.ram = player.ram.sub(2_182_917_128);
+  player.points = player.points.add(12.002);
   DIALOGUE.messages = [
     "+ (你获得了 12.002 点数.\n+ 你消耗了 2.033 GB RAM.)",
     "- 你敢鲨人？",
@@ -139,8 +140,8 @@ export function seeing_Endless_e19728_2() {
 }
 export function seeing_Endless_e19728_3() {
   player.replaces.push([278, 45, "NULL"]);
-  player.ram -= 137_604_628;
-  player.points += 0.203;
+  player.ram = player.ram.sub(137_604_628);
+  player.points = player.points.add(0.203);
   DIALOGUE.messages = [
     "+ 你获得了 0.203 点数.\n+ 你消耗了 131.23 MB RAM.",
     "+ 好了，解决了。",
@@ -160,7 +161,7 @@ export function bed1_dreaming_1(into = true) {
     } else {
       player.x = 279;
       player.y = 42;
-      player.ram += 8589934592;
+      player.ram = player.ram.add(8_589_934_592);
       player.replaces.push([279, 45, "NPC?guard1"]);
     }
     setTimeout(function () {
@@ -187,9 +188,9 @@ export function Endless_e19728_trap3() {
     player.features.push("25_1_done");
     TEMP.interact = 0;
     player.thief_points = player.points;
-    player.points = 0;
-    player.thief_rams = player.ram - 8192;
-    player.ram = 8192;
+    player.points = new Decimal(0);
+    player.thief_rams = player.ram.sub(8192);
+    player.ram = new Decimal(8192);
   }, 5700);
 }
 export function Endless_e19728_trap2() {

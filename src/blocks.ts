@@ -64,18 +64,18 @@ export function genDoor(x: string) {
   bl.data = x;
   bl.solid = () => {
     if (bl.data == "19_-4_U0") {
-      if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
+      if (player.features.includes("19_-4_U0") && player.ram.gte(409600)) {
         return false;
       }
       return true;
     }
-    if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
+    if (bl.data == "1327" && player.ram.gte(8.25 * 1024)) {
       return false;
     }
-    if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
+    if (bl.data == "1723" && player.ram.gte(9.5 * 1024)) {
       return false;
     }
-    if (bl.data == "1913_U0" && player.ram >= 204800) {
+    if (bl.data == "1913_U0" && player.ram.gte(204800)) {
       return false;
     }
     if (bl.data == "RIGHT" && player.items.doorkey_1) {
@@ -84,7 +84,7 @@ export function genDoor(x: string) {
     if (
       bl.data == "JAIL_PLAYER" &&
       player.features.includes("JAIL_PLAYER_1") &&
-      player.ram >= 153600
+      player.ram.gte(153600)
     ) {
       return false;
     }
@@ -110,7 +110,7 @@ export function genDoor(x: string) {
       return [false];
     }
     if (bl.data == "293_44") {
-      if (player.ram >= 21990232555520) {
+      if (player.ram.gte(21990232555520)) {
         DIALOGUE.messages = [
           "+ 和这个门，决斗。",
           "- 你是谁？你也敢？",
@@ -143,7 +143,7 @@ export function genDoor(x: string) {
       DIALOGUE.startConversation();
       return [false];
     }
-    if (bl.data == "282_40" && player.ram >= 31465472) {
+    if (bl.data == "282_40" && player.ram.gte(31465472)) {
       DIALOGUE.messages = ["+ 帮别人“越狱”，emmm\n+ 算不算...?", "+ 管他呢"];
       DIALOGUE.stillInteraction = true;
       DIALOGUE.afterConversation = function () {
@@ -199,13 +199,13 @@ export function genDoor(x: string) {
           "+ ......",
         ];
         player.features.push("JAIL_PLAYER_1");
-      } else if (player.ram <= 153600) {
+      } else if (player.ram.lte(153600)) {
         DIALOGUE.messages = [
           "+ 这个门太难开了。",
           "+ 我至少需要150 KB才能破开...",
         ];
       } else {
-        player.ram -= 145408;
+        player.ram = player.ram.sub(145408);
         return [true];
       }
       DIALOGUE.startConversation();
@@ -216,7 +216,7 @@ export function genDoor(x: string) {
       return [true];
     }
     if (bl.data == "19_-4_U0") {
-      if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
+      if (player.features.includes("19_-4_U0") && player.ram.gte(409600)) {
         player.features.push("19_-4_U0_OPENED");
         return [true];
       }
@@ -228,13 +228,13 @@ export function genDoor(x: string) {
       player.features.push("19_-4_U0");
       return [false];
     }
-    if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
+    if (bl.data == "1327" && player.ram.gte(8.25 * 1024)) {
       return [true];
     }
-    if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
+    if (bl.data == "1723" && player.ram.gte(9.5 * 1024)) {
       return [true, "TP?PSEUDO?17?23?0"];
     }
-    if (bl.data == "1913_U0" && player.ram >= 204800) {
+    if (bl.data == "1913_U0" && player.ram.gte(204800)) {
       return [true];
     }
     return [false];
@@ -267,7 +267,7 @@ export function genFeature(x: string[]) {
     player.features.push(bl.data);
     switch (bl.data) {
       case "point":
-        player.points += 1;
+        player.points = player.points.add(1);
         break;
     }
     return [true];
@@ -562,7 +562,7 @@ export function genNPC(x: string) {
             "+ (你获得了0.001 点数。)\n+ 这NPC身价这么低？",
           ];
           DIALOGUE.startConversation();
-          player.points += 0.001;
+          player.points = player.points.add(0.001);
           player.features.push("19_-4_U0_OPENED_2");
         } else {
           DIALOGUE.messages = [

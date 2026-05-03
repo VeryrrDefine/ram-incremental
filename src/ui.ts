@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js";
 import { assets } from "./assets";
 import { BATTLE } from "./battle";
 import { configurations } from "./configurations";
@@ -369,8 +370,8 @@ export const UI = [
                 align: "center",
                 size: 21,
                 onClick() {
-                  player.points = 0;
-                  player.ram = 8192;
+                  player.points = new Decimal(0);
+                  player.ram = new Decimal(8192);
                   player.upgrades["20_8"] = 0;
                   player.upgrades["20_7"] = 0;
                   player.upgrades["17_7"] = 0;

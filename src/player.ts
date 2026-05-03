@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js";
 import type { GameMap } from "./map";
 import { TEMP } from "./temp";
 
@@ -13,31 +14,31 @@ function initialPlayer() {
     replaces_Universe: [[]] as GameMap[],
     universe: -1, // -1: Main Universe, 0: Sub universe
     features: [] as string[],
-    points: 0,
+    points: new Decimal(0),
     saveCreateTime: Date.now(),
     lastTick: Date.now(),
-    ram: 8192,
+    ram: new Decimal(8192),
     upgrades: {} as Record<string, number>,
     items: {
       purplecrystal: 1,
       doorkey_1: 0,
     } as Record<string, number>,
-    thief_points: 0,
-    thief_rams: 0,
+    thief_points: new Decimal(0),
+    thief_rams: new Decimal(0),
     playername: "Player",
     generatorOpen: false,
     // 0: Current, 1: Bought
     dimensions: [
-      [0, 0],
-      [0, 0],
-      [0, 0],
-      [0, 0],
+      [new Decimal(0), new Decimal(0)],
+      [new Decimal(0), new Decimal(0)],
+      [new Decimal(0), new Decimal(0)],
+      [new Decimal(0), new Decimal(0)],
     ],
   };
 }
 
 export let player = initialPlayer();
-const SAVE_ID = "test-game-2";
+const SAVE_ID = "ram-incremental";
 export function save(info?: string) {
   if (TEMP.interact == 1 && info !== "force") return;
   localStorage.setItem(SAVE_ID, JSON.stringify(player));
@@ -50,7 +51,7 @@ export function deepCopyProps(source: any, target: any) {
       // 如果源对象的属性是对象或数组，则递归复制
       if (
         typeof source[key] === "object" &&
-        // !(source[key] instanceof PowiainaNum) &&
+        !(source[key] instanceof Decimal) &&
         source[key] !== null
       ) {
         // 如果目标对象没有这个属性，或者属性是null，则创建一个新的
@@ -64,8 +65,11 @@ export function deepCopyProps(source: any, target: any) {
         // 递归复制属性
         deepCopyProps(source[key], target[key]);
       } else {
+        if (target[key] instanceof Decimal) {
+          target[key] = new Decimal(source[key]);
+        }
         // 如果属性不是对象或数组，则直接复制
-        target[key] = source[key];
+        else target[key] = source[key];
       }
     }
   }

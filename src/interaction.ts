@@ -43,7 +43,7 @@ export function tryMove(dx: number, dy: number) {
       touch[1] || "NULL",
     ]);
   }
-  if (player.features.includes("collram")) player.ram += 1;
+  if (player.features.includes("collram")) player.ram = player.ram.add(1);
 }
 
 // 点击处理

@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js";
 import { delay } from "./await";
 import { displayNumber } from "./display";
 import { stepsLinear } from "./geometry";
@@ -11,23 +12,23 @@ export const battle_tips = [
 export const enemies = [
   {
     name: "门",
-    totalRam: 16492674416640,
+    totalRam: new Decimal(16492674416640),
   },
   {
     name: "门",
-    totalRam: 32985348833280,
+    totalRam: new Decimal(32985348833280),
   },
   {
     name: "Endless_e308",
-    totalRam: 8.98846567431158e307,
+    totalRam: new Decimal(8.98846567431158e307),
   },
 ];
 export const BATTLE = {
   playerAttackTick: 0,
   enemyAttackTick: 0,
-  ram: 8192,
-  enemyram: 16492674416640,
-  enemyTotalram: 16492674416640,
+  ram: new Decimal(8192),
+  enemyram: new Decimal(16492674416640),
+  enemyTotalram: new Decimal(16492674416640),
   enemyName: "啊",
   enemyid: 0,
   interact: 0,
@@ -62,22 +63,22 @@ export const BATTLE = {
     BATTLE.playerAttackTick = 0;
     let atk = BATTLE.calculatePlayerAttack();
     TEMP.attack_ram = atk;
-    BATTLE.enemyram = Math.max(0, BATTLE.enemyram - atk);
+    BATTLE.enemyram = BATTLE.enemyram.sub(atk).clampMin(0);
     await stepsLinear((x) => (TEMP.battle_animation = x), 200, 300, 1112);
     TEMP.battle_animation = 100;
 
-    if (BATTLE.enemyram >= 8192) {
+    if (BATTLE.enemyram.gte(8192)) {
       BATTLE.enemyAttack();
     } else {
       let pt = BATTLE.enemyPointGain();
-      player.points += pt;
+      player.points = player.points.add(pt);
       TEMP.battle_tips =
         "你赢了！ 你获得了" + displayNumber(pt) + " 点数.\n点击继续。";
       BATTLE.win = true;
     }
   },
   enemyPointGain() {
-    return 1e9 + Math.random() * 1e9;
+    return new Decimal(1e9).add(Math.random() * 1e9);
   },
   async enemyAttack() {
     await delay(300 + Math.random() * 500);
@@ -93,10 +94,10 @@ export const BATTLE = {
     BATTLE.enemyAttackTick = 0;
     let atk = BATTLE.calculateEnemyAttack();
     TEMP.attack_ram = atk;
-    BATTLE.ram = Math.max(0, BATTLE.ram - atk);
+    BATTLE.ram = BATTLE.ram.sub(atk).clampMin(0);
     await stepsLinear((x) => (TEMP.battle_animation = x), 400, 500, 1112);
     TEMP.battle_animation = 100;
-    if (BATTLE.ram >= 8192) {
+    if (BATTLE.ram.gte(8192)) {
       BATTLE.interact = 0;
     } else {
       TEMP.battle_tips =
@@ -105,22 +106,27 @@ export const BATTLE = {
       location.reload();
     }
   },
-  calculateEnemyAttack() {
-    let atk =
-      10 **
-      (Math.log10(BATTLE.enemyTotalram / 50) + (Math.random() * 0.5 - 0.25));
+  calculateEnemyAttack(): Decimal {
+    let atk = BATTLE.enemyTotalram
+      .div(50)
+      .log10()
+      .add(Math.random() * 0.5 - 0.25)
+      .pow10();
 
     if (Math.random() < 0.1) {
-      atk *= 30;
+      atk = atk.mul(30);
     }
     return atk;
   },
-  calculatePlayerAttack() {
-    let atk =
-      10 ** (Math.log10(BATTLE.ram / 50) + (Math.random() * 0.5 - 0.25));
+  calculatePlayerAttack(): Decimal {
+    let atk = BATTLE.ram
+      .div(50)
+      .log10()
+      .add(Math.random() * 0.5 - 0.25)
+      .pow10();
 
     if (Math.random() < 0.15) {
-      atk *= 35;
+      atk = atk.mul(35);
     }
     return atk;
   },

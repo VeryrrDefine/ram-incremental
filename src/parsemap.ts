@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js";
 import {
   Block,
   genDoor as genDoorBlock,
@@ -187,8 +188,8 @@ export function blockDataToBlock(x: string) {
               ? "已购买"
               : "价格:" +
                 (UPGRADES[part].currency == "RAM"
-                  ? displayRAM(cost, false)
-                  : displayNumber(cost)) +
+                  ? displayRAM(new Decimal(cost), false)
+                  : displayNumber(new Decimal(cost))) +
                 UPGRADES[part].currency)
           );
         }

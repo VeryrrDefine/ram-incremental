@@ -1,33 +1,35 @@
+import Decimal from "break_eternity.js";
 import { dimLoop } from "./dimension";
 import { player } from "./player";
 
-export function ramGain() {
-  let base = 0;
+export function ramGain(): Decimal {
+  let base = new Decimal(0);
   if (player.features.includes("auto1")) {
-    base += 1;
+    base = base.add(1);
   }
   if (player.upgrades["17_7"]) {
-    base += player.upgrades["17_7"] ?? 0;
+    base = base.add(player.upgrades["17_7"] ?? 0);
   }
   if (player.upgrades["19_7"]) {
-    base += player.points ** 0.5;
+    base = base.add(player.points.pow(0.5));
   }
   if (player.upgrades["20_7"]) {
-    base += Math.max(1, (player.ram / 1024) ** 0.3);
+    base = base.add(player.ram.div(1024).pow(0.3).clampMin(1));
   }
   return base;
 }
 
-export function pointGain() {
-  let base = 0;
+export function pointGain(): Decimal {
+  let base = new Decimal(0);
   if (player.upgrades["16_7"]) {
-    base += player.upgrades["16_7"] ?? 0;
+    base = base.add(player.upgrades["16_7"] ?? 0);
   }
   if (player.upgrades["17_7"]) {
-    base += player.upgrades["17_7"] ?? 0;
+    base = base.add(player.upgrades["17_7"] ?? 0);
   }
   if (player.upgrades["20_8"]) {
-    base *= Math.max(1, Math.log10(Math.max(player.ram, 1)));
+    base = base.mul(player.ram.clampMin(1).log10().clampMin(1));
+    // base *= Math.max(1, Math.log10(Math.max(player.ram, 1)));
   }
   return base;
 }
@@ -40,11 +42,11 @@ export function loop() {
   }
   if (player.upgrades["16_7"] || player.upgrades["17_7"]) {
     let pGain = pointGain();
-    player.points += pGain * ticks;
+    player.points = player.points.add(pGain.mul(ticks));
   }
   let gain = ramGain();
-  if (gain) {
-    player.ram += ramGain() * ticks;
+  if (gain.gt(0)) {
+    player.ram = player.ram.add(gain.mul(ticks));
   }
   if (player.features.includes("25_1") && player.x == 26 && player.y == 1) {
     player.replaces.push([25, -1, "NULL"]);
