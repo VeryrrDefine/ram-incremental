@@ -68,3 +68,16 @@ export function handleClick(canvasX: number, canvasY: number) {
     addMapBlock(worldX, worldY, "WALL", player.universe);
   }
 }
+
+export function removeArrayElement<T>(arr: Array<T>, ele: T) {
+  let ind = -1;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] == ele) {
+      ind = i;
+      break;
+    }
+  }
+  if (ind !== -1) arr.splice(ind, 1);
+
+  return arr;
+}

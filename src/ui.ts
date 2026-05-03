@@ -4,7 +4,7 @@ import { DIALOGUE } from "./dialogue";
 import { buyDimensions, dimensionCost, dimensionMult } from "./dimension";
 import { displayNumber, displayRAM } from "./display";
 import { canvasToWorld } from "./geometry";
-import { tryMove } from "./interaction";
+import { removeArrayElement, tryMove } from "./interaction";
 import { informations, ITEMS, useItem1 } from "./items";
 import { mouse } from "./mouse";
 import { player } from "./player";
@@ -341,7 +341,67 @@ ${canvasToWorld(
         {
           type: "group",
           condition() {
-            return true;
+            return !player.features.includes("JOHN_BAIXIE_VISITED");
+          },
+          group(): UIopt[] {
+            return [
+              {
+                type: "text",
+                fore: "#fff",
+                rect: new Rect(34, 34, 686 - 34, 686 - 34),
+                text() {
+                  return "缺了点啥...?";
+                },
+                align: "center",
+                size: 21,
+              },
+            ];
+          },
+        },
+        {
+          type: "group",
+          condition() {
+            return (
+              player.features.includes("JOHN_BAIXIE_VISITED") &&
+              !player.features.includes("REAL_3")
+            );
+          },
+          group(): UIopt[] {
+            return [
+              {
+                type: "rect",
+                fore: "#fff",
+                rect: new Rect(148, 255, 372, 197),
+              },
+              {
+                type: "text",
+                fore: "#000",
+                rect: new Rect(148, 255, 372, 197),
+                text() {
+                  return "我需要重置...我的点数和RAM...还有升级...";
+                },
+                align: "center",
+                size: 21,
+                onClick() {
+                  player.points = 0;
+                  player.ram = 8192;
+                  player.upgrades["20_8"] = 0;
+                  player.upgrades["20_7"] = 0;
+                  player.upgrades["17_7"] = 0;
+                  player.upgrades["16_7"] = 0;
+                  player.upgrades["19_7"] = 0;
+                  removeArrayElement(player.features, "collram");
+                  removeArrayElement(player.features, "auto1");
+                  player.features.push("REAL_3");
+                },
+              },
+            ];
+          },
+        },
+        {
+          type: "group",
+          condition() {
+            return player.features.includes("REAL_3");
           },
           group(): UIopt[] {
             let res: UIopt[] = [];

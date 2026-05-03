@@ -397,6 +397,7 @@ export function genNPC(x: string) {
           player.replaces.push([282, 40, "NPC?John_Baixie"]);
           await delay(300);
           player.replaces.push([282, 40, "NULL"]);
+          player.features.push("JOHN_BAIXIE_VISITED");
           TEMP.interact = 0;
         };
         DIALOGUE.startConversation();

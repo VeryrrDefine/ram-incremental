@@ -1,6 +1,9 @@
 import { player } from "./player";
 
 export function dimensionCost(x: number) {
+  if (player.dimensions[x][1] == 0 && x == 0) {
+    return 0;
+  }
   return (x + 2) ** (player.dimensions[x][1] + x * 4) * 1000;
 }
 export function dimensionMult(x: number) {
@@ -9,7 +12,7 @@ export function dimensionMult(x: number) {
 export function buyDimensions(x: number) {
   let cost = dimensionCost(x);
   if (player.ram >= cost) {
-    player.ram -= cost - 8192;
+    player.ram -= Math.max(0, cost - 8192);
     player.dimensions[x][1]++;
     player.dimensions[x][0] += 1;
   }
