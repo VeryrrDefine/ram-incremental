@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Ram Incremental 地图编辑器</title>
+    <title>Ram Incremental 地图编辑器 - 增强版(区域选择/复制/粘贴)</title>
     <style>
         * {
             user-select: none;
@@ -19,7 +19,6 @@
             color: #eef;
         }
 
-        /* 主布局 */
         .app {
             display: flex;
             flex-direction: column;
@@ -27,7 +26,6 @@
             width: 100vw;
         }
 
-        /* 工具栏 */
         .toolbar {
             background: #2d2f3e;
             padding: 8px 12px;
@@ -92,7 +90,6 @@
             font-family: monospace;
         }
 
-        /* 主区域: canvas + 侧边栏 */
         .main-area {
             display: flex;
             flex: 1;
@@ -112,7 +109,6 @@
             cursor: crosshair;
         }
 
-        /* 右侧编辑面板 */
         .side-panel {
             width: 320px;
             background: #2a2c3c;
@@ -221,6 +217,24 @@
             background: #6c6f92;
             border-radius: 4px;
         }
+
+        .region-info {
+            font-size: 12px;
+            background: #10121c;
+            border-radius: 12px;
+            padding: 8px;
+            margin-top: 8px;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 6px;
+            background: #25283a;
+            padding: 4px 8px;
+            border-radius: 32px;
+        }
     </style>
 </head>
 
@@ -229,6 +243,13 @@
         <div class="toolbar">
             <button id="loadBtn">📂 加载JSON</button>
             <button id="saveBtn">💾 导出地图</button>
+            <div class="sep"></div>
+            <!-- 新增复制/粘贴/清除选区按钮 -->
+            <div class="tool-group">
+                <button id="copyRegionBtn" style="background:#4f6f8f;">📋 复制区域</button>
+                <button id="pasteRegionBtn" style="background:#6f8f6f;">📌 粘贴区域</button>
+                <button id="clearSelectionBtn" style="background:#6f4f5f;">✖️ 清除选区</button>
+            </div>
             <div class="sep"></div>
             <div class="coord-input">
                 <span>📍 跳转</span>
@@ -246,8 +267,9 @@
             </div>
             <div class="sep"></div>
             <div class="badge" id="tileCountDisplay">图块数量: --</div>
+            <div class="badge" id="regionInfoDisplay" style="background:#3c4f5a;">📐 选区: 无</div>
             <div style="flex:1"></div>
-            <span>✏️ 单击格子选中 | 拖拽平移 (鼠标中键/右键拖拽)</span>
+            <span>✏️ 单击格子 | Shift+拖拽框选区域 | 拖拽平移(中/右键)</span>
         </div>
 
         <div class="main-area">
@@ -284,18 +306,17 @@
                     </div>
                 </div>
                 <div class="panel-section">
-                    <h3>📖 帮助</h3>
+                    <h3>📦 区域操作提示</h3>
                     <div style="font-size:12px; line-height:1.5">
-                        • 墙壁WALL 灰色不可通行<br>
-                        • TEXT?文本 多行用\n分割<br>
-                        • DOOR?方向/id 控制门<br>
-                        • FEAT?/ITEM?/NPC? 任意参数<br>
-                        • 空单元格表示可通行地面<br>
-                        • 直接编辑原始字符串, 格式必须符合引擎规则<br>
-                        • 支持所有自定义类型前缀如 COLORFUL?#ff6600
+                        • <strong>框选区域</strong>: 按住 <kbd>Shift</kbd> + 鼠标左键拖拽<br>
+                        • <strong>复制区域</strong>: 框选后点击“📋 复制区域”<br>
+                        • <strong>粘贴区域</strong>: 先单击格子作为粘贴起点，再点“📌 粘贴区域”<br>
+                        • <strong>清除选区</strong>: 点击按钮 或 按 <kbd>ESC</kbd> / 单击非Shift格子<br>
+                        • 复制会存储选区内的所有图块(包含空地)<br>
+                        • 粘贴将完整覆盖目标区域的内容
                     </div>
                     <hr>
-                    <div>💡 提示: 鼠标滚轮缩放, 左键拖拽移动地图, 点击格子编辑</div>
+                    <div>💡 提示: 鼠标滚轮缩放, 左键拖拽移动地图, 单击格子编辑</div>
                 </div>
             </div>
         </div>
@@ -303,17 +324,15 @@
 
     <script>
         // ---------- 地图数据存储 ----------
-        // 使用 Map key = "x,y" , value = { raw: string, typePrefix: string, full: string }
-        // 为了导出时完全保留原始字符串，我们只存储 rawString
-        let tileMap = new Map(); // key: "x,y" , value: rawString 例如 "WALL" , "TEXT?欢迎来到\nRam\nIncremental"
+        let tileMap = new Map(); // key: "x,y" -> rawString (例如 "WALL", "TEXT?你好")
 
         // 视图控制变量
         let canvas = document.getElementById('mapCanvas');
         let container = document.getElementById('canvasContainer');
         let ctx = canvas.getContext('2d');
 
-        let offsetX = 0, offsetY = 0;    // 视口左上角对应的世界坐标 (格坐标)
-        let scale = 1.0;                 // 渲染缩放 (格子大小 = baseTileSize * scale)
+        let offsetX = 0, offsetY = 0;
+        let scale = 1.0;
         const BASE_TILE_SIZE = 32;
 
         let isPanning = false;
@@ -321,6 +340,15 @@
         let lastOffset = { x: 0, y: 0 };
 
         let selectedTileX = null, selectedTileY = null;
+
+        // ---------- 新增: 区域选择相关变量 ----------
+        let selectionRect = null;          // { minX, minY, maxX, maxY }
+        let isSelecting = false;           // 是否正在框选 (Shift+拖拽中)
+        let selectingStartTile = { x: 0, y: 0 };
+        let selectingCurrentTile = { x: 0, y: 0 };
+
+        // 剪贴板数据 (区域内容)
+        let clipboardRegion = null;         // 结构: { width, height, data:二维数组(raw字符串) }
 
         // UI 元素绑定
         const selectedCoordSpan = document.getElementById('selectedCoord');
@@ -338,13 +366,37 @@
         const resetViewBtn = document.getElementById('resetViewBtn');
         const zoomLevelSpan = document.getElementById('zoomLevel');
         const tileCountDisplay = document.getElementById('tileCountDisplay');
+        const regionInfoDisplay = document.getElementById('regionInfoDisplay');
+
+        // 新增按钮
+        const copyRegionBtn = document.getElementById('copyRegionBtn');
+        const pasteRegionBtn = document.getElementById('pasteRegionBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
 
         // ---------- 辅助函数 ----------
         function updateTileCountDisplay() {
             tileCountDisplay.innerText = `图块数量: ${tileMap.size}`;
         }
 
-        // 从原始字符串解析 类型前缀 (第一个 ? 之前的部分，若没有?则整体当作类型)
+        function updateRegionInfoDisplay() {
+            if (selectionRect) {
+                const w = selectionRect.maxX - selectionRect.minX + 1;
+                const h = selectionRect.maxY - selectionRect.minY + 1;
+                regionInfoDisplay.innerText = `📐 选区: (${selectionRect.minX},${selectionRect.minY}) → (${selectionRect.maxX},${selectionRect.maxY})  ${w}×${h}`;
+            } else {
+                regionInfoDisplay.innerText = `📐 选区: 无`;
+            }
+        }
+
+        // 清除选区
+        function clearSelection() {
+            selectionRect = null;
+            isSelecting = false;
+            updateRegionInfoDisplay();
+            renderCanvas();
+        }
+
+        // 从原始字符串解析类型前缀
         function getTypeFromRaw(raw) {
             if (!raw) return "EMPTY";
             let qIndex = raw.indexOf('?');
@@ -352,14 +404,29 @@
             return raw.substring(0, qIndex);
         }
 
-        // 将当前地图数据转换成 原始数组格式 [[x,y,value],...]
+        // 获取指定坐标的 raw 字符串 (不存在返回 "")
+        function getTileRawAt(x, y) {
+            const key = `${x},${y}`;
+            return tileMap.get(key) || "";
+        }
+
+        // 设置指定坐标的 raw (如果 raw 为空字符串则删除该格子)
+        function setTileRawAt(x, y, raw) {
+            const key = `${x},${y}`;
+            if (raw === undefined || raw === null || raw === "") {
+                tileMap.delete(key);
+            } else {
+                tileMap.set(key, raw);
+            }
+        }
+
+        // 导出数组
         function exportToArray() {
             const arr = [];
             for (let [key, rawVal] of tileMap.entries()) {
                 const [x, y] = key.split(',').map(Number);
                 arr.push([x, y, rawVal]);
             }
-            // 可选排序 (按x,y)
             arr.sort((a, b) => {
                 if (a[0] !== b[0]) return a[0] - b[0];
                 return a[1] - b[1];
@@ -367,7 +434,6 @@
             return arr;
         }
 
-        // 从标准数组加载地图
         function loadFromArray(dataArray) {
             tileMap.clear();
             for (let item of dataArray) {
@@ -378,20 +444,14 @@
                 }
             }
             updateTileCountDisplay();
+            clearSelection();     // 清空选区
             renderCanvas();
-            // 清空选中
             selectedTileX = selectedTileY = null;
             updateSelectedPanel(null);
         }
 
-        // 加载默认示例数据 (直接使用内置mapdata)
+        // 默认演示数据
         function loadDefaultMap() {
-            // 原始数据太长但我们已经有一个文件内容, 这里直接内嵌？为了可靠，手动解析提供的样例数据的一个子集？
-            // 由于实际提供的mapdata.json很大，编辑器应该能够导入该文件。为了展示，直接使用硬编码示例不现实。
-            // 但我们可以先用一个最小的示例确保功能可视，再提供"加载JSON"按钮让用户选择提供的文件。
-            // 更好的方式：初始化一个空白地图？但为了演示，先加载样例中的几个基础坐标，让用户导入真正文件。
-            // 为了编辑器开箱即用，我们通过fetch加载同目录? 由于独立html, 可以定义默认展示简单样例，但为了匹配需求，直接提供一个内置简化示例（十字路口）
-            // 但用户只需要点击加载按钮加载给出的 mapdata.json 即可。因此默认初始化用一个小样例，然后提示。
             const minimalDemo = [
                 [2, 1, "TEXT?欢迎来到\nRam\nIncremental"],
                 [2, 2, "TEXT?按上下左右键移动"],
@@ -404,11 +464,10 @@
                 [13, 12, "RAM"]
             ];
             loadFromArray(minimalDemo);
-            // 重置视图到中心区域
             resetView();
         }
 
-        // 渲染画布
+        // 渲染画布 (包含选区高亮)
         function renderCanvas() {
             if (!canvas || !ctx) return;
             const containerRect = container.getBoundingClientRect();
@@ -422,13 +481,11 @@
             const tileSize = BASE_TILE_SIZE * scale;
             if (tileSize < 1) return;
 
-            // 计算可见范围
             const startCol = Math.floor(-offsetX / tileSize);
             const endCol = Math.ceil((w - offsetX) / tileSize);
             const startRow = Math.floor(-offsetY / tileSize);
             const endRow = Math.ceil((h - offsetY) / tileSize);
 
-            // 优化边界
             for (let row = startRow - 1; row <= endRow + 1; row++) {
                 for (let col = startCol - 1; col <= endCol + 1; col++) {
                     const worldX = col;
@@ -440,21 +497,16 @@
                     const key = `${worldX},${worldY}`;
                     const raw = tileMap.get(key);
                     const isEmpty = !raw;
-                    // 绘制背景 (空地浅色)
+
                     if (isEmpty) {
                         ctx.fillStyle = "#3a3c4e";
                         ctx.fillRect(screenX, screenY, tileSize, tileSize);
-                        ctx.strokeStyle = "#2a2c3c";
-                        ctx.strokeRect(screenX, screenY, tileSize, tileSize);
-                        // 加点网格线
-                        ctx.beginPath();
                         ctx.strokeStyle = "#2f3348";
                         ctx.lineWidth = 0.5;
                         ctx.strokeRect(screenX, screenY, tileSize, tileSize);
                         continue;
                     }
 
-                    // 绘制有内容的格
                     const typePrefix = getTypeFromRaw(raw);
                     // 根据类型着色
                     if (typePrefix === "WALL") {
@@ -531,12 +583,9 @@
                         ctx.fillText("?", screenX + tileSize * 0.4, screenY + tileSize * 0.7);
                     }
 
-                    // 描边+选中高亮
                     ctx.strokeStyle = "#33363f";
                     ctx.lineWidth = 0.8;
                     ctx.strokeRect(screenX, screenY, tileSize, tileSize);
-
-                    // 添加小文字显示类型简写
                     ctx.fillStyle = "#f9f9fc";
                     ctx.font = `${Math.max(9, tileSize * 0.22)}px monospace`;
                     let short = typePrefix.substring(0, 3);
@@ -544,7 +593,7 @@
                 }
             }
 
-            // 绘制选中的边框
+            // 绘制单个选中的高亮边框
             if (selectedTileX !== null && selectedTileY !== null) {
                 const sx = offsetX + selectedTileX * tileSize;
                 const sy = offsetY + selectedTileY * tileSize;
@@ -557,9 +606,52 @@
                     ctx.restore();
                 }
             }
+
+            // 绘制区域选框 (矩形)
+            let rectToDraw = selectionRect;
+            // 如果正在框选过程中，优先显示临时的选择框
+            if (isSelecting) {
+                const minX = Math.min(selectingStartTile.x, selectingCurrentTile.x);
+                const maxX = Math.max(selectingStartTile.x, selectingCurrentTile.x);
+                const minY = Math.min(selectingStartTile.y, selectingCurrentTile.y);
+                const maxY = Math.max(selectingStartTile.y, selectingCurrentTile.y);
+                if (minX !== undefined && maxX !== undefined) {
+                    const startScreenX = offsetX + minX * tileSize;
+                    const startScreenY = offsetY + minY * tileSize;
+                    const endScreenX = offsetX + (maxX + 1) * tileSize;
+                    const endScreenY = offsetY + (maxY + 1) * tileSize;
+                    ctx.save();
+                    ctx.fillStyle = "rgba(100, 150, 250, 0.2)";
+                    ctx.fillRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                    ctx.strokeStyle = "#ffcc77";
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([6, 8]);
+                    ctx.strokeRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                    ctx.setLineDash([]);
+                    ctx.restore();
+                }
+            } else if (rectToDraw) {
+                const minX = rectToDraw.minX;
+                const maxX = rectToDraw.maxX;
+                const minY = rectToDraw.minY;
+                const maxY = rectToDraw.maxY;
+                const startScreenX = offsetX + minX * tileSize;
+                const startScreenY = offsetY + minY * tileSize;
+                const endScreenX = offsetX + (maxX + 1) * tileSize;
+                const endScreenY = offsetY + (maxY + 1) * tileSize;
+                ctx.save();
+                ctx.fillStyle = "rgba(80, 180, 80, 0.15)";
+                ctx.fillRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                ctx.strokeStyle = "#aaff88";
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([5, 7]);
+                ctx.strokeRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                ctx.setLineDash([]);
+                ctx.restore();
+            }
         }
 
-        // 屏幕坐标转世界格子
+        // 屏幕坐标转格子坐标
         function screenToTile(screenX, screenY) {
             const rect = canvas.getBoundingClientRect();
             const canvasX = (screenX - rect.left) * (canvas.width / rect.width);
@@ -570,7 +662,7 @@
             return { x: worldX, y: worldY };
         }
 
-        // 更新右侧面板
+        // 更新右侧面板 (单个格子)
         function updateSelectedPanel(tile) {
             if (tile && tile.x !== undefined && tile.y !== undefined) {
                 selectedTileX = tile.x;
@@ -593,24 +685,20 @@
             }
         }
 
-        // 保存当前格子编辑
         function saveCurrentTile() {
             if (selectedTileX === null || selectedTileY === null) {
                 alert("请先点击选中一个格子");
                 return;
             }
             let newRaw = tileRawTextarea.value.trim();
-            const forcedType = tileTypeInput.value.trim();
-            // 如果用户修改原始字符串为空，则删除此格子
             if (newRaw === "") {
                 deleteCurrentTile();
                 return;
             }
-            // 额外：确保类型前缀粗略合法性，但保持用户输入
             tileMap.set(`${selectedTileX},${selectedTileY}`, newRaw);
             updateTileCountDisplay();
             renderCanvas();
-            updateSelectedPanel({ x: selectedTileX, y: selectedTileY }); // 刷新面板显示新raw
+            updateSelectedPanel({ x: selectedTileX, y: selectedTileY });
         }
 
         function deleteCurrentTile() {
@@ -642,7 +730,6 @@
 
         function resetView() {
             scale = 1.0;
-            // 尝试定位到 (13,1) 附近
             panTo(13, 1);
             zoomLevelSpan.innerText = `100%`;
             renderCanvas();
@@ -650,13 +737,78 @@
 
         function gotoCoordinate(x, y) {
             panTo(x, y);
+        }
+
+        // ---------- 新增: 区域复制 ----------
+        function copyRegion() {
+            if (!selectionRect) {
+                alert("请先使用 Shift + 鼠标拖拽 选择一个区域");
+                return;
+            }
+            const { minX, minY, maxX, maxY } = selectionRect;
+            const width = maxX - minX + 1;
+            const height = maxY - minY + 1;
+            const data = Array(height).fill().map(() => Array(width).fill(""));
+            for (let dy = 0; dy < height; dy++) {
+                for (let dx = 0; dx < width; dx++) {
+                    const worldX = minX + dx;
+                    const worldY = minY + dy;
+                    data[dy][dx] = getTileRawAt(worldX, worldY);
+                }
+            }
+            clipboardRegion = { width, height, data };
+            alert(`已复制区域 ${width}×${height} ，包含 ${tileMap.size} 个有效图块(保留空地结构)`);
+        }
+
+        // 粘贴区域 (以当前选中的格子为左上角)
+        function pasteRegion() {
+            if (!clipboardRegion) {
+                alert("剪贴板为空，请先复制一个区域");
+                return;
+            }
+            if (selectedTileX === null || selectedTileY === null) {
+                alert("请先单击一个格子作为粘贴的目标左上角");
+                return;
+            }
+            const startX = selectedTileX;
+            const startY = selectedTileY;
+            const { width, height, data } = clipboardRegion;
+            let pasteCount = 0;
+            for (let dy = 0; dy < height; dy++) {
+                for (let dx = 0; dx < width; dx++) {
+                    const targetX = startX + dx;
+                    const targetY = startY + dy;
+                    const srcRaw = data[dy][dx];
+                    setTileRawAt(targetX, targetY, srcRaw);
+                    if (srcRaw !== "") pasteCount++;
+                }
+            }
+            updateTileCountDisplay();
+            renderCanvas();
+            // 粘贴后不清除选区，可以继续粘贴或编辑
+            alert(`粘贴完成，覆盖区域 ${width}×${height}，有效图块数更新。`);
+        }
+
+        // 最终确定选区(从临时拖拽)
+        function finalizeSelection(start, current) {
+            const minX = Math.min(start.x, current.x);
+            const maxX = Math.max(start.x, current.x);
+            const minY = Math.min(start.y, current.y);
+            const maxY = Math.max(start.y, current.y);
+            if (minX !== maxX || minY !== maxY) {
+                selectionRect = { minX, maxX, minY, maxY };
+            } else {
+                selectionRect = null; // 点选框为空矩形则不建立选区
+            }
+            updateRegionInfoDisplay();
             renderCanvas();
         }
 
-        // 鼠标交互
+        // ----- 鼠标事件增强 (区域选择)-----
         function initMouseEvents() {
-            let isDragging = false;
-            let lastMouseX = 0, lastMouseY = 0;
+            let isPanningActive = false;
+            let lastPanX = 0, lastPanY = 0;
+            let isSelectingActive = false;  // shift+左键框选
 
             canvas.addEventListener('wheel', (e) => {
                 e.preventDefault();
@@ -664,7 +816,6 @@
                 let newScale = scale + delta;
                 newScale = Math.min(4.0, Math.max(0.3, newScale));
                 if (newScale !== scale) {
-                    // 以鼠标位置为中心缩放
                     const rect = canvas.getBoundingClientRect();
                     const mouseX = e.clientX - rect.left;
                     const mouseY = e.clientY - rect.top;
@@ -681,38 +832,69 @@
             });
 
             canvas.addEventListener('mousedown', (e) => {
-                if (e.button === 0) { // 左键: 选中
-                    const { x, y } = screenToTile(e.clientX, e.clientY);
-                    updateSelectedPanel({ x, y });
+                // 中键/右键 平移
+                if (e.button === 1 || e.button === 2) {
+                    isPanningActive = true;
+                    lastPanX = e.clientX;
+                    lastPanY = e.clientY;
+                    canvas.style.cursor = 'grabbing';
+                    e.preventDefault();
+                    return;
+                }
+                // 左键 + Shift -> 开始框选
+                if (e.button === 0 && e.shiftKey) {
+                    const tile = screenToTile(e.clientX, e.clientY);
+                    isSelectingActive = true;
+                    isSelecting = true;
+                    selectingStartTile = { x: tile.x, y: tile.y };
+                    selectingCurrentTile = { x: tile.x, y: tile.y };
+                    // 清除原有选区，全新框选
+                    selectionRect = null;
+                    updateRegionInfoDisplay();
                     renderCanvas();
                     e.preventDefault();
+                    return;
                 }
-                else if (e.button === 1 || e.button === 2) { // 中键/右键 拖拽平移
-                    isDragging = true;
-                    lastMouseX = e.clientX;
-                    lastMouseY = e.clientY;
-                    canvas.style.cursor = 'grabbing';
+                // 普通左键: 单击选中格子并清除选区
+                if (e.button === 0 && !e.shiftKey) {
+                    const tile = screenToTile(e.clientX, e.clientY);
+                    updateSelectedPanel(tile);
+                    clearSelection();   // 清除区域选框
+                    renderCanvas();
                     e.preventDefault();
                 }
             });
 
             window.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const dx = e.clientX - lastMouseX;
-                    const dy = e.clientY - lastMouseY;
+                if (isPanningActive) {
+                    const dx = e.clientX - lastPanX;
+                    const dy = e.clientY - lastPanY;
                     offsetX += dx;
                     offsetY += dy;
-                    lastMouseX = e.clientX;
-                    lastMouseY = e.clientY;
+                    lastPanX = e.clientX;
+                    lastPanY = e.clientY;
+                    renderCanvas();
+                    e.preventDefault();
+                    return;
+                }
+                if (isSelectingActive && isSelecting) {
+                    const tile = screenToTile(e.clientX, e.clientY);
+                    selectingCurrentTile = { x: tile.x, y: tile.y };
                     renderCanvas();
                     e.preventDefault();
                 }
             });
 
             window.addEventListener('mouseup', (e) => {
-                if (isDragging) {
-                    isDragging = false;
+                if (isPanningActive) {
+                    isPanningActive = false;
                     canvas.style.cursor = 'crosshair';
+                    e.preventDefault();
+                }
+                if (isSelectingActive && isSelecting) {
+                    finalizeSelection(selectingStartTile, selectingCurrentTile);
+                    isSelectingActive = false;
+                    isSelecting = false;
                     e.preventDefault();
                 }
             });
@@ -754,55 +936,70 @@
             reader.readAsText(file);
         }
 
-        // 监听更新、删除
-        updateBtn.addEventListener('click', saveCurrentTile);
-        deleteBtn.addEventListener('click', deleteCurrentTile);
+        // 键盘监听 ESC 清除选区
+        function initKeyboard() {
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    clearSelection();
+                    renderCanvas();
+                    e.preventDefault();
+                }
+                // 可选 Ctrl+C / Ctrl+V 快捷复制粘贴，但不干扰原有按钮，额外增加便利
+                if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                    e.preventDefault();
+                    copyRegion();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                    e.preventDefault();
+                    pasteRegion();
+                }
+            });
+        }
 
-        loadBtn.addEventListener('click', () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                if (e.target.files.length) importFile(e.target.files[0]);
-            };
-            input.click();
-        });
-
-        saveBtn.addEventListener('click', exportFile);
-        gotoBtn.addEventListener('click', () => {
-            let x = parseInt(gotoX.value, 10);
-            let y = parseInt(gotoY.value, 10);
-            if (isNaN(x)) x = 0;
-            if (isNaN(y)) y = 0;
-            gotoCoordinate(x, y);
-        });
-
-        zoomInBtn.addEventListener('click', () => setScale(scale + 0.2));
-        zoomOutBtn.addEventListener('click', () => setScale(scale - 0.2));
-        resetViewBtn.addEventListener('click', resetView);
-
-        // 监听窗口尺寸变化
-        window.addEventListener('resize', () => {
-            renderCanvas();
-        });
+        // UI 按钮事件
+        function bindUI() {
+            updateBtn.addEventListener('click', saveCurrentTile);
+            deleteBtn.addEventListener('click', deleteCurrentTile);
+            loadBtn.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => { if (e.target.files.length) importFile(e.target.files[0]); };
+                input.click();
+            });
+            saveBtn.addEventListener('click', exportFile);
+            gotoBtn.addEventListener('click', () => {
+                let x = parseInt(gotoX.value, 10);
+                let y = parseInt(gotoY.value, 10);
+                if (isNaN(x)) x = 0;
+                if (isNaN(y)) y = 0;
+                gotoCoordinate(x, y);
+            });
+            zoomInBtn.addEventListener('click', () => setScale(scale + 0.2));
+            zoomOutBtn.addEventListener('click', () => setScale(scale - 0.2));
+            resetViewBtn.addEventListener('click', resetView);
+            copyRegionBtn.addEventListener('click', copyRegion);
+            pasteRegionBtn.addEventListener('click', pasteRegion);
+            clearSelectionBtn.addEventListener('click', clearSelection);
+        }
 
         function setupCanvasResizeObserver() {
-            const resizeObserver = new ResizeObserver(() => {
-                renderCanvas();
-            });
+            const resizeObserver = new ResizeObserver(() => renderCanvas());
             resizeObserver.observe(container);
         }
 
-        // 初始化地图默认数据（轻量级演示，用户可加载原文件）
         function init() {
             loadDefaultMap();
             initMouseEvents();
+            initKeyboard();
+            bindUI();
             setupCanvasResizeObserver();
             renderCanvas();
         }
 
         init();
     </script>
+    <script type="module" src="/src/editor.js"></script>
 </body>
 
 </html>
