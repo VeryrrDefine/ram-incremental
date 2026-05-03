@@ -1,4 +1,7 @@
 export function displayNumber(x: number) {
+  if (x == 1 / 0) {
+    return "∞";
+  }
   if (x >= 1e3) {
     let exp = Math.floor(Math.log10(x));
     let exp10 = 10 ** exp;

@@ -16,7 +16,7 @@ export const ITEMS = ["purplecrystal", "generator"];
 
 export let informations: any = {
   purplecrystal: "使用后存档将被硬重置",
-  generator: "可生产点数，RAM",
+  generator: "可生产RAM",
 };
 
 export function useItem2(item: string) {
