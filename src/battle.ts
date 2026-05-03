@@ -22,6 +22,10 @@ export const enemies = [
     name: "Endless_e308",
     totalRam: new Decimal("e1.425e8"),
   },
+  {
+    name: "守卫",
+    totalRam: new Decimal(32985348833280),
+  },
 ];
 export const BATTLE = {
   playerAttackTick: 0,

@@ -21,7 +21,7 @@ export class Block {
   solid() {
     return false;
   }
-  onTouch(): [remove: boolean, replaceTo?: string] {
+  onTouch(_objpos: [number, number]): [remove: boolean, replaceTo?: string] {
     return [false];
   }
   solidInteractionable() {
@@ -613,4 +613,26 @@ export function genNPC(x: string) {
     })();
   }
   return null;
+}
+
+export function genEnemy(x: string) {
+  return new (class extends Block {
+    color = "#fff700ff";
+    content = "敌人";
+    onTouch(objpos: [number, number]): [remove: boolean, replaceTo?: string] {
+      BATTLE.enemyid = Number(x);
+
+      BATTLE.startBattle();
+      BATTLE.afterBattle = function () {
+        player.replaces.push([objpos[0], objpos[1], "NULL"]);
+      };
+      return [false];
+    }
+    solid(): boolean {
+      return true;
+    }
+    solidInteractionable(): boolean {
+      return true;
+    }
+  })();
 }

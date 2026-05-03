@@ -946,10 +946,13 @@
                 }
                 // 可选 Ctrl+C / Ctrl+V 快捷复制粘贴，但不干扰原有按钮，额外增加便利
                 if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+
+                    if (["TEXTAREA", "INPUT"].includes(document.activeElement.tagName)) return;
                     e.preventDefault();
                     copyRegion();
                 }
                 if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                    if (["TEXTAREA", "INPUT"].includes(document.activeElement.tagName)) return;
                     e.preventDefault();
                     pasteRegion();
                 }

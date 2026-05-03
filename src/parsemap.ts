@@ -2,6 +2,7 @@ import Decimal from "break_eternity.js";
 import {
   Block,
   genDoor as genDoorBlock,
+  genEnemy,
   genEvent,
   genFeature,
   genItem,
@@ -53,6 +54,14 @@ export function blockDataToBlock(x: string) {
   if (x.startsWith("ITEM")) {
     let t = x.split("?");
     if (t[0] === "ITEM") return writeToCache(genItem(t), x);
+  }
+  if (x.startsWith("ENEMY")) {
+    let t = x.split("?");
+    if (t[1]) {
+      return newBlockAndCache(() => {
+        return genEnemy(t[1]);
+      }, x);
+    }
   }
   if (x.startsWith("FEAT")) {
     let t = x.split("?");
