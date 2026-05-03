@@ -26,6 +26,13 @@ function initialPlayer() {
     thief_rams: 0,
     playername: "Player",
     generatorOpen: false,
+    // 0: Current, 1: Bought
+    dimensions: [
+      [0, 0],
+      [0, 0],
+      [0, 0],
+      [0, 0],
+    ],
   };
 }
 

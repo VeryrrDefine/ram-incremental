@@ -1,3 +1,4 @@
+import { dimLoop } from "./dimension";
 import { player } from "./player";
 
 export function ramGain() {
@@ -31,6 +32,7 @@ export function pointGain() {
   return base;
 }
 export function loop() {
+  player.editing = false;
   let ticks = (Date.now() - player.lastTick) / 1000;
   if (ticks < 0) {
     player.lastTick = Date.now();
@@ -71,5 +73,6 @@ export function loop() {
       block_Replaces.push(mid);
     }
   }
+  dimLoop(ticks);
   player.lastTick = Date.now();
 }

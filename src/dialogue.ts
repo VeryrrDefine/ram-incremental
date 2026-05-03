@@ -21,9 +21,9 @@ export const DIALOGUE = {
   afterConversation() {},
 };
 
-declare global {
-  interface Window {
-    DIALOGUE: typeof DIALOGUE;
-  }
-}
-window.DIALOGUE = DIALOGUE;
+// declare global {
+//   interface Window {
+//     DIALOGUE: typeof DIALOGUE;
+//   }
+// }
+// window.DIALOGUE = DIALOGUE;

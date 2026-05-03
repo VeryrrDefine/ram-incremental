@@ -1,8 +1,11 @@
 import { assets } from "./assets";
+import { BATTLE } from "./battle";
 import { configurations } from "./configurations";
 import { DIALOGUE } from "./dialogue";
+import { buyDimensions, dimensionCost, dimensionMult } from "./dimension";
+import { displayNumber, displayRAM } from "./display";
 import { canvasToWorld } from "./geometry";
-import { tryMove } from "./interaction";
+import { removeArrayElement, tryMove } from "./interaction";
 import { informations, ITEMS, useItem1 } from "./items";
 import { mouse } from "./mouse";
 import { player } from "./player";
@@ -145,24 +148,6 @@ export type UIopt =
     };
 export const UI = [
   {
-    type: "text",
-    size: 21,
-    rect: new Rect(0, 10, 720, 720),
-    fore: "#008cff",
-    align: ["left", "top"],
-    text() {
-      return `\
-player ${player.x},${player.y},${player.universe}|\
-${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|\
-${canvasToWorld(
-  player.x,
-  player.y,
-  Math.floor(mouse.mouseX / 80),
-  Math.floor(mouse.mouseY / 80),
-).join(",")}`;
-    },
-  },
-  {
     type: "image",
     image_left: 0,
     image_top: 0,
@@ -174,6 +159,7 @@ ${canvasToWorld(
       player.openedMenu = !player.openedMenu;
     },
   },
+  // menu
   {
     type: "group",
     condition() {
@@ -240,6 +226,7 @@ ${canvasToWorld(
       ];
     },
   },
+  // arrow button
   {
     type: "group",
     condition() {
@@ -298,6 +285,7 @@ ${canvasToWorld(
       ];
     },
   },
+  // generator
   {
     type: "group",
     condition() {
@@ -327,9 +315,121 @@ ${canvasToWorld(
             player.generatorOpen = false;
           },
         },
+        {
+          type: "text",
+          rect: new Rect(216, 50, 200, 30),
+          text() {
+            return displayRAM(player.ram, false);
+          },
+          align: "left",
+          size: 21,
+        },
+        {
+          type: "group",
+          condition() {
+            return !player.features.includes("JOHN_BAIXIE_VISITED");
+          },
+          group(): UIopt[] {
+            return [
+              {
+                type: "text",
+                fore: "#fff",
+                rect: new Rect(34, 34, 686 - 34, 686 - 34),
+                text() {
+                  return "缺了点啥...?";
+                },
+                align: "center",
+                size: 21,
+              },
+            ];
+          },
+        },
+        {
+          type: "group",
+          condition() {
+            return (
+              player.features.includes("JOHN_BAIXIE_VISITED") &&
+              !player.features.includes("REAL_3")
+            );
+          },
+          group(): UIopt[] {
+            return [
+              {
+                type: "rect",
+                fore: "#fff",
+                rect: new Rect(148, 255, 372, 197),
+              },
+              {
+                type: "text",
+                fore: "#000",
+                rect: new Rect(148, 255, 372, 197),
+                text() {
+                  return "我需要重置...我的点数和RAM...还有升级...";
+                },
+                align: "center",
+                size: 21,
+                onClick() {
+                  player.points = 0;
+                  player.ram = 8192;
+                  player.upgrades["20_8"] = 0;
+                  player.upgrades["20_7"] = 0;
+                  player.upgrades["17_7"] = 0;
+                  player.upgrades["16_7"] = 0;
+                  player.upgrades["19_7"] = 0;
+                  removeArrayElement(player.features, "collram");
+                  removeArrayElement(player.features, "auto1");
+                  player.features.push("REAL_3");
+                },
+              },
+            ];
+          },
+        },
+        {
+          type: "group",
+          condition() {
+            return player.features.includes("REAL_3");
+          },
+          group(): UIopt[] {
+            let res: UIopt[] = [];
+            for (let i = 0; i < 4; i++) {
+              let r1 = new Rect(48, 60 + i * 23, 600, 100);
+              res.push({
+                type: "text",
+                rect: r1,
+                text() {
+                  return (
+                    "RAM Dim. " +
+                    i +
+                    "   +" +
+                    displayNumber(player.dimensions[i][0]) +
+                    ` *${displayNumber(dimensionMult(i))} [${displayNumber(player.dimensions[i][1])}]`
+                  );
+                },
+                fore: "#ffffff",
+                size: 21,
+                align: "left",
+              });
+              res.push({
+                type: "text",
+                rect: r1,
+                text() {
+                  return "[Cost: " + displayRAM(dimensionCost(i), false) + "]";
+                },
+                fore: "#ffffff",
+                size: 21,
+                align: "right",
+                onClick() {
+                  buyDimensions(i);
+                },
+              });
+            }
+            return res;
+          },
+        },
       ];
     },
   },
+  // items
   {
     type: "group",
     condition() {
@@ -391,6 +491,156 @@ ${canvasToWorld(
         // ]);
       }
       return res;
+    },
+  },
+  // mask
+  {
+    type: "group",
+    condition() {
+      return TEMP.battle_animation > 0;
+    },
+    group(): UIopt[] {
+      return [
+        {
+          type: "rect",
+          fore: `rgba(0, 0, 0, ${TEMP.battle_animation / 100})`,
+          rect: new Rect(0, 0, 720, 720),
+          onClick() {
+            BATTLE.winBattle();
+          },
+        },
+      ];
+    },
+  },
+  {
+    type: "group",
+    condition() {
+      return TEMP.battle_animation >= 100;
+    },
+    group(): UIopt[] {
+      return [
+        {
+          type: "text",
+          rect: new Rect(0, 50, 720, 120),
+          text() {
+            return `敌人 门${BATTLE.enemyAttackTick ? "[" + (BATTLE.enemyAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.enemyram, false)}/${displayRAM(BATTLE.enemyTotalram, false)}`;
+          },
+          align: "center",
+          fore: "#fff",
+          size: 21,
+        },
+        {
+          type: "group",
+          condition() {
+            return TEMP.battle_animation <= 300 && TEMP.battle_animation >= 200;
+          },
+          group() {
+            return [
+              {
+                type: "text",
+                rect: new Rect(
+                  0,
+                  150 -
+                    Math.sin(
+                      ((TEMP.battle_animation - 200) / 100) * 3.1415926,
+                    ) *
+                      50,
+                  720,
+                  120,
+                ),
+                text() {
+                  return "-" + displayRAM(TEMP.attack_ram, false);
+                },
+                align: "center",
+                fore: "#f00",
+                size: 23,
+              },
+            ];
+          },
+        },
+        {
+          type: "group",
+          condition() {
+            return TEMP.battle_animation <= 500 && TEMP.battle_animation >= 400;
+          },
+          group() {
+            return [
+              {
+                type: "text",
+                rect: new Rect(
+                  0,
+                  580 -
+                    Math.sin(
+                      ((TEMP.battle_animation - 400) / 100) * 3.1415926,
+                    ) *
+                      50,
+                  720,
+                  120,
+                ),
+                text() {
+                  return "-" + displayRAM(TEMP.attack_ram, false);
+                },
+                align: "center",
+                fore: "#f00",
+                size: 23,
+              },
+            ];
+          },
+        },
+        {
+          type: "text",
+          rect: new Rect(0, 600, 720, 120),
+          text() {
+            return `玩家 ${player.playername}${BATTLE.playerAttackTick ? "[" + (BATTLE.playerAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.ram, false)}/${displayRAM(player.ram, false)}`;
+          },
+          fore: "#fff",
+          align: "center",
+          size: 21,
+        },
+        {
+          type: "rect",
+          rect: new Rect(80, 324, 560, 200),
+          fore: "#fff",
+        },
+        {
+          type: "rect",
+          rect: new Rect(82, 326, 556, 196),
+          fore: "#000",
+        },
+        {
+          type: "text",
+          rect: new Rect(82, 326, 556, 196),
+          fore: "#fff",
+          text() {
+            return BATTLE.interact == 1
+              ? "Waiting..." + "\n" + TEMP.battle_tips
+              : "Attack";
+          },
+          onClick() {
+            BATTLE.playerAttack();
+          },
+          align: ["left", "top"],
+          size: 21,
+        },
+      ];
+    },
+  },
+  {
+    type: "text",
+    size: 21,
+    rect: new Rect(0, 10, 720, 720),
+    fore: "#008cff",
+    align: ["left", "top"],
+    text() {
+      return `\
+player ${player.x},${player.y},${player.universe}|\
+${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|\
+${canvasToWorld(
+  player.x,
+  player.y,
+  Math.floor(mouse.mouseX / 80),
+  Math.floor(mouse.mouseY / 80),
+).join(",")}`;
     },
   },
 ] as const satisfies UIopt[];

@@ -1,4 +1,5 @@
 import { delay } from "./await";
+import { BATTLE } from "./battle";
 import { DIALOGUE } from "./dialogue";
 import { player } from "./player";
 import {
@@ -90,15 +91,39 @@ export function genDoor(x: string) {
   };
   bl.onTouch = () => {
     if (bl.data == "293_44") {
-      DIALOGUE.messages = [
-        "+ 这个门上写着\n+ “涉*关押区...”",
-        "+ 我需要至少20.000 TB打开...",
-      ];
+      if (player.ram >= 21990232555520) {
+        DIALOGUE.messages = [
+          "+ 和这个门，决斗。",
+          "- 你是谁？你也敢？",
+          "+ (这个门怎么会说话...)",
+          "+ 不好，赶紧跑...",
+          "- 别跑！",
+          "+ ...",
+        ];
+
+        DIALOGUE.startConversation();
+        DIALOGUE.afterConversation = function () {
+          BATTLE.startBattle();
+        };
+        BATTLE.afterBattle = function () {
+          DIALOGUE.messages = ["- 你...", "+ ...?"];
+
+          DIALOGUE.startConversation();
+          DIALOGUE.afterConversation = function () {
+            player.replaces.push([293, 44, "NULL"]);
+          };
+        };
+        return [false];
+      } else
+        DIALOGUE.messages = [
+          "+ 这个门上写着\n+ “涉*关押区...”",
+          "+ 我需要至少20.000 TB打开...",
+        ];
 
       DIALOGUE.startConversation();
       return [false];
     }
-    if (bl.data == "282_40") {
+    if (bl.data == "282_40" && player.ram >= 31465472) {
       DIALOGUE.messages = ["+ 帮别人“越狱”，emmm\n+ 算不算...?", "+ 管他呢"];
       DIALOGUE.stillInteraction = true;
       DIALOGUE.afterConversation = function () {
@@ -397,6 +422,7 @@ export function genNPC(x: string) {
           player.replaces.push([282, 40, "NPC?John_Baixie"]);
           await delay(300);
           player.replaces.push([282, 40, "NULL"]);
+          player.features.push("JOHN_BAIXIE_VISITED");
           TEMP.interact = 0;
         };
         DIALOGUE.startConversation();
