@@ -35,7 +35,7 @@ export function buyDimensions(x: number) {
 
 export function dimLoop(seconds: number) {
   player.ram = Math.min(
-    21989133043892.223,
+    21990232555520,
     player.ram + player.dimensions[0][0] * dimensionMult(0) * seconds,
   );
   for (let i = 1; i < 4; i++) {
