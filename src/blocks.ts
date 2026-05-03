@@ -6,6 +6,7 @@ import {
   bed1_dreaming_1,
   Endless_e19728_trap,
   Endless_e19728_trap2,
+  Endless_e19728_trap4,
   jail_breaking_door,
   jail_breaking_door_282_40,
   seeing_Endless_e19728,
@@ -90,6 +91,24 @@ export function genDoor(x: string) {
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "293_34") {
+      DIALOGUE.messages = ["- 你是谁？"];
+
+      DIALOGUE.startConversation();
+      DIALOGUE.afterConversation = function () {
+        BATTLE.enemyid = 1;
+        BATTLE.startBattle();
+      };
+      BATTLE.afterBattle = function () {
+        DIALOGUE.messages = ["- 请输入文本"];
+
+        DIALOGUE.startConversation();
+        DIALOGUE.afterConversation = function () {
+          player.replaces.push([293, 34, "NULL"]);
+        };
+      };
+      return [false];
+    }
     if (bl.data == "293_44") {
       if (player.ram >= 21990232555520) {
         DIALOGUE.messages = [
@@ -103,6 +122,7 @@ export function genDoor(x: string) {
 
         DIALOGUE.startConversation();
         DIALOGUE.afterConversation = function () {
+          BATTLE.enemyid = 0;
           BATTLE.startBattle();
         };
         BATTLE.afterBattle = function () {
@@ -224,7 +244,8 @@ export function genDoor(x: string) {
       bl.data == "19_-4_U0" ||
       bl.data == "JAIL_PLAYER" ||
       bl.data == "282_40" ||
-      bl.data == "293_44"
+      bl.data == "293_44" ||
+      bl.data == "293_34"
     ) {
       return true;
     }
@@ -360,6 +381,25 @@ export function genEvent(x: string) {
       }
     })();
   }
+  if (x == "293_33") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (!player.features.includes("293_33")) {
+          TEMP.interact = 1;
+          player.features.push("293_33");
+          player.replaces.push([293, 34, "WALL"]);
+          player.replaces.push([294, 33, "WALL"]);
+          player.replaces.push([293, 32, "WALL"]);
+          player.replaces.push([292, 33, "WALL"]);
+          setTimeout(Endless_e19728_trap4, 500);
+        }
+        return [false];
+      }
+    })();
+  }
   if (x == "37_1") {
     return new (class extends Block {
       color = "#00000000";
@@ -455,6 +495,23 @@ export function genNPC(x: string) {
     return new (class extends Block {
       color = "#fff700ff";
       content = "Endless_\ne19728";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        // DIALOGUE.messages = ["- 你好。"];
+        // DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+  if (x == "Endless_e308") {
+    return new (class extends Block {
+      color = "#a2ff00ff";
+      content = "Endless_\ne308";
       onTouch(): [remove: boolean, replaceTo?: string] {
         // DIALOGUE.messages = ["- 你好。"];
         // DIALOGUE.startConversation();

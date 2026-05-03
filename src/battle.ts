@@ -8,12 +8,28 @@ export const battle_tips = [
   "当你攻击敌人时，你有10%的概率会施展暴击。\n这会帮你输掉这场战斗。",
   "当你失败时，你不会被硬重置，只需要重新加载游戏。",
 ];
+export const enemies = [
+  {
+    name: "门",
+    totalRam: 16492674416640,
+  },
+  {
+    name: "门",
+    totalRam: 32985348833280,
+  },
+  {
+    name: "Endless_e308",
+    totalRam: 8.98846567431158e307,
+  },
+];
 export const BATTLE = {
   playerAttackTick: 0,
   enemyAttackTick: 0,
   ram: 8192,
   enemyram: 16492674416640,
   enemyTotalram: 16492674416640,
+  enemyName: "啊",
+  enemyid: 0,
   interact: 0,
   win: false,
   afterBattle() {},
@@ -29,6 +45,9 @@ export const BATTLE = {
   },
   async startBattle() {
     TEMP.interact = 1;
+    BATTLE.enemyram = enemies[BATTLE.enemyid].totalRam;
+    BATTLE.enemyTotalram = enemies[BATTLE.enemyid].totalRam;
+    BATTLE.enemyName = enemies[BATTLE.enemyid].name;
     await stepsLinear((x) => (TEMP.battle_animation = x), 0, 100, 1112);
     BATTLE.ram = player.ram;
     console.log("I no money, I no money, No kill me, No kill me");

@@ -523,7 +523,7 @@ export const UI = [
           type: "text",
           rect: new Rect(0, 50, 720, 120),
           text() {
-            return `敌人 门${BATTLE.enemyAttackTick ? "[" + (BATTLE.enemyAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.enemyram, false)}/${displayRAM(BATTLE.enemyTotalram, false)}`;
+            return `敌人 ${BATTLE.enemyName}${BATTLE.enemyAttackTick ? "[" + (BATTLE.enemyAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.enemyram, false)}/${displayRAM(BATTLE.enemyTotalram, false)}`;
           },
           align: "center",
           fore: "#fff",

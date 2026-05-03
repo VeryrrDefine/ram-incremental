@@ -1,3 +1,5 @@
+import { delay } from "./await";
+import { BATTLE } from "./battle";
 import { DIALOGUE } from "./dialogue";
 import { displayNumber } from "./display";
 import { player } from "./player";
@@ -22,6 +24,7 @@ export function Endless_e19728_trap() {
   DIALOGUE.startConversation();
   DIALOGUE.afterConversation = Endless_e19728_trap3;
 }
+
 function fadein() {
   setTimeout(function () {
     TEMP.endless_e19728_animation = 1;
@@ -196,4 +199,34 @@ export function Endless_e19728_trap2() {
   player.replaces.push([38, 1, "WALL"]);
   player.replaces.push([38, 2, "WALL"]);
   player.replaces.push([37, 2, "WALL"]);
+}
+
+export async function Endless_e19728_trap4() {
+  DIALOGUE.messages = ["- 很明显，", "- 有人越狱了。"];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  await delay(1000);
+  player.replaces.push([293, 29, "NPC?Endless_e308"]);
+  await delay(1000);
+  player.replaces.push([293, 29, "NULL"]);
+  player.replaces.push([293, 30, "NPC?Endless_e308"]);
+  await delay(1000);
+  player.replaces.push([293, 30, "NULL"]);
+  player.replaces.push([293, 31, "NPC?Endless_e308"]);
+  await delay(1000);
+  DIALOGUE.messages = [
+    "- 你就是把Endless_e19728\n- 打似的那个？。",
+    "+ 对，怎么了？",
+    "- 你还有脸说“怎么了？”",
+    "- 信不信我和你",
+  ];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  BATTLE.enemyid = 2;
+  BATTLE.startBattle();
+
+  // alert("test");
+  // DIALOGUE.afterConversation = Endless_e19728_trap5;
 }

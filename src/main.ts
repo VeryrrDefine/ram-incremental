@@ -90,8 +90,8 @@ document.addEventListener("keydown", (e) => {
 // 调试用
 import { player } from "./player";
 // @ts-ignore
-// window.player = player;
-import { map } from "./map";
+window.player = player;
+// import { map } from "./map";
 import { openItem } from "./items";
 // @ts-ignore
 // window.map = map;
