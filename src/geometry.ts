@@ -22,3 +22,32 @@ export function canvasToWorld(
 }
 
 export { isInRect } from "./rect.ts";
+
+export function stepsLinear(
+  setFunc: (x: number) => void,
+  from: number,
+  to: number,
+  time: number,
+) {
+  return new Promise((res, rej2) => {
+    if (time <= 0) setFunc(to);
+    let cur = from;
+    let ticks = Math.floor(time / 50);
+    let q = setInterval(() => {
+      cur += (to - from) / ticks;
+      setFunc(cur);
+    }, 50);
+    let timo = 0;
+
+    timo = setTimeout(() => {
+      clearInterval(q);
+      setFunc(to);
+    }, time);
+
+    setTimeout(function () {
+      res("");
+    }, time + 1);
+  });
+}
+
+// window.stepsLinear = stepsLinear;

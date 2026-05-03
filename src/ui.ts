@@ -1,4 +1,5 @@
 import { assets } from "./assets";
+import { BATTLE } from "./battle";
 import { configurations } from "./configurations";
 import { DIALOGUE } from "./dialogue";
 import { buyDimensions, dimensionCost, dimensionMult } from "./dimension";
@@ -147,24 +148,6 @@ export type UIopt =
     };
 export const UI = [
   {
-    type: "text",
-    size: 21,
-    rect: new Rect(0, 10, 720, 720),
-    fore: "#008cff",
-    align: ["left", "top"],
-    text() {
-      return `\
-player ${player.x},${player.y},${player.universe}|\
-${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|\
-${canvasToWorld(
-  player.x,
-  player.y,
-  Math.floor(mouse.mouseX / 80),
-  Math.floor(mouse.mouseY / 80),
-).join(",")}`;
-    },
-  },
-  {
     type: "image",
     image_left: 0,
     image_top: 0,
@@ -176,6 +159,7 @@ ${canvasToWorld(
       player.openedMenu = !player.openedMenu;
     },
   },
+  // menu
   {
     type: "group",
     condition() {
@@ -242,6 +226,7 @@ ${canvasToWorld(
       ];
     },
   },
+  // arrow button
   {
     type: "group",
     condition() {
@@ -300,6 +285,7 @@ ${canvasToWorld(
       ];
     },
   },
+  // generator
   {
     type: "group",
     condition() {
@@ -443,6 +429,7 @@ ${canvasToWorld(
       ];
     },
   },
+  // items
   {
     type: "group",
     condition() {
@@ -504,6 +491,156 @@ ${canvasToWorld(
         // ]);
       }
       return res;
+    },
+  },
+  // mask
+  {
+    type: "group",
+    condition() {
+      return TEMP.battle_animation > 0;
+    },
+    group(): UIopt[] {
+      return [
+        {
+          type: "rect",
+          fore: `rgba(0, 0, 0, ${TEMP.battle_animation / 100})`,
+          rect: new Rect(0, 0, 720, 720),
+          onClick() {
+            BATTLE.winBattle();
+          },
+        },
+      ];
+    },
+  },
+  {
+    type: "group",
+    condition() {
+      return TEMP.battle_animation >= 100;
+    },
+    group(): UIopt[] {
+      return [
+        {
+          type: "text",
+          rect: new Rect(0, 50, 720, 120),
+          text() {
+            return `Enemy 门${BATTLE.enemyAttackTick ? "[" + (BATTLE.enemyAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.enemyram, false)}/${displayRAM(BATTLE.enemyTotalram, false)}`;
+          },
+          align: "center",
+          fore: "#fff",
+          size: 21,
+        },
+        {
+          type: "group",
+          condition() {
+            return TEMP.battle_animation <= 300 && TEMP.battle_animation >= 200;
+          },
+          group() {
+            return [
+              {
+                type: "text",
+                rect: new Rect(
+                  0,
+                  150 -
+                    Math.sin(
+                      ((TEMP.battle_animation - 200) / 100) * 3.1415926,
+                    ) *
+                      50,
+                  720,
+                  120,
+                ),
+                text() {
+                  return "-" + displayRAM(TEMP.attack_ram, false);
+                },
+                align: "center",
+                fore: "#f00",
+                size: 23,
+              },
+            ];
+          },
+        },
+        {
+          type: "group",
+          condition() {
+            return TEMP.battle_animation <= 500 && TEMP.battle_animation >= 400;
+          },
+          group() {
+            return [
+              {
+                type: "text",
+                rect: new Rect(
+                  0,
+                  580 -
+                    Math.sin(
+                      ((TEMP.battle_animation - 400) / 100) * 3.1415926,
+                    ) *
+                      50,
+                  720,
+                  120,
+                ),
+                text() {
+                  return "-" + displayRAM(TEMP.attack_ram, false);
+                },
+                align: "center",
+                fore: "#f00",
+                size: 23,
+              },
+            ];
+          },
+        },
+        {
+          type: "text",
+          rect: new Rect(0, 600, 720, 120),
+          text() {
+            return `Player${BATTLE.playerAttackTick ? "[" + (BATTLE.playerAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.ram, false)}/${displayRAM(player.ram, false)}`;
+          },
+          fore: "#fff",
+          align: "center",
+          size: 21,
+        },
+        {
+          type: "rect",
+          rect: new Rect(80, 324, 560, 200),
+          fore: "#fff",
+        },
+        {
+          type: "rect",
+          rect: new Rect(82, 326, 556, 196),
+          fore: "#000",
+        },
+        {
+          type: "text",
+          rect: new Rect(82, 326, 556, 196),
+          fore: "#fff",
+          text() {
+            return BATTLE.interact == 1
+              ? "Waiting..." + "\n" + TEMP.battle_tips
+              : "Attack";
+          },
+          onClick() {
+            BATTLE.playerAttack();
+          },
+          align: ["left", "top"],
+          size: 21,
+        },
+      ];
+    },
+  },
+  {
+    type: "text",
+    size: 21,
+    rect: new Rect(0, 10, 720, 720),
+    fore: "#008cff",
+    align: ["left", "top"],
+    text() {
+      return `\
+player ${player.x},${player.y},${player.universe}|\
+${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|\
+${canvasToWorld(
+  player.x,
+  player.y,
+  Math.floor(mouse.mouseX / 80),
+  Math.floor(mouse.mouseY / 80),
+).join(",")}`;
     },
   },
 ] as const satisfies UIopt[];

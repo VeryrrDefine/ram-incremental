@@ -1,4 +1,5 @@
 import { delay } from "./await";
+import { BATTLE } from "./battle";
 import { DIALOGUE } from "./dialogue";
 import { player } from "./player";
 import {
@@ -91,9 +92,27 @@ export function genDoor(x: string) {
   bl.onTouch = () => {
     if (bl.data == "293_44") {
       if (player.ram >= 21990232555520) {
-        DIALOGUE.messages = ["+ 没做完"];
+        DIALOGUE.messages = [
+          "+ 和这个门，决斗。",
+          "- 你是谁？你也敢？",
+          "+ (这个门怎么会说话...)",
+          "+ 不好，赶紧跑...",
+          "- 别跑！",
+          "+ ...",
+        ];
 
         DIALOGUE.startConversation();
+        DIALOGUE.afterConversation = function () {
+          BATTLE.startBattle();
+        };
+        BATTLE.afterBattle = function () {
+          DIALOGUE.messages = ["- 你...", "+ ...?"];
+
+          DIALOGUE.startConversation();
+          DIALOGUE.afterConversation = function () {
+            player.replaces.push([293, 44, "NULL"]);
+          };
+        };
         return [false];
       } else
         DIALOGUE.messages = [

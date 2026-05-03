@@ -6,6 +6,7 @@ import { save } from "./player";
 import { loop } from "./loop";
 import { mouse } from "./mouse";
 import { DIALOGUE } from "./dialogue";
+import { BATTLE } from "./battle";
 
 let canvas: HTMLCanvasElement;
 let assets: HTMLImageElement;
@@ -94,3 +95,4 @@ import { map } from "./map";
 import { openItem } from "./items";
 // @ts-ignore
 window.map = map;
+// setTimeout(BATTLE.startBattle, 100);
