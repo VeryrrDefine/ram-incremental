@@ -443,8 +443,8 @@ export const UI = [
           image_top: 0,
           image_width: 610,
           image_height: 630,
-          canvas_left: 32,
-          canvas_top: 32,
+          canvas_left: 55,
+          canvas_top: 45,
           onClick() {
             TEMP.newspapercontent = 0;
           },
