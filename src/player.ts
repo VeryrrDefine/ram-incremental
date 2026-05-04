@@ -34,6 +34,9 @@ function initialPlayer() {
       [new Decimal(0), new Decimal(0)],
       [new Decimal(0), new Decimal(0)],
     ],
+    generatorUpgrades: {
+      0: new Decimal(0),
+    } as Record<number, Decimal>,
   };
 }
 

@@ -26,6 +26,18 @@ export const enemies = [
     name: "守卫",
     totalRam: new Decimal(32985348833280),
   },
+  {
+    name: "守卫",
+    totalRam: new Decimal(109951162777600),
+  },
+  {
+    name: "守卫",
+    totalRam: new Decimal(109951162777600),
+  },
+  {
+    name: "守卫",
+    totalRam: new Decimal(1e24),
+  },
 ];
 export const BATTLE = {
   playerAttackTick: 0,
@@ -85,7 +97,9 @@ export const BATTLE = {
     }
   },
   enemyPointGain() {
-    return new Decimal(1e9).add(Math.random() * 1e9);
+    let baseValue = new Decimal(1e9);
+    baseValue = baseValue.mul(BATTLE.enemyTotalram.div(16492674416640).sqrt());
+    return baseValue.add(baseValue.mul(Math.random()));
   },
   async enemyAttack() {
     await delay(300 + Math.random() * 500);

@@ -14,6 +14,7 @@ import { Rect } from "./rect";
 import { ctx } from "./render";
 import { TEMP } from "./temp";
 import { TextDrawer, type Align, type VerticialAlign } from "./text";
+import { upgradeComponent } from "./generator-upgrades";
 
 export function executeUI(
   x: UIopt,
@@ -424,6 +425,15 @@ export const UI = [
                 },
               });
             }
+            res.push({
+              type: "group",
+              condition() {
+                return true;
+              },
+              group() {
+                return upgradeComponent(0, 0, 0);
+              },
+            });
             return res;
           },
         },
