@@ -9,6 +9,7 @@ import {
   Endless_e19728_trap4,
   jail_breaking_door,
   jail_breaking_door_282_40,
+  leaveJailSecretly,
   seeing_Endless_e19728,
 } from "./plot";
 import { TEMP } from "./temp";
@@ -33,6 +34,10 @@ export const WALL = new Block();
 WALL.color = "#ffffff";
 WALL.content = "";
 WALL.solid = () => true;
+export const INVISIBLEWALL = new Block();
+INVISIBLEWALL.color = "#000000";
+INVISIBLEWALL.content = "";
+INVISIBLEWALL.solid = () => true;
 
 export const POINT_GENERATOR = new Block();
 POINT_GENERATOR.color = "#00ffffff";
@@ -405,6 +410,26 @@ export function genEvent(x: string) {
         TEMP.interact = 1;
         DIALOGUE.messages = ["+ 不对啊，现在是几月几日？", "+ 现在是几点？"];
         DIALOGUE.startConversation();
+        return [true];
+      }
+    })();
+  }
+  if (x == "311_13") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        TEMP.interact = 1;
+        DIALOGUE.messages = [
+          "+ 我感受到了右边有个传送门...",
+          "+ 看来可以离开了...",
+        ];
+        DIALOGUE.stillInteraction = true;
+        DIALOGUE.startConversation();
+        DIALOGUE.afterConversation = function () {
+          leaveJailSecretly();
+        };
         return [true];
       }
     })();

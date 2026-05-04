@@ -77,6 +77,15 @@ export function renderGame() {
         }
         continue;
       }
+      if (
+        player.features.includes("leave_jail_secretly") &&
+        0 <= wx &&
+        wx <= 19 &&
+        22 <= wy &&
+        wy <= 32
+      )
+        continue;
+
       const block = getBlock(wx, wy);
       if (block) {
         drawBlock(block, i * GRIDSIZE, j * GRIDSIZE);
@@ -92,6 +101,7 @@ export function renderGame() {
               ")";
             ctx.fillRect(i * GRIDSIZE, j * GRIDSIZE, GRIDSIZE, GRIDSIZE);
           }
+
           /**
              * 
         ctx.fillStyle = "rgba(255,0,0,0.5)";
@@ -99,11 +109,21 @@ export function renderGame() {
              */
         }
       }
+
+      if (
+        TEMP.player_move_withoutcontrol.active &&
+        wx == TEMP.player_move_withoutcontrol.x &&
+        wy == TEMP.player_move_withoutcontrol.y
+      ) {
+        drawBlock(PLAYERBLOCK, i * GRIDSIZE, j * GRIDSIZE);
+      }
     }
   }
 
-  // 绘制玩家
-  drawBlock(PLAYERBLOCK, 320, 320);
+  if (TEMP.player_move_withoutcontrol.active == false) {
+    // 绘制玩家
+    drawBlock(PLAYERBLOCK, 320, 320);
+  }
 
   // 绘制坐标轴线（可选）
   ctx.strokeStyle = "#fff";

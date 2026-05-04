@@ -5,6 +5,7 @@ import { DIALOGUE } from "./dialogue";
 import { displayNumber } from "./display";
 import { player } from "./player";
 import { TEMP } from "./temp";
+import { stepsLinear } from "./geometry";
 
 export function Endless_e19728_trap() {
   DIALOGUE.messages = [
@@ -237,4 +238,42 @@ export async function Endless_e19728_trap4() {
 
   // alert("test");
   // DIALOGUE.afterConversation = Endless_e19728_trap5;
+}
+
+export async function leaveJailSecretly() {
+  TEMP.player_move_withoutcontrol.x = 311;
+  TEMP.player_move_withoutcontrol.y = 13;
+  TEMP.player_move_withoutcontrol.active = true;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.y = 12;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 312;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 313;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 314;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 315;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 316;
+  await delay(2000);
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
+  await delay(10000);
+  TEMP.player_move_withoutcontrol.active = false;
+  player.x = 25;
+  player.y = 18;
+  player.features.push("leave_jail_secretly");
+  player.replaces.push([19, 18, "NULL"]);
+  player.replaces.push([18, 21, "WALL"]);
+  player.replaces.push([25, -1, "NULL"]);
+  player.replaces.push([35, 1, "NULL"]);
+  player.replaces.push([36, 1, "NULL"]);
+  player.replaces.push([37, 0, "NULL"]);
+  player.replaces.push([38, 0, "NULL"]);
+  player.replaces.push([38, 1, "NULL"]);
+  player.replaces.push([38, 2, "NULL"]);
+  player.replaces.push([37, 2, "NULL"]);
+  player.replaces.push([37, 1, "NULL"]);
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 5, 0, 5000);
+  TEMP.interact = 0;
 }

@@ -9,6 +9,7 @@ import {
   genNPC,
   genTextBlock,
   genTP,
+  INVISIBLEWALL,
   WALL,
 } from "./blocks";
 import { DIALOGUE } from "./dialogue";
@@ -31,6 +32,7 @@ function newBlockAndCache(block: () => Block | null, x: string) {
 
 export function blockDataToBlock(x: string) {
   if (x === "WALL") return WALL;
+  if (x === "INVISIBLEWALL") return INVISIBLEWALL;
   if (x === "NULL") return null;
   if (blockDataCache.has(x)) return blockDataCache.get(x);
 

@@ -48,22 +48,23 @@ export function loop() {
   if (gain.gt(0)) {
     player.ram = player.ram.add(gain.mul(ticks));
   }
-  if (player.features.includes("25_1") && player.x == 26 && player.y == 1) {
-    player.replaces.push([25, -1, "NULL"]);
-    player.replaces.push([25, 1, "NPC?Endless_e19728"]);
-  }
-  if (player.features.includes("25_1") && player.x == 27 && player.y == 1) {
-    player.replaces.push([25, 1, "NULL"]);
-    player.replaces.push([26, 1, "NPC?Endless_e19728"]);
-  }
-  if (player.features.includes("25_1") && player.y == 1)
-    for (let i = 28; i <= 36; i++) {
-      if (player.x == i) {
-        player.replaces.push([i - 2, 1, "NULL"]);
-        player.replaces.push([i - 1, 1, "NPC?Endless_e19728"]);
-      }
+  if (!player.features.includes("leave_jail_secretly")) {
+    if (player.features.includes("25_1") && player.x == 26 && player.y == 1) {
+      player.replaces.push([25, -1, "NULL"]);
+      player.replaces.push([25, 1, "NPC?Endless_e19728"]);
     }
-
+    if (player.features.includes("25_1") && player.x == 27 && player.y == 1) {
+      player.replaces.push([25, 1, "NULL"]);
+      player.replaces.push([26, 1, "NPC?Endless_e19728"]);
+    }
+    if (player.features.includes("25_1") && player.y == 1)
+      for (let i = 28; i <= 36; i++) {
+        if (player.x == i) {
+          player.replaces.push([i - 2, 1, "NULL"]);
+          player.replaces.push([i - 1, 1, "NPC?Endless_e19728"]);
+        }
+      }
+  }
   let block_Replaces: string[] = [];
   for (let i = player.replaces.length - 1; i >= 0; i--) {
     let repl = player.replaces[i];
