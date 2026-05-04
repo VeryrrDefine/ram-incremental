@@ -2,7 +2,7 @@
 import { canvasToWorld, GRIDSIZE, isInRect, worldToCanvas } from "./geometry";
 import { getBlock } from "./collision"; // 后面会定义
 import { player } from "./gameState";
-import { Block, genTextBlock, PLAYERBLOCK } from "./blocks";
+import { Block, genTextBlock, PLAYERBLOCK, PLAYERBLOCK2 } from "./blocks";
 import { FONT } from "./font";
 import { DIALOGUE } from "./dialogue";
 import { TEMP } from "./temp";
@@ -115,14 +115,18 @@ export function renderGame() {
         wx == TEMP.player_move_withoutcontrol.x &&
         wy == TEMP.player_move_withoutcontrol.y
       ) {
-        drawBlock(PLAYERBLOCK, i * GRIDSIZE, j * GRIDSIZE);
+        drawBlock(
+          player.changedColor ? PLAYERBLOCK2 : PLAYERBLOCK,
+          i * GRIDSIZE,
+          j * GRIDSIZE,
+        );
       }
     }
   }
 
   if (TEMP.player_move_withoutcontrol.active == false) {
     // 绘制玩家
-    drawBlock(PLAYERBLOCK, 320, 320);
+    drawBlock(player.changedColor ? PLAYERBLOCK2 : PLAYERBLOCK, 320, 320);
   }
 
   // 绘制坐标轴线（可选）

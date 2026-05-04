@@ -37,6 +37,7 @@ function initialPlayer() {
     generatorUpgrades: {
       0: new Decimal(0),
     } as Record<number, Decimal>,
+    changedColor: 0,
   };
 }
 

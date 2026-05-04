@@ -7,6 +7,7 @@ import {
   Endless_e19728_trap,
   Endless_e19728_trap2,
   Endless_e19728_trap4,
+  Endless_e19728_trap_5,
   jail_breaking_door,
   jail_breaking_door_282_40,
   leaveJailSecretly,
@@ -47,6 +48,13 @@ export const PLAYERBLOCK = new Block();
 PLAYERBLOCK.color = "#008cffff";
 PLAYERBLOCK.content = "Player";
 PLAYERBLOCK.contentDynamic = function () {
+  return player.playername;
+};
+
+export const PLAYERBLOCK2 = new Block();
+PLAYERBLOCK2.color = "#ffc800ff";
+PLAYERBLOCK2.content = "Player";
+PLAYERBLOCK2.contentDynamic = function () {
   return player.playername;
 };
 
@@ -440,11 +448,17 @@ export function genEvent(x: string) {
       textcolor: string = "#ffffff";
       content = "t";
       onTouch(): [remove: boolean, replaceTo?: string] {
-        if (!player.features.includes("37_1")) {
+        if (
+          !player.features.includes("37_1") ||
+          player.features.includes("leave_jail_secretly")
+        ) {
           TEMP.interact = 1;
-          player.features.push("37_1");
-          setTimeout(Endless_e19728_trap2, 500);
-          setTimeout(Endless_e19728_trap, 1000);
+          if (player.features.includes("leave_jail_secretly")) {
+            Endless_e19728_trap_5();
+          } else {
+            setTimeout(Endless_e19728_trap2, 500);
+            setTimeout(Endless_e19728_trap, 1000);
+          }
         }
         return [false];
       }
@@ -525,6 +539,22 @@ export function genNPC(x: string) {
       }
     })();
   }
+  if (x == "AntiDim19728") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "AntiDim19728";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+
   if (x == "Endless_e19728") {
     return new (class extends Block {
       color = "#fff700ff";

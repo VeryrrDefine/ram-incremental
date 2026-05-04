@@ -38,6 +38,10 @@ export const enemies = [
     name: "守卫",
     totalRam: new Decimal(1e24),
   },
+  {
+    name: "AntiDim19728",
+    totalRam: new Decimal("ee1.03e309"),
+  },
 ];
 export const BATTLE = {
   playerAttackTick: 0,

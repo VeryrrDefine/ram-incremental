@@ -81,8 +81,41 @@ export function blockDataToBlock(x: string) {
             content = t[1];
             textcolor = "#000000";
             onTouch(): [remove: boolean] {
-              DIALOGUE.messages = ["- 运行程序失败"];
+              if (player.ram.gte(1e30)) {
+                DIALOGUE.messages = [
+                  "+ 正在运行程序 news ...",
+                  "- ...",
+                  "- ......",
+                  "- .........",
+                  "- 2085年4月19日 新闻报道：",
+                  "- 近日，有一人因在黑市买物被捕",
+                  "- 该人拒绝配合，越狱并将\n- Endless_e19728和1守卫打亖。",
+                  "- 现该人下落不明，此人已被通鸡。\n- 有线索者奖励0.125 点数。",
+                  "- 该人能力至少>=10GB。",
+                  "- ...",
+                  "- ......",
+                  "- .........",
+                  "- 现在，井方已将该黑市通往的通道围堵。",
+                  "- ...",
+                  "- ......",
+                  "- .........",
+                  "- 新闻部 2085年4月19日",
+                  "+ ...",
+                  "+ 话说为啥那个神秘人，给我留了8KB\n+ RAM?",
+                  "+ 等会儿，只有两人知道我的名字。",
+                  "+ 大概换个颜色他们就认不出我了。",
+                  "+ 等会儿...",
+                  '+ ctx.fillStyle = "#ffc800ff"',
+                  "+ 我真是个天才。",
+                ];
+              } else {
+                DIALOGUE.messages = ["- 运行程序失败"];
+              }
               DIALOGUE.startConversation();
+              DIALOGUE.afterConversation = function () {
+                player.changedColor = 1;
+                player.features.push("changed_color");
+              };
               return [false];
             }
           })();

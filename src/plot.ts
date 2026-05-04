@@ -273,7 +273,113 @@ export async function leaveJailSecretly() {
   player.replaces.push([38, 1, "NULL"]);
   player.replaces.push([38, 2, "NULL"]);
   player.replaces.push([37, 2, "NULL"]);
-  player.replaces.push([37, 1, "NULL"]);
   await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 5, 0, 5000);
   TEMP.interact = 0;
+}
+export async function Endless_e19728_trap_5() {
+  await delay(100);
+  player.replaces.push([36, 1, "WALL"]);
+  player.replaces.push([37, 0, "WALL"]);
+  player.replaces.push([38, 0, "WALL"]);
+  player.replaces.push([38, 1, "WALL"]);
+  player.replaces.push([38, 2, "WALL"]);
+  player.replaces.push([37, 2, "WALL"]);
+  await delay(500);
+  player.replaces.push([37, 5, "NPC?guard1"]);
+  await delay(500);
+  player.replaces.push([37, 5, "NULL"]);
+  player.replaces.push([37, 4, "NPC?guard1"]);
+  await delay(500);
+  player.replaces.push([37, 4, "NULL"]);
+  player.replaces.push([37, 3, "NPC?guard1"]);
+  await delay(1000);
+  if (player.features.includes("changed_color")) {
+    DIALOGUE.messages = [
+      "- 抓到你了。",
+      "+ (叉子，又被发现了...)",
+      "- 不对，抓错人了，蓝色的才是。",
+    ];
+    DIALOGUE.stillInteraction = true;
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+    player.replaces.push([36, 1, "NULL"]);
+    player.replaces.push([37, 0, "NULL"]);
+    player.replaces.push([38, 0, "NULL"]);
+    player.replaces.push([38, 1, "NULL"]);
+    player.replaces.push([38, 2, "NULL"]);
+    player.replaces.push([37, 2, "NULL"]);
+    player.replaces.push([37, 1, "NULL"]);
+    await delay(500);
+    player.replaces.push([37, 3, "NULL"]);
+    player.replaces.push([37, 4, "NPC?guard1"]);
+    await delay(500);
+    player.replaces.push([37, 4, "NULL"]);
+    player.replaces.push([37, 5, "NPC?guard1"]);
+    await delay(500);
+    player.replaces.push([37, 5, "NULL"]);
+    player.features.push("37_1_again");
+  } else {
+    DIALOGUE.messages = ["- 抓到你了。", "+ (叉子，又被发现了...)"];
+    DIALOGUE.stillInteraction = true;
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+  }
+
+  if (!player.features.includes("changed_color")) {
+    await delay(1000);
+    DIALOGUE.messages = [
+      "- 你就是最近新闻上那个\n- 被通鸡的人。\n- 我去找AntiDim19728。\n",
+    ];
+    DIALOGUE.stillInteraction = true;
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+    await delay(500);
+    TEMP.endless_e19728_animation = 5;
+    player.replaces.push([38, 3, "NPC?AntiDim19728"]);
+    await delay(5000);
+
+    TEMP.endless_e19728_animation = 0;
+    await delay(1000);
+    if (player.points.gte(1e12)) {
+      DIALOGUE.messages = [
+        "- AntiDim19728, 就是这个——\n- 蓝色的， 被通鸡的人。",
+        "(AntiDim19728)\n- 很好。",
+        "(AntiDim19728)\n- 奖励你0.125点数。",
+        "+ 只要放了我，我就给你，\n+ " +
+          displayNumber(player.points.div(100)) +
+          "点数！\n+ 给，那个，谁？",
+        `(???)\n- 我的叉子！\n- 这都能顶我${displayNumber(player.points)}年的工资了！`,
+        "(AntiDim19728)\n- 我先把那个tancaihaose的杀了",
+      ];
+
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.startConversation();
+      await DIALOGUE.waitUntilDialogueDone();
+      TEMP.attack_effect.push([37, 3, Date.now()]);
+      await delay(1000);
+      player.replaces.push([37, 3, "NULL"]);
+
+      DIALOGUE.messages = ["- 好了。", "+ 不好", "- 现在就嗄了你。"];
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.startConversation();
+      await DIALOGUE.waitUntilDialogueDone();
+      BATTLE.enemyid = 7;
+      BATTLE.startBattle();
+    } else {
+      DIALOGUE.messages = [
+        "- AntiDim19728, 就是这个——\n- 蓝色的， 被通鸡的人。",
+        "(AntiDim19728)\n- 很好。",
+        "(AntiDim19728)\n- 奖励你0.125点数。",
+        "(???)\m- 好的。",
+        "+ 叉！",
+        "(AntiDim19728)\n- 要决斗？",
+        "(AntiDim19728)\n- 好。",
+      ];
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.startConversation();
+      await DIALOGUE.waitUntilDialogueDone();
+      BATTLE.enemyid = 7;
+      BATTLE.startBattle();
+    }
+  }
 }
