@@ -108,14 +108,14 @@ export function blockDataToBlock(x: string) {
                   '+ ctx.fillStyle = "#ffc800ff"',
                   "+ 我真是个天才。",
                 ];
+                DIALOGUE.afterConversation = function () {
+                  player.changedColor = 1;
+                  player.features.push("changed_color");
+                };
               } else {
                 DIALOGUE.messages = ["- 运行程序失败"];
               }
               DIALOGUE.startConversation();
-              DIALOGUE.afterConversation = function () {
-                player.changedColor = 1;
-                player.features.push("changed_color");
-              };
               return [false];
             }
           })();

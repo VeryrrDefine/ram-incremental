@@ -311,6 +311,16 @@ export function genTP(x: string[], pseudo2 = false) {
   bl.data = [x[2], x[3], x[4]];
   bl.textcolor = pseudo ? "#000000" : "#ffffff";
   bl.onTouch = function () {
+    if (+bl.data[0] == 11 && +bl.data[1] == -9) {
+      if (
+        !(player.features.includes("item") && player.items["doorkey_1"] == 1)
+      ) {
+        DIALOGUE.messages = ["+ 两个东西我需要拿走..."];
+        DIALOGUE.startConversation();
+
+        return [false];
+      }
+    }
     player.x = +bl.data[0];
     player.y = +bl.data[1];
     console.log(bl.data[2]);
@@ -329,8 +339,9 @@ function validateName(x: string) {
   if (lowerc.includes("197")) return false;
   if (lowerc.includes("728")) return false;
   if (lowerc.includes("endless")) return false;
-  if (lowerc.includes("RBNR")) return false;
-  if (lowerc.includes("RBNR")) return false;
+  if (lowerc.includes("rbnr")) return false;
+  if (lowerc.includes("rbnc")) return false;
+  if (lowerc.includes("mitsi")) return false;
   if (lowerc.includes("棍母")) return false;
   if (lowerc.includes("滚木")) return false;
   if (lowerc.includes("num")) return false;
