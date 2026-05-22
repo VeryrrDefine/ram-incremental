@@ -52,8 +52,16 @@ function skipConversation() {
   return;
 }
 let lastMove = Date.now();
+let patterns_last10: string[] = [];
+// window.patterns_last10 = patterns_last10;
 document.addEventListener("keydown", (e) => {
   const key = e.key;
+  // console.log(key);
+  patterns_last10.push(key);
+  if (patterns_last10.length > 10) {
+    patterns_last10.shift();
+  }
+
   if (DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600) {
     if (e.key == "Shift") {
       skipConversation();
