@@ -29,13 +29,13 @@ export function tryMove(dx: number, dy: number) {
 
     if (!block) return;
     if (block.solidInteractionable()) {
-      block.onTouch();
+      block.onTouch([newX, newY]);
     }
     return;
   }
   const block = getBlock(player.x, player.y);
   let universe = player.universe;
-  let touch = block?.onTouch?.() ?? [false];
+  let touch = block?.onTouch?.([newX, newY]) ?? [false];
   if (touch[0]) {
     getReplaceMapOfUniverse(universe).push([
       player.x,
@@ -43,7 +43,7 @@ export function tryMove(dx: number, dy: number) {
       touch[1] || "NULL",
     ]);
   }
-  if (player.features.includes("collram")) player.ram += 1;
+  if (player.features.includes("collram")) player.ram = player.ram.add(1);
 }
 
 // 点击处理

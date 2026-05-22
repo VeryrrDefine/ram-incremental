@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ram Incremental 地图编辑器 - 增强版(区域选择/复制/粘贴)</title>
+    <style>
+        * {
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Monaco', monospace;
+            background: #1e1f2c;
+            color: #eef;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .toolbar {
+            background: #2d2f3e;
+            padding: 8px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            border-bottom: 1px solid #4a4d64;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .toolbar button,
+        .toolbar label,
+        .toolbar input {
+            background: #3c3f55;
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.1s;
+            font-family: inherit;
+        }
+
+        .toolbar button:hover {
+            background: #5b5f82;
+            transform: scale(0.98);
+        }
+
+        .toolbar input {
+            background: #252736;
+            cursor: text;
+            width: 140px;
+        }
+
+        .toolbar .sep {
+            width: 1px;
+            height: 28px;
+            background: #5a5e7a;
+            margin: 0 4px;
+        }
+
+        .coord-input {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .coord-input input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .zoom-level {
+            background: #1e1f2c;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .main-area {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: #181a25;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #232536;
+            cursor: crosshair;
+        }
+
+        .side-panel {
+            width: 320px;
+            background: #2a2c3c;
+            border-left: 1px solid #4a4d64;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 16px;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .panel-section {
+            background: #1f2130;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 2px 6px black;
+        }
+
+        .panel-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            border-left: 4px solid #7c7eff;
+            padding-left: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+
+        .info-row span:first-child {
+            color: #b9c3e9;
+        }
+
+        select,
+        textarea,
+        input {
+            width: 100%;
+            background: #10121c;
+            border: 1px solid #5f6a8a;
+            color: #f0f0f0;
+            padding: 8px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            background: #3f4270;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: #7a3e4a;
+        }
+
+        .delete-btn:hover {
+            background: #a14b5c;
+        }
+
+        .current-tile-preview {
+            background: #0f0f1a;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        hr {
+            border-color: #4a4d64;
+        }
+
+        .badge {
+            background: #3c3f55;
+            border-radius: 16px;
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #1e1f2c;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #6c6f92;
+            border-radius: 4px;
+        }
+
+        .region-info {
+            font-size: 12px;
+            background: #10121c;
+            border-radius: 12px;
+            padding: 8px;
+            margin-top: 8px;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 6px;
+            background: #25283a;
+            padding: 4px 8px;
+            border-radius: 32px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="toolbar">
+            <button id="loadBtn">📂 加载JSON</button>
+            <button id="saveBtn">💾 导出地图</button>
+            <div class="sep"></div>
+            <!-- 新增复制/粘贴/清除选区按钮 -->
+            <div class="tool-group">
+                <button id="copyRegionBtn" style="background:#4f6f8f;">📋 复制区域</button>
+                <button id="pasteRegionBtn" style="background:#6f8f6f;">📌 粘贴区域</button>
+                <button id="clearSelectionBtn" style="background:#6f4f5f;">✖️ 清除选区</button>
+            </div>
+            <div class="sep"></div>
+            <div class="coord-input">
+                <span>📍 跳转</span>
+                <input type="number" id="gotoX" placeholder="X" value="13">
+                <input type="number" id="gotoY" placeholder="Y" value="1">
+                <button id="gotoBtn">前往</button>
+            </div>
+            <div class="sep"></div>
+            <div>
+                <span>🔍 缩放 </span>
+                <button id="zoomOutBtn">-</button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button id="zoomInBtn">+</button>
+                <button id="resetViewBtn">重置视图</button>
+            </div>
+            <div class="sep"></div>
+            <div class="badge" id="tileCountDisplay">图块数量: --</div>
+            <div class="badge" id="regionInfoDisplay" style="background:#3c4f5a;">📐 选区: 无</div>
+            <div style="flex:1"></div>
+            <span>✏️ 单击格子 | Shift+拖拽框选区域 | 拖拽平移(中/右键)</span>
+        </div>
+
+        <div class="main-area">
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="mapCanvas"></canvas>
+            </div>
+            <div class="side-panel" id="sidePanel">
+                <div class="panel-section">
+                    <h3>📌 当前选中</h3>
+                    <div class="info-row"><span>坐标:</span><span id="selectedCoord">( - , - )</span></div>
+                    <div class="info-row"><span>类型:</span><input type="text" id="tileType"
+                            placeholder="如 WALL, TEXT?, DOOR?UP" list="typeSuggestions"></div>
+                    <datalist id="typeSuggestions">
+                        <option>WALL</option>
+                        <option>TEXT?</option>
+                        <option>DOOR?</option>
+                        <option>FEAT?</option>
+                        <option>FEAT2?</option>
+                        <option>FEAT3?</option>
+                        <option>ITEM?</option>
+                        <option>NPC?</option>
+                        <option>POINTS</option>
+                        <option>RAM</option>
+                        <option>HARDRESET</option>
+                        <option>TP?</option>
+                        <option>COLORFUL?</option>
+                        <option>HARDRESET2</option>
+                    </datalist>
+                    <div class="info-row"><span>完整参数:</span></div>
+                    <textarea id="tileRaw" rows="3" placeholder="原始值如: TEXT?你好世界\n第二行"></textarea>
+                    <div class="action-buttons">
+                        <button id="updateTileBtn">✅ 更新 / 添加</button>
+                        <button id="deleteTileBtn" class="delete-btn">🗑️ 删除(变成空地)</button>
+                    </div>
+                </div>
+                <div class="panel-section">
+                    <h3>📦 区域操作提示</h3>
+                    <div style="font-size:12px; line-height:1.5">
+                        • <strong>框选区域</strong>: 按住 <kbd>Shift</kbd> + 鼠标左键拖拽<br>
+                        • <strong>复制区域</strong>: 框选后点击“📋 复制区域”<br>
+                        • <strong>粘贴区域</strong>: 先单击格子作为粘贴起点，再点“📌 粘贴区域”<br>
+                        • <strong>清除选区</strong>: 点击按钮 或 按 <kbd>ESC</kbd> / 单击非Shift格子<br>
+                        • 复制会存储选区内的所有图块(包含空地)<br>
+                        • 粘贴将完整覆盖目标区域的内容
+                    </div>
+                    <hr>
+                    <div>💡 提示: 鼠标滚轮缩放, 左键拖拽移动地图, 单击格子编辑</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- 地图数据存储 ----------
+        let tileMap = new Map(); // key: "x,y" -> rawString (例如 "WALL", "TEXT?你好")
+
+        // 视图控制变量
+        let canvas = document.getElementById('mapCanvas');
+        let container = document.getElementById('canvasContainer');
+        let ctx = canvas.getContext('2d');
+
+        let offsetX = 0, offsetY = 0;
+        let scale = 1.0;
+        const BASE_TILE_SIZE = 32;
+
+        let isPanning = false;
+        let panStart = { x: 0, y: 0 };
+        let lastOffset = { x: 0, y: 0 };
+
+        let selectedTileX = null, selectedTileY = null;
+
+        // ---------- 新增: 区域选择相关变量 ----------
+        let selectionRect = null;          // { minX, minY, maxX, maxY }
+        let isSelecting = false;           // 是否正在框选 (Shift+拖拽中)
+        let selectingStartTile = { x: 0, y: 0 };
+        let selectingCurrentTile = { x: 0, y: 0 };
+
+        // 剪贴板数据 (区域内容)
+        let clipboardRegion = null;         // 结构: { width, height, data:二维数组(raw字符串) }
+
+        // UI 元素绑定
+        const selectedCoordSpan = document.getElementById('selectedCoord');
+        const tileTypeInput = document.getElementById('tileType');
+        const tileRawTextarea = document.getElementById('tileRaw');
+        const updateBtn = document.getElementById('updateTileBtn');
+        const deleteBtn = document.getElementById('deleteTileBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const gotoBtn = document.getElementById('gotoBtn');
+        const gotoX = document.getElementById('gotoX');
+        const gotoY = document.getElementById('gotoY');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const resetViewBtn = document.getElementById('resetViewBtn');
+        const zoomLevelSpan = document.getElementById('zoomLevel');
+        const tileCountDisplay = document.getElementById('tileCountDisplay');
+        const regionInfoDisplay = document.getElementById('regionInfoDisplay');
+
+        // 新增按钮
+        const copyRegionBtn = document.getElementById('copyRegionBtn');
+        const pasteRegionBtn = document.getElementById('pasteRegionBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+
+        // ---------- 辅助函数 ----------
+        function updateTileCountDisplay() {
+            tileCountDisplay.innerText = `图块数量: ${tileMap.size}`;
+        }
+
+        function updateRegionInfoDisplay() {
+            if (selectionRect) {
+                const w = selectionRect.maxX - selectionRect.minX + 1;
+                const h = selectionRect.maxY - selectionRect.minY + 1;
+                regionInfoDisplay.innerText = `📐 选区: (${selectionRect.minX},${selectionRect.minY}) → (${selectionRect.maxX},${selectionRect.maxY})  ${w}×${h}`;
+            } else {
+                regionInfoDisplay.innerText = `📐 选区: 无`;
+            }
+        }
+
+        // 清除选区
+        function clearSelection() {
+            selectionRect = null;
+            isSelecting = false;
+            updateRegionInfoDisplay();
+            renderCanvas();
+        }
+
+        // 从原始字符串解析类型前缀
+        function getTypeFromRaw(raw) {
+            if (!raw) return "EMPTY";
+            let qIndex = raw.indexOf('?');
+            if (qIndex === -1) return raw;
+            return raw.substring(0, qIndex);
+        }
+
+        // 获取指定坐标的 raw 字符串 (不存在返回 "")
+        function getTileRawAt(x, y) {
+            const key = `${x},${y}`;
+            return tileMap.get(key) || "";
+        }
+
+        // 设置指定坐标的 raw (如果 raw 为空字符串则删除该格子)
+        function setTileRawAt(x, y, raw) {
+            const key = `${x},${y}`;
+            if (raw === undefined || raw === null || raw === "") {
+                tileMap.delete(key);
+            } else {
+                tileMap.set(key, raw);
+            }
+        }
+
+        // 导出数组
+        function exportToArray() {
+            const arr = [];
+            for (let [key, rawVal] of tileMap.entries()) {
+                const [x, y] = key.split(',').map(Number);
+                arr.push([x, y, rawVal]);
+            }
+            arr.sort((a, b) => {
+                if (a[0] !== b[0]) return a[0] - b[0];
+                return a[1] - b[1];
+            });
+            return arr;
+        }
+
+        function loadFromArray(dataArray) {
+            tileMap.clear();
+            for (let item of dataArray) {
+                if (item.length >= 3) {
+                    const x = item[0], y = item[1];
+                    const raw = String(item[2]);
+                    tileMap.set(`${x},${y}`, raw);
+                }
+            }
+            updateTileCountDisplay();
+            clearSelection();     // 清空选区
+            renderCanvas();
+            selectedTileX = selectedTileY = null;
+            updateSelectedPanel(null);
+        }
+
+        // 默认演示数据
+        function loadDefaultMap() {
+            const minimalDemo = [
+                [2, 1, "TEXT?欢迎来到\nRam\nIncremental"],
+                [2, 2, "TEXT?按上下左右键移动"],
+                [3, 2, "TEXT?白色方块是墙"],
+                [0, 0, "WALL"], [1, 0, "WALL"], [0, 1, "WALL"], [1, 1, "WALL"],
+                [13, 1, "TEXT?十字路口"],
+                [13, 2, "TEXT?先去下方"],
+                [8, 2, "TEXT?下方可以去设置"],
+                [14, 10, "POINTS"],
+                [13, 12, "RAM"]
+            ];
+            loadFromArray(minimalDemo);
+            resetView();
+        }
+
+        // 渲染画布 (包含选区高亮)
+        function renderCanvas() {
+            if (!canvas || !ctx) return;
+            const containerRect = container.getBoundingClientRect();
+            const w = containerRect.width;
+            const h = containerRect.height;
+            canvas.width = w;
+            canvas.height = h;
+            if (w === 0 || h === 0) return;
+
+            ctx.clearRect(0, 0, w, h);
+            const tileSize = BASE_TILE_SIZE * scale;
+            if (tileSize < 1) return;
+
+            const startCol = Math.floor(-offsetX / tileSize);
+            const endCol = Math.ceil((w - offsetX) / tileSize);
+            const startRow = Math.floor(-offsetY / tileSize);
+            const endRow = Math.ceil((h - offsetY) / tileSize);
+
+            for (let row = startRow - 1; row <= endRow + 1; row++) {
+                for (let col = startCol - 1; col <= endCol + 1; col++) {
+                    const worldX = col;
+                    const worldY = row;
+                    const screenX = offsetX + col * tileSize;
+                    const screenY = offsetY + row * tileSize;
+                    if (screenX + tileSize < 0 || screenY + tileSize < 0 || screenX > w || screenY > h) continue;
+
+                    const key = `${worldX},${worldY}`;
+                    const raw = tileMap.get(key);
+                    const isEmpty = !raw;
+
+                    if (isEmpty) {
+                        ctx.fillStyle = "#3a3c4e";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.strokeStyle = "#2f3348";
+                        ctx.lineWidth = 0.5;
+                        ctx.strokeRect(screenX, screenY, tileSize, tileSize);
+                        continue;
+                    }
+
+                    const typePrefix = getTypeFromRaw(raw);
+                    // 根据类型着色
+                    if (typePrefix === "WALL") {
+                        ctx.fillStyle = "#5c6079";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#cdd4ff";
+                        ctx.font = `bold ${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("⬛", screenX + tileSize * 0.25, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "TEXT") {
+                        ctx.fillStyle = "#e3d9a8";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#2a2b3c";
+                        ctx.font = `${Math.max(11, tileSize * 0.3)}px monospace`;
+                        ctx.fillText("📄", screenX + 4, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "DOOR") {
+                        ctx.fillStyle = "#b89a6b";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#2d1f0c";
+                        ctx.font = `${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("🚪", screenX + tileSize * 0.2, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "FEAT" || typePrefix === "FEAT2" || typePrefix === "FEAT3") {
+                        ctx.fillStyle = "#7d6d8f";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#f1e7ff";
+                        ctx.font = `${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("⚡", screenX + tileSize * 0.3, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "ITEM") {
+                        ctx.fillStyle = "#4d9e7c";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#fff1b5";
+                        ctx.font = `${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("🎁", screenX + tileSize * 0.25, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "NPC") {
+                        ctx.fillStyle = "#5680a7";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#ffffff";
+                        ctx.font = `${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("🧑", screenX + tileSize * 0.25, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "POINTS") {
+                        ctx.fillStyle = "#f4b942";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#1e1e2a";
+                        ctx.font = `${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("★", screenX + tileSize * 0.3, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "RAM") {
+                        ctx.fillStyle = "#50b0b0";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#112222";
+                        ctx.font = `${Math.max(11, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("💾", screenX + tileSize * 0.25, screenY + tileSize * 0.7);
+                    }
+                    else if (typePrefix === "COLORFUL") {
+                        let colorMatch = raw.match(/COLORFUL\?#([0-9a-fA-F]{6})/);
+                        let fillCol = "#aa88ff";
+                        if (colorMatch) fillCol = "#" + colorMatch[1];
+                        ctx.fillStyle = fillCol;
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "white";
+                        ctx.font = `${Math.max(12, tileSize * 0.35)}px monospace`;
+                        ctx.fillText("🎨", screenX + tileSize * 0.3, screenY + tileSize * 0.7);
+                    }
+                    else {
+                        ctx.fillStyle = "#6c6480";
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                        ctx.fillStyle = "#ffffff";
+                        ctx.font = `${Math.max(10, tileSize * 0.3)}px monospace`;
+                        ctx.fillText("?", screenX + tileSize * 0.4, screenY + tileSize * 0.7);
+                    }
+
+                    ctx.strokeStyle = "#33363f";
+                    ctx.lineWidth = 0.8;
+                    ctx.strokeRect(screenX, screenY, tileSize, tileSize);
+                    ctx.fillStyle = "#f9f9fc";
+                    ctx.font = `${Math.max(9, tileSize * 0.22)}px monospace`;
+                    let short = typePrefix.substring(0, 3);
+                    ctx.fillText(short, screenX + 2, screenY + tileSize - 3);
+                }
+            }
+
+            // 绘制单个选中的高亮边框
+            if (selectedTileX !== null && selectedTileY !== null) {
+                const sx = offsetX + selectedTileX * tileSize;
+                const sy = offsetY + selectedTileY * tileSize;
+                if (sx + tileSize > 0 && sx < w && sy + tileSize > 0 && sy < h) {
+                    ctx.save();
+                    ctx.strokeStyle = "#ffd966";
+                    ctx.lineWidth = 3;
+                    ctx.shadowBlur = 0;
+                    ctx.strokeRect(sx + 1, sy + 1, tileSize - 2, tileSize - 2);
+                    ctx.restore();
+                }
+            }
+
+            // 绘制区域选框 (矩形)
+            let rectToDraw = selectionRect;
+            // 如果正在框选过程中，优先显示临时的选择框
+            if (isSelecting) {
+                const minX = Math.min(selectingStartTile.x, selectingCurrentTile.x);
+                const maxX = Math.max(selectingStartTile.x, selectingCurrentTile.x);
+                const minY = Math.min(selectingStartTile.y, selectingCurrentTile.y);
+                const maxY = Math.max(selectingStartTile.y, selectingCurrentTile.y);
+                if (minX !== undefined && maxX !== undefined) {
+                    const startScreenX = offsetX + minX * tileSize;
+                    const startScreenY = offsetY + minY * tileSize;
+                    const endScreenX = offsetX + (maxX + 1) * tileSize;
+                    const endScreenY = offsetY + (maxY + 1) * tileSize;
+                    ctx.save();
+                    ctx.fillStyle = "rgba(100, 150, 250, 0.2)";
+                    ctx.fillRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                    ctx.strokeStyle = "#ffcc77";
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([6, 8]);
+                    ctx.strokeRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                    ctx.setLineDash([]);
+                    ctx.restore();
+                }
+            } else if (rectToDraw) {
+                const minX = rectToDraw.minX;
+                const maxX = rectToDraw.maxX;
+                const minY = rectToDraw.minY;
+                const maxY = rectToDraw.maxY;
+                const startScreenX = offsetX + minX * tileSize;
+                const startScreenY = offsetY + minY * tileSize;
+                const endScreenX = offsetX + (maxX + 1) * tileSize;
+                const endScreenY = offsetY + (maxY + 1) * tileSize;
+                ctx.save();
+                ctx.fillStyle = "rgba(80, 180, 80, 0.15)";
+                ctx.fillRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                ctx.strokeStyle = "#aaff88";
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([5, 7]);
+                ctx.strokeRect(startScreenX, startScreenY, endScreenX - startScreenX, endScreenY - startScreenY);
+                ctx.setLineDash([]);
+                ctx.restore();
+            }
+        }
+
+        // 屏幕坐标转格子坐标
+        function screenToTile(screenX, screenY) {
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = (screenX - rect.left) * (canvas.width / rect.width);
+            const canvasY = (screenY - rect.top) * (canvas.height / rect.height);
+            const tileSize = BASE_TILE_SIZE * scale;
+            const worldX = Math.floor((canvasX - offsetX) / tileSize);
+            const worldY = Math.floor((canvasY - offsetY) / tileSize);
+            return { x: worldX, y: worldY };
+        }
+
+        // 更新右侧面板 (单个格子)
+        function updateSelectedPanel(tile) {
+            if (tile && tile.x !== undefined && tile.y !== undefined) {
+                selectedTileX = tile.x;
+                selectedTileY = tile.y;
+                const key = `${selectedTileX},${selectedTileY}`;
+                const raw = tileMap.get(key) || "";
+                selectedCoordSpan.innerText = `(${selectedTileX}, ${selectedTileY})`;
+                tileRawTextarea.value = raw;
+                if (raw) {
+                    tileTypeInput.value = getTypeFromRaw(raw);
+                } else {
+                    tileTypeInput.value = "空地(无数据)";
+                }
+            } else {
+                selectedTileX = null;
+                selectedTileY = null;
+                selectedCoordSpan.innerText = "(未选中)";
+                tileRawTextarea.value = "";
+                tileTypeInput.value = "";
+            }
+        }
+
+        function saveCurrentTile() {
+            if (selectedTileX === null || selectedTileY === null) {
+                alert("请先点击选中一个格子");
+                return;
+            }
+            let newRaw = tileRawTextarea.value.trim();
+            if (newRaw === "") {
+                deleteCurrentTile();
+                return;
+            }
+            tileMap.set(`${selectedTileX},${selectedTileY}`, newRaw);
+            updateTileCountDisplay();
+            renderCanvas();
+            updateSelectedPanel({ x: selectedTileX, y: selectedTileY });
+        }
+
+        function deleteCurrentTile() {
+            if (selectedTileX === null || selectedTileY === null) return;
+            const key = `${selectedTileX},${selectedTileY}`;
+            tileMap.delete(key);
+            updateTileCountDisplay();
+            renderCanvas();
+            updateSelectedPanel(null);
+            selectedTileX = selectedTileY = null;
+        }
+
+        // 视图功能
+        function setScale(newScale) {
+            scale = Math.min(4.0, Math.max(0.25, newScale));
+            zoomLevelSpan.innerText = `${Math.round(scale * 100)}%`;
+            renderCanvas();
+        }
+
+        function panTo(centerX, centerY) {
+            const containerRect = container.getBoundingClientRect();
+            const centerScreenX = containerRect.width / 2;
+            const centerScreenY = containerRect.height / 2;
+            const tileSize = BASE_TILE_SIZE * scale;
+            offsetX = centerScreenX - centerX * tileSize;
+            offsetY = centerScreenY - centerY * tileSize;
+            renderCanvas();
+        }
+
+        function resetView() {
+            scale = 1.0;
+            panTo(13, 1);
+            zoomLevelSpan.innerText = `100%`;
+            renderCanvas();
+        }
+
+        function gotoCoordinate(x, y) {
+            panTo(x, y);
+        }
+
+        // ---------- 新增: 区域复制 ----------
+        function copyRegion() {
+            if (!selectionRect) {
+                alert("请先使用 Shift + 鼠标拖拽 选择一个区域");
+                return;
+            }
+            const { minX, minY, maxX, maxY } = selectionRect;
+            const width = maxX - minX + 1;
+            const height = maxY - minY + 1;
+            const data = Array(height).fill().map(() => Array(width).fill(""));
+            for (let dy = 0; dy < height; dy++) {
+                for (let dx = 0; dx < width; dx++) {
+                    const worldX = minX + dx;
+                    const worldY = minY + dy;
+                    data[dy][dx] = getTileRawAt(worldX, worldY);
+                }
+            }
+            clipboardRegion = { width, height, data };
+            alert(`已复制区域 ${width}×${height} ，包含 ${tileMap.size} 个有效图块(保留空地结构)`);
+        }
+
+        // 粘贴区域 (以当前选中的格子为左上角)
+        function pasteRegion() {
+            if (!clipboardRegion) {
+                alert("剪贴板为空，请先复制一个区域");
+                return;
+            }
+            if (selectedTileX === null || selectedTileY === null) {
+                alert("请先单击一个格子作为粘贴的目标左上角");
+                return;
+            }
+            const startX = selectedTileX;
+            const startY = selectedTileY;
+            const { width, height, data } = clipboardRegion;
+            let pasteCount = 0;
+            for (let dy = 0; dy < height; dy++) {
+                for (let dx = 0; dx < width; dx++) {
+                    const targetX = startX + dx;
+                    const targetY = startY + dy;
+                    const srcRaw = data[dy][dx];
+                    setTileRawAt(targetX, targetY, srcRaw);
+                    if (srcRaw !== "") pasteCount++;
+                }
+            }
+            updateTileCountDisplay();
+            renderCanvas();
+            // 粘贴后不清除选区，可以继续粘贴或编辑
+            alert(`粘贴完成，覆盖区域 ${width}×${height}，有效图块数更新。`);
+        }
+
+        // 最终确定选区(从临时拖拽)
+        function finalizeSelection(start, current) {
+            const minX = Math.min(start.x, current.x);
+            const maxX = Math.max(start.x, current.x);
+            const minY = Math.min(start.y, current.y);
+            const maxY = Math.max(start.y, current.y);
+            if (minX !== maxX || minY !== maxY) {
+                selectionRect = { minX, maxX, minY, maxY };
+            } else {
+                selectionRect = null; // 点选框为空矩形则不建立选区
+            }
+            updateRegionInfoDisplay();
+            renderCanvas();
+        }
+
+        // ----- 鼠标事件增强 (区域选择)-----
+        function initMouseEvents() {
+            let isPanningActive = false;
+            let lastPanX = 0, lastPanY = 0;
+            let isSelectingActive = false;  // shift+左键框选
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                let newScale = scale + delta;
+                newScale = Math.min(4.0, Math.max(0.3, newScale));
+                if (newScale !== scale) {
+                    const rect = canvas.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+                    const beforeTileSize = BASE_TILE_SIZE * scale;
+                    const worldX = (mouseX - offsetX) / beforeTileSize;
+                    const worldY = (mouseY - offsetY) / beforeTileSize;
+                    scale = newScale;
+                    const afterTileSize = BASE_TILE_SIZE * scale;
+                    offsetX = mouseX - worldX * afterTileSize;
+                    offsetY = mouseY - worldY * afterTileSize;
+                    renderCanvas();
+                    zoomLevelSpan.innerText = `${Math.round(scale * 100)}%`;
+                }
+            });
+
+            canvas.addEventListener('mousedown', (e) => {
+                // 中键/右键 平移
+                if (e.button === 1 || e.button === 2) {
+                    isPanningActive = true;
+                    lastPanX = e.clientX;
+                    lastPanY = e.clientY;
+                    canvas.style.cursor = 'grabbing';
+                    e.preventDefault();
+                    return;
+                }
+                // 左键 + Shift -> 开始框选
+                if (e.button === 0 && e.shiftKey) {
+                    const tile = screenToTile(e.clientX, e.clientY);
+                    isSelectingActive = true;
+                    isSelecting = true;
+                    selectingStartTile = { x: tile.x, y: tile.y };
+                    selectingCurrentTile = { x: tile.x, y: tile.y };
+                    // 清除原有选区，全新框选
+                    selectionRect = null;
+                    updateRegionInfoDisplay();
+                    renderCanvas();
+                    e.preventDefault();
+                    return;
+                }
+                // 普通左键: 单击选中格子并清除选区
+                if (e.button === 0 && !e.shiftKey) {
+                    const tile = screenToTile(e.clientX, e.clientY);
+                    updateSelectedPanel(tile);
+                    clearSelection();   // 清除区域选框
+                    renderCanvas();
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isPanningActive) {
+                    const dx = e.clientX - lastPanX;
+                    const dy = e.clientY - lastPanY;
+                    offsetX += dx;
+                    offsetY += dy;
+                    lastPanX = e.clientX;
+                    lastPanY = e.clientY;
+                    renderCanvas();
+                    e.preventDefault();
+                    return;
+                }
+                if (isSelectingActive && isSelecting) {
+                    const tile = screenToTile(e.clientX, e.clientY);
+                    selectingCurrentTile = { x: tile.x, y: tile.y };
+                    renderCanvas();
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('mouseup', (e) => {
+                if (isPanningActive) {
+                    isPanningActive = false;
+                    canvas.style.cursor = 'crosshair';
+                    e.preventDefault();
+                }
+                if (isSelectingActive && isSelecting) {
+                    finalizeSelection(selectingStartTile, selectingCurrentTile);
+                    isSelectingActive = false;
+                    isSelecting = false;
+                    e.preventDefault();
+                }
+            });
+
+            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+
+        // 导入导出文件
+        function exportFile() {
+            const dataArray = exportToArray();
+            const jsonStr = JSON.stringify(dataArray, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mapdata_edited.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importFile(file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    const json = JSON.parse(evt.target.result);
+                    if (Array.isArray(json)) {
+                        loadFromArray(json);
+                        resetView();
+                        alert(`导入成功，共 ${tileMap.size} 个图块`);
+                    } else {
+                        alert("无效地图数据: 不是数组");
+                    }
+                } catch (e) {
+                    alert("解析JSON失败: " + e.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 键盘监听 ESC 清除选区
+        function initKeyboard() {
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    clearSelection();
+                    renderCanvas();
+                    e.preventDefault();
+                }
+                // 可选 Ctrl+C / Ctrl+V 快捷复制粘贴，但不干扰原有按钮，额外增加便利
+                if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+
+                    if (["TEXTAREA", "INPUT"].includes(document.activeElement.tagName)) return;
+                    e.preventDefault();
+                    copyRegion();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                    if (["TEXTAREA", "INPUT"].includes(document.activeElement.tagName)) return;
+                    e.preventDefault();
+                    pasteRegion();
+                }
+            });
+        }
+
+        // UI 按钮事件
+        function bindUI() {
+            updateBtn.addEventListener('click', saveCurrentTile);
+            deleteBtn.addEventListener('click', deleteCurrentTile);
+            loadBtn.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => { if (e.target.files.length) importFile(e.target.files[0]); };
+                input.click();
+            });
+            saveBtn.addEventListener('click', exportFile);
+            gotoBtn.addEventListener('click', () => {
+                let x = parseInt(gotoX.value, 10);
+                let y = parseInt(gotoY.value, 10);
+                if (isNaN(x)) x = 0;
+                if (isNaN(y)) y = 0;
+                gotoCoordinate(x, y);
+            });
+            zoomInBtn.addEventListener('click', () => setScale(scale + 0.2));
+            zoomOutBtn.addEventListener('click', () => setScale(scale - 0.2));
+            resetViewBtn.addEventListener('click', resetView);
+            copyRegionBtn.addEventListener('click', copyRegion);
+            pasteRegionBtn.addEventListener('click', pasteRegion);
+            clearSelectionBtn.addEventListener('click', clearSelection);
+        }
+
+        function setupCanvasResizeObserver() {
+            const resizeObserver = new ResizeObserver(() => renderCanvas());
+            resizeObserver.observe(container);
+        }
+
+        function init() {
+            loadDefaultMap();
+            initMouseEvents();
+            initKeyboard();
+            bindUI();
+            setupCanvasResizeObserver();
+            renderCanvas();
+        }
+
+        init();
+    </script>
+    <script type="module" src="/src/editor.js"></script>
+</body>
+
+</html>

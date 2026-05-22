@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js";
 import { assets } from "./assets";
 import { BATTLE } from "./battle";
 import { configurations } from "./configurations";
@@ -13,6 +14,7 @@ import { Rect } from "./rect";
 import { ctx } from "./render";
 import { TEMP } from "./temp";
 import { TextDrawer, type Align, type VerticialAlign } from "./text";
+import { upgradeComponent } from "./generator-upgrades";
 
 export function executeUI(
   x: UIopt,
@@ -369,8 +371,8 @@ export const UI = [
                 align: "center",
                 size: 21,
                 onClick() {
-                  player.points = 0;
-                  player.ram = 8192;
+                  player.points = new Decimal(0);
+                  player.ram = new Decimal(8192);
                   player.upgrades["20_8"] = 0;
                   player.upgrades["20_7"] = 0;
                   player.upgrades["17_7"] = 0;
@@ -423,7 +425,38 @@ export const UI = [
                 },
               });
             }
+            res.push({
+              type: "group",
+              condition() {
+                return true;
+              },
+              group() {
+                return upgradeComponent(0, 0, 0);
+              },
+            });
             return res;
+          },
+        },
+      ];
+    },
+  },
+  {
+    type: "group",
+    condition() {
+      return TEMP.newspapercontent != 0;
+    },
+    group() {
+      return [
+        {
+          type: "image",
+          image_left: 224,
+          image_top: 0,
+          image_width: 610,
+          image_height: 630,
+          canvas_left: 55,
+          canvas_top: 45,
+          onClick() {
+            TEMP.newspapercontent = 0;
           },
         },
       ];
@@ -523,7 +556,7 @@ export const UI = [
           type: "text",
           rect: new Rect(0, 50, 720, 120),
           text() {
-            return `敌人 门${BATTLE.enemyAttackTick ? "[" + (BATTLE.enemyAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.enemyram, false)}/${displayRAM(BATTLE.enemyTotalram, false)}`;
+            return `敌人 ${BATTLE.enemyName}${BATTLE.enemyAttackTick ? "[" + (BATTLE.enemyAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.enemyram, false)}/${displayRAM(BATTLE.enemyTotalram, false)}`;
           },
           align: "center",
           fore: "#fff",
@@ -591,7 +624,7 @@ export const UI = [
           type: "text",
           rect: new Rect(0, 600, 720, 120),
           text() {
-            return `玩家 ${player.playername}${BATTLE.playerAttackTick ? "[" + (BATTLE.playerAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.ram, false)}/${displayRAM(player.ram, false)}`;
+            return `玩家 ${player.playername}${BATTLE.playerAttackTick ? "[" + (BATTLE.playerAttackTick / 20).toFixed(2) + "]" : ""}\nRAM ${displayRAM(BATTLE.ram, false)}/${BATTLE.failed ? displayRAM(Decimal.dZero, false) : displayRAM(player.ram, false)}`;
           },
           fore: "#fff",
           align: "center",
@@ -625,6 +658,7 @@ export const UI = [
       ];
     },
   },
+
   {
     type: "text",
     size: 21,

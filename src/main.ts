@@ -52,8 +52,16 @@ function skipConversation() {
   return;
 }
 let lastMove = Date.now();
+let patterns_last10: string[] = [];
+// window.patterns_last10 = patterns_last10;
 document.addEventListener("keydown", (e) => {
   const key = e.key;
+  // console.log(key);
+  patterns_last10.push(key);
+  if (patterns_last10.length > 10) {
+    patterns_last10.shift();
+  }
+
   if (DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600) {
     if (e.key == "Shift") {
       skipConversation();
@@ -90,8 +98,8 @@ document.addEventListener("keydown", (e) => {
 // 调试用
 import { player } from "./player";
 // @ts-ignore
-// window.player = player;
-import { map } from "./map";
+window.player = player;
+// import { map } from "./map";
 import { openItem } from "./items";
 // @ts-ignore
 // window.map = map;

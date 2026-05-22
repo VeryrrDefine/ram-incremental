@@ -6,8 +6,11 @@ import {
   bed1_dreaming_1,
   Endless_e19728_trap,
   Endless_e19728_trap2,
+  Endless_e19728_trap4,
+  Endless_e19728_trap_5,
   jail_breaking_door,
   jail_breaking_door_282_40,
+  leaveJailSecretly,
   seeing_Endless_e19728,
 } from "./plot";
 import { TEMP } from "./temp";
@@ -20,7 +23,7 @@ export class Block {
   solid() {
     return false;
   }
-  onTouch(): [remove: boolean, replaceTo?: string] {
+  onTouch(_objpos: [number, number]): [remove: boolean, replaceTo?: string] {
     return [false];
   }
   solidInteractionable() {
@@ -32,6 +35,10 @@ export const WALL = new Block();
 WALL.color = "#ffffff";
 WALL.content = "";
 WALL.solid = () => true;
+export const INVISIBLEWALL = new Block();
+INVISIBLEWALL.color = "#000000";
+INVISIBLEWALL.content = "";
+INVISIBLEWALL.solid = () => true;
 
 export const POINT_GENERATOR = new Block();
 POINT_GENERATOR.color = "#00ffffff";
@@ -41,6 +48,13 @@ export const PLAYERBLOCK = new Block();
 PLAYERBLOCK.color = "#008cffff";
 PLAYERBLOCK.content = "Player";
 PLAYERBLOCK.contentDynamic = function () {
+  return player.playername;
+};
+
+export const PLAYERBLOCK2 = new Block();
+PLAYERBLOCK2.color = "#ffc800ff";
+PLAYERBLOCK2.content = "Player";
+PLAYERBLOCK2.contentDynamic = function () {
   return player.playername;
 };
 
@@ -63,18 +77,18 @@ export function genDoor(x: string) {
   bl.data = x;
   bl.solid = () => {
     if (bl.data == "19_-4_U0") {
-      if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
+      if (player.features.includes("19_-4_U0") && player.ram.gte(409600)) {
         return false;
       }
       return true;
     }
-    if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
+    if (bl.data == "1327" && player.ram.gte(8.25 * 1024)) {
       return false;
     }
-    if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
+    if (bl.data == "1723" && player.ram.gte(9.5 * 1024)) {
       return false;
     }
-    if (bl.data == "1913_U0" && player.ram >= 204800) {
+    if (bl.data == "1913_U0" && player.ram.gte(204800)) {
       return false;
     }
     if (bl.data == "RIGHT" && player.items.doorkey_1) {
@@ -83,15 +97,33 @@ export function genDoor(x: string) {
     if (
       bl.data == "JAIL_PLAYER" &&
       player.features.includes("JAIL_PLAYER_1") &&
-      player.ram >= 153600
+      player.ram.gte(153600)
     ) {
       return false;
     }
     return true;
   };
   bl.onTouch = () => {
+    if (bl.data == "293_34") {
+      DIALOGUE.messages = ["- 你是谁？"];
+
+      DIALOGUE.startConversation();
+      DIALOGUE.afterConversation = function () {
+        BATTLE.enemyid = 1;
+        BATTLE.startBattle();
+      };
+      BATTLE.afterBattle = function () {
+        DIALOGUE.messages = ["- 请输入文本"];
+
+        DIALOGUE.startConversation();
+        DIALOGUE.afterConversation = function () {
+          player.replaces.push([293, 34, "NULL"]);
+        };
+      };
+      return [false];
+    }
     if (bl.data == "293_44") {
-      if (player.ram >= 21990232555520) {
+      if (player.ram.gte(21990232555520)) {
         DIALOGUE.messages = [
           "+ 和这个门，决斗。",
           "- 你是谁？你也敢？",
@@ -103,6 +135,7 @@ export function genDoor(x: string) {
 
         DIALOGUE.startConversation();
         DIALOGUE.afterConversation = function () {
+          BATTLE.enemyid = 0;
           BATTLE.startBattle();
         };
         BATTLE.afterBattle = function () {
@@ -123,7 +156,7 @@ export function genDoor(x: string) {
       DIALOGUE.startConversation();
       return [false];
     }
-    if (bl.data == "282_40" && player.ram >= 31465472) {
+    if (bl.data == "282_40" && player.ram.gte(31465472)) {
       DIALOGUE.messages = ["+ 帮别人“越狱”，emmm\n+ 算不算...?", "+ 管他呢"];
       DIALOGUE.stillInteraction = true;
       DIALOGUE.afterConversation = function () {
@@ -179,13 +212,13 @@ export function genDoor(x: string) {
           "+ ......",
         ];
         player.features.push("JAIL_PLAYER_1");
-      } else if (player.ram <= 153600) {
+      } else if (player.ram.lte(153600)) {
         DIALOGUE.messages = [
           "+ 这个门太难开了。",
           "+ 我至少需要150 KB才能破开...",
         ];
       } else {
-        player.ram -= 145408;
+        player.ram = player.ram.sub(145408);
         return [true];
       }
       DIALOGUE.startConversation();
@@ -196,7 +229,7 @@ export function genDoor(x: string) {
       return [true];
     }
     if (bl.data == "19_-4_U0") {
-      if (player.features.includes("19_-4_U0") && player.ram >= 409600) {
+      if (player.features.includes("19_-4_U0") && player.ram.gte(409600)) {
         player.features.push("19_-4_U0_OPENED");
         return [true];
       }
@@ -208,13 +241,13 @@ export function genDoor(x: string) {
       player.features.push("19_-4_U0");
       return [false];
     }
-    if (bl.data == "1327" && player.ram >= 8.25 * 1024) {
+    if (bl.data == "1327" && player.ram.gte(8.25 * 1024)) {
       return [true];
     }
-    if (bl.data == "1723" && player.ram >= 9.5 * 1024) {
+    if (bl.data == "1723" && player.ram.gte(9.5 * 1024)) {
       return [true, "TP?PSEUDO?17?23?0"];
     }
-    if (bl.data == "1913_U0" && player.ram >= 204800) {
+    if (bl.data == "1913_U0" && player.ram.gte(204800)) {
       return [true];
     }
     return [false];
@@ -224,7 +257,8 @@ export function genDoor(x: string) {
       bl.data == "19_-4_U0" ||
       bl.data == "JAIL_PLAYER" ||
       bl.data == "282_40" ||
-      bl.data == "293_44"
+      bl.data == "293_44" ||
+      bl.data == "293_34"
     ) {
       return true;
     }
@@ -246,7 +280,7 @@ export function genFeature(x: string[]) {
     player.features.push(bl.data);
     switch (bl.data) {
       case "point":
-        player.points += 1;
+        player.points = player.points.add(1);
         break;
     }
     return [true];
@@ -277,6 +311,16 @@ export function genTP(x: string[], pseudo2 = false) {
   bl.data = [x[2], x[3], x[4]];
   bl.textcolor = pseudo ? "#000000" : "#ffffff";
   bl.onTouch = function () {
+    if (+bl.data[0] == 11 && +bl.data[1] == -9) {
+      if (
+        !(player.features.includes("item") && player.items["doorkey_1"] == 1)
+      ) {
+        DIALOGUE.messages = ["+ 两个东西我需要拿走..."];
+        DIALOGUE.startConversation();
+
+        return [false];
+      }
+    }
     player.x = +bl.data[0];
     player.y = +bl.data[1];
     console.log(bl.data[2]);
@@ -295,8 +339,9 @@ function validateName(x: string) {
   if (lowerc.includes("197")) return false;
   if (lowerc.includes("728")) return false;
   if (lowerc.includes("endless")) return false;
-  if (lowerc.includes("RBNR")) return false;
-  if (lowerc.includes("RBNR")) return false;
+  if (lowerc.includes("rbnr")) return false;
+  if (lowerc.includes("rbnc")) return false;
+  if (lowerc.includes("mitsi")) return false;
   if (lowerc.includes("棍母")) return false;
   if (lowerc.includes("滚木")) return false;
   if (lowerc.includes("num")) return false;
@@ -360,17 +405,71 @@ export function genEvent(x: string) {
       }
     })();
   }
+  if (x == "293_32") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (!player.features.includes("293_32")) {
+          TEMP.interact = 1;
+
+          Endless_e19728_trap4();
+        }
+        return [false];
+      }
+    })();
+  }
+  if (x == "293_33") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        TEMP.interact = 1;
+        DIALOGUE.messages = ["+ 不对啊，现在是几月几日？", "+ 现在是几点？"];
+        DIALOGUE.startConversation();
+        return [true];
+      }
+    })();
+  }
+  if (x == "311_13") {
+    return new (class extends Block {
+      color = "#00000000";
+      textcolor: string = "#ffffff";
+      content = "t";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        TEMP.interact = 1;
+        DIALOGUE.messages = [
+          "+ 我感受到了右边有个传送门...",
+          "+ 看来可以离开了...",
+        ];
+        DIALOGUE.stillInteraction = true;
+        DIALOGUE.startConversation();
+        DIALOGUE.afterConversation = function () {
+          leaveJailSecretly();
+        };
+        return [true];
+      }
+    })();
+  }
   if (x == "37_1") {
     return new (class extends Block {
       color = "#00000000";
       textcolor: string = "#ffffff";
       content = "t";
       onTouch(): [remove: boolean, replaceTo?: string] {
-        if (!player.features.includes("37_1")) {
+        if (
+          !player.features.includes("37_1") ||
+          player.features.includes("leave_jail_secretly")
+        ) {
           TEMP.interact = 1;
-          player.features.push("37_1");
-          setTimeout(Endless_e19728_trap2, 500);
-          setTimeout(Endless_e19728_trap, 1000);
+          if (player.features.includes("leave_jail_secretly")) {
+            Endless_e19728_trap_5();
+          } else {
+            setTimeout(Endless_e19728_trap2, 500);
+            setTimeout(Endless_e19728_trap, 1000);
+          }
         }
         return [false];
       }
@@ -451,10 +550,43 @@ export function genNPC(x: string) {
       }
     })();
   }
+  if (x == "AntiDim19728") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      content = "AntiDim19728";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+
   if (x == "Endless_e19728") {
     return new (class extends Block {
       color = "#fff700ff";
       content = "Endless_\ne19728";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        // DIALOGUE.messages = ["- 你好。"];
+        // DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+  if (x == "Endless_e308") {
+    return new (class extends Block {
+      color = "#a2ff00ff";
+      content = "Endless_\ne308";
       onTouch(): [remove: boolean, replaceTo?: string] {
         // DIALOGUE.messages = ["- 你好。"];
         // DIALOGUE.startConversation();
@@ -505,7 +637,7 @@ export function genNPC(x: string) {
             "+ (你获得了0.001 点数。)\n+ 这NPC身价这么低？",
           ];
           DIALOGUE.startConversation();
-          player.points += 0.001;
+          player.points = player.points.add(0.001);
           player.features.push("19_-4_U0_OPENED_2");
         } else {
           DIALOGUE.messages = [
@@ -547,4 +679,26 @@ export function genNPC(x: string) {
     })();
   }
   return null;
+}
+
+export function genEnemy(x: string) {
+  return new (class extends Block {
+    color = "#fff700ff";
+    content = "敌人";
+    onTouch(objpos: [number, number]): [remove: boolean, replaceTo?: string] {
+      BATTLE.enemyid = Number(x);
+
+      BATTLE.startBattle();
+      BATTLE.afterBattle = function () {
+        player.replaces.push([objpos[0], objpos[1], "NULL"]);
+      };
+      return [false];
+    }
+    solid(): boolean {
+      return true;
+    }
+    solidInteractionable(): boolean {
+      return true;
+    }
+  })();
 }

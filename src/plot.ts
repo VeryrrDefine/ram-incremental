@@ -1,7 +1,11 @@
+import Decimal from "break_eternity.js";
+import { delay } from "./await";
+import { BATTLE } from "./battle";
 import { DIALOGUE } from "./dialogue";
 import { displayNumber } from "./display";
 import { player } from "./player";
 import { TEMP } from "./temp";
+import { stepsLinear } from "./geometry";
 
 export function Endless_e19728_trap() {
   DIALOGUE.messages = [
@@ -22,6 +26,7 @@ export function Endless_e19728_trap() {
   DIALOGUE.startConversation();
   DIALOGUE.afterConversation = Endless_e19728_trap3;
 }
+
 function fadein() {
   setTimeout(function () {
     TEMP.endless_e19728_animation = 1;
@@ -87,8 +92,8 @@ export function jail_breaking_door() {
   TEMP.attack_effect.push([279, 44, Date.now()]);
   setTimeout(function () {
     player.replaces.push([279, 44, "NULL"]);
-    player.ram -= 134_217_728;
-    player.points += 1.293e9;
+    player.ram = player.ram.sub(134_217_728);
+    player.points = player.points.add(1.293e9);
     DIALOGUE.messages = [
       "+ (你获得了 1.293e9 点数.\n+ 你消耗了 128.00 MB RAM.)",
       "+ 点数好多。",
@@ -102,8 +107,8 @@ export function jail_breaking_door_282_40() {
   TEMP.attack_effect.push([282, 40, Date.now()]);
   setTimeout(function () {
     player.replaces.push([282, 40, "NULL"]);
-    player.ram -= 31457280;
-    player.points += 3.4e8 + 0.0001;
+    player.ram = player.ram.sub(31457280);
+    player.points = player.points.add(3.4e8 + 0.0001);
     DIALOGUE.messages = [
       "+ 你获得了 3.400e8 点数.\n+ 你消耗了 30.00 MB RAM.",
       "- 你把门拆了？那么强？谢谢。",
@@ -118,8 +123,8 @@ export function jail_breaking_door_282_40() {
 }
 export function seeing_Endless_e19728_2() {
   player.replaces.push([279, 45, "NULL"]);
-  player.ram -= 2_182_917_128;
-  player.points += 12.002;
+  player.ram = player.ram.sub(2_182_917_128);
+  player.points = player.points.add(12.002);
   DIALOGUE.messages = [
     "+ (你获得了 12.002 点数.\n+ 你消耗了 2.033 GB RAM.)",
     "- 你敢鲨人？",
@@ -136,8 +141,8 @@ export function seeing_Endless_e19728_2() {
 }
 export function seeing_Endless_e19728_3() {
   player.replaces.push([278, 45, "NULL"]);
-  player.ram -= 137_604_628;
-  player.points += 0.203;
+  player.ram = player.ram.sub(137_604_628);
+  player.points = player.points.add(0.203);
   DIALOGUE.messages = [
     "+ 你获得了 0.203 点数.\n+ 你消耗了 131.23 MB RAM.",
     "+ 好了，解决了。",
@@ -157,7 +162,7 @@ export function bed1_dreaming_1(into = true) {
     } else {
       player.x = 279;
       player.y = 42;
-      player.ram += 8589934592;
+      player.ram = player.ram.add(8_589_934_592);
       player.replaces.push([279, 45, "NPC?guard1"]);
     }
     setTimeout(function () {
@@ -184,9 +189,9 @@ export function Endless_e19728_trap3() {
     player.features.push("25_1_done");
     TEMP.interact = 0;
     player.thief_points = player.points;
-    player.points = 0;
-    player.thief_rams = player.ram - 8192;
-    player.ram = 8192;
+    player.points = new Decimal(0);
+    player.thief_rams = player.ram.sub(8192);
+    player.ram = new Decimal(8192);
   }, 5700);
 }
 export function Endless_e19728_trap2() {
@@ -196,4 +201,190 @@ export function Endless_e19728_trap2() {
   player.replaces.push([38, 1, "WALL"]);
   player.replaces.push([38, 2, "WALL"]);
   player.replaces.push([37, 2, "WALL"]);
+}
+
+export async function Endless_e19728_trap4() {
+  await delay(1000);
+  player.features.push("293_32");
+  player.replaces.push([293, 31, "WALL"]);
+  player.replaces.push([293, 33, "WALL"]);
+  await delay(1000);
+
+  DIALOGUE.messages = ["- 很明显，", "- 有人越狱了。"];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  await delay(1000);
+  player.replaces.push([293, 28, "NPC?Endless_e308"]);
+  await delay(1000);
+  player.replaces.push([293, 28, "NULL"]);
+  player.replaces.push([293, 29, "NPC?Endless_e308"]);
+  await delay(1000);
+  player.replaces.push([293, 29, "NULL"]);
+  player.replaces.push([293, 30, "NPC?Endless_e308"]);
+  await delay(1000);
+  DIALOGUE.messages = [
+    "- 你就是把Endless_e19728\n- 打似的那个？。",
+    "+ 对，怎么了？",
+    "- 你还有脸说“怎么了？”",
+    "- 你要么被判亖形，要么被我打亖",
+    "+ ...",
+  ];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  BATTLE.enemyid = 2;
+  BATTLE.startBattle();
+
+  // alert("test");
+  // DIALOGUE.afterConversation = Endless_e19728_trap5;
+}
+
+export async function leaveJailSecretly() {
+  TEMP.player_move_withoutcontrol.x = 311;
+  TEMP.player_move_withoutcontrol.y = 13;
+  TEMP.player_move_withoutcontrol.active = true;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.y = 12;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 312;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 313;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 314;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 315;
+  await delay(300);
+  TEMP.player_move_withoutcontrol.x = 316;
+  await delay(2000);
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
+  await delay(10000);
+  TEMP.player_move_withoutcontrol.active = false;
+  player.x = 25;
+  player.y = 18;
+  player.features.push("leave_jail_secretly");
+  player.replaces.push([19, 18, "NULL"]);
+  player.replaces.push([18, 21, "WALL"]);
+  player.replaces.push([25, -1, "NULL"]);
+  player.replaces.push([35, 1, "NULL"]);
+  player.replaces.push([36, 1, "NULL"]);
+  player.replaces.push([37, 0, "NULL"]);
+  player.replaces.push([38, 0, "NULL"]);
+  player.replaces.push([38, 1, "NULL"]);
+  player.replaces.push([38, 2, "NULL"]);
+  player.replaces.push([37, 2, "NULL"]);
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 5, 0, 5000);
+  TEMP.interact = 0;
+}
+export async function Endless_e19728_trap_5() {
+  await delay(100);
+  player.replaces.push([36, 1, "WALL"]);
+  player.replaces.push([37, 0, "WALL"]);
+  player.replaces.push([38, 0, "WALL"]);
+  player.replaces.push([38, 1, "WALL"]);
+  player.replaces.push([38, 2, "WALL"]);
+  player.replaces.push([37, 2, "WALL"]);
+  await delay(500);
+  player.replaces.push([37, 5, "NPC?guard1"]);
+  await delay(500);
+  player.replaces.push([37, 5, "NULL"]);
+  player.replaces.push([37, 4, "NPC?guard1"]);
+  await delay(500);
+  player.replaces.push([37, 4, "NULL"]);
+  player.replaces.push([37, 3, "NPC?guard1"]);
+  await delay(1000);
+  if (player.features.includes("changed_color")) {
+    DIALOGUE.messages = [
+      "- 抓到你了。",
+      "+ (叉子，又被发现了...)",
+      "- 这个地方没做完，\n- 做完了之后就不会\n- 出现战斗。",
+      // "- 不对，抓错人了，蓝色的才是。",
+    ];
+    DIALOGUE.stillInteraction = true;
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+
+    BATTLE.enemyid = 7;
+    BATTLE.startBattle();
+    return;
+    player.replaces.push([36, 1, "NULL"]);
+    player.replaces.push([37, 0, "NULL"]);
+    player.replaces.push([38, 0, "NULL"]);
+    player.replaces.push([38, 1, "NULL"]);
+    player.replaces.push([38, 2, "NULL"]);
+    player.replaces.push([37, 2, "NULL"]);
+    player.replaces.push([37, 1, "NULL"]);
+    await delay(500);
+    player.replaces.push([37, 3, "NULL"]);
+    player.replaces.push([37, 4, "NPC?guard1"]);
+    await delay(500);
+    player.replaces.push([37, 4, "NULL"]);
+    player.replaces.push([37, 5, "NPC?guard1"]);
+    await delay(500);
+    player.replaces.push([37, 5, "NULL"]);
+    player.features.push("37_1_again");
+  } else {
+    DIALOGUE.messages = ["- 抓到你了。", "+ (叉子，又被发现了...)"];
+    DIALOGUE.stillInteraction = true;
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+  }
+
+  if (!player.features.includes("changed_color")) {
+    await delay(1000);
+    DIALOGUE.messages = [
+      "- 你就是最近新闻上那个\n- 被通鸡的人。\n- 我去找AntiDim19728。\n",
+    ];
+    DIALOGUE.stillInteraction = true;
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+    await delay(500);
+    TEMP.endless_e19728_animation = 5;
+    player.replaces.push([38, 3, "NPC?AntiDim19728"]);
+    await delay(5000);
+
+    TEMP.endless_e19728_animation = 0;
+    await delay(1000);
+    if (player.points.gte(1e12)) {
+      DIALOGUE.messages = [
+        "- AntiDim19728, 就是这个——\n- 蓝色的， 被通鸡的人。",
+        "(AntiDim19728)\n- 很好。",
+        "(AntiDim19728)\n- 奖励你0.125点数。",
+        "+ 只要放了我，我就给你，\n+ " +
+          displayNumber(player.points.div(100)) +
+          "点数！\n+ 给，那个，谁？",
+        `(???)\n- 我的叉子！\n- 这都能顶我${displayNumber(player.points)}年的工资了！`,
+        "(AntiDim19728)\n- 我先把那个tancaihaose的杀了",
+      ];
+
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.startConversation();
+      await DIALOGUE.waitUntilDialogueDone();
+      TEMP.attack_effect.push([37, 3, Date.now()]);
+      await delay(1000);
+      player.replaces.push([37, 3, "NULL"]);
+
+      DIALOGUE.messages = ["- 好了。", "+ 不好", "- 现在就嗄了你。"];
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.startConversation();
+      await DIALOGUE.waitUntilDialogueDone();
+      BATTLE.enemyid = 7;
+      BATTLE.startBattle();
+    } else {
+      DIALOGUE.messages = [
+        "- AntiDim19728, 就是这个——\n- 蓝色的， 被通鸡的人。",
+        "(AntiDim19728)\n- 很好。",
+        "(AntiDim19728)\n- 奖励你0.125点数。",
+        "(???)\m- 好的。",
+        "+ 叉！",
+        "(AntiDim19728)\n- 要决斗？",
+        "(AntiDim19728)\n- 好。",
+      ];
+      DIALOGUE.stillInteraction = true;
+      DIALOGUE.startConversation();
+      await DIALOGUE.waitUntilDialogueDone();
+      BATTLE.enemyid = 7;
+      BATTLE.startBattle();
+    }
+  }
 }

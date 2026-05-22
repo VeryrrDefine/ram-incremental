@@ -8,7 +8,7 @@ export const UPGRADES = {
     },
     onBuy() {
       if (UPGRADES["16_7"].cost() <= player.points) {
-        player.points -= UPGRADES["16_7"].cost();
+        player.points = player.points.sub(UPGRADES["16_7"].cost());
         player.upgrades["16_7"] = (player.upgrades["16_7"] ?? 0) + 1;
       }
     },
@@ -21,7 +21,7 @@ export const UPGRADES = {
     },
     onBuy() {
       if (UPGRADES["17_7"].cost() <= player.points) {
-        player.points -= UPGRADES["17_7"].cost();
+        player.points = player.points.sub(UPGRADES["17_7"].cost());
         player.upgrades["17_7"] = (player.upgrades["17_7"] ?? 0) + 1;
       }
     },
@@ -34,7 +34,7 @@ export const UPGRADES = {
     },
     onBuy() {
       if (UPGRADES["19_7"].cost() <= player.points) {
-        player.points -= 1536;
+        player.points = player.points.sub(1536);
         player.upgrades["19_7"] = 1;
       }
     },
@@ -47,7 +47,7 @@ export const UPGRADES = {
     },
     onBuy() {
       if (UPGRADES["20_7"].cost() <= player.ram) {
-        player.ram -= 22528;
+        player.ram = player.ram.sub(22528);
         player.upgrades["20_7"] = 1;
       }
     },

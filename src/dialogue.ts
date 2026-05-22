@@ -10,6 +10,13 @@ export const DIALOGUE = {
     TEMP.interact = 1;
     this.UItick = Date.now();
   },
+  waitUntilDialogueDone() {
+    return new Promise(function (res) {
+      setInterval(function () {
+        if (DIALOGUE.conversation == 0) res(true);
+      }, 100);
+    });
+  },
   endConversation() {
     this.conversation = 0;
     this.UItick = 0;
