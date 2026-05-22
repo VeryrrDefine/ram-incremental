@@ -297,11 +297,16 @@ export async function Endless_e19728_trap_5() {
     DIALOGUE.messages = [
       "- 抓到你了。",
       "+ (叉子，又被发现了...)",
-      "- 不对，抓错人了，蓝色的才是。",
+      "- 这个地方没做完，\n- 做完了之后就不会\n- 出现战斗。",
+      // "- 不对，抓错人了，蓝色的才是。",
     ];
     DIALOGUE.stillInteraction = true;
     DIALOGUE.startConversation();
     await DIALOGUE.waitUntilDialogueDone();
+
+    BATTLE.enemyid = 7;
+    BATTLE.startBattle();
+    return;
     player.replaces.push([36, 1, "NULL"]);
     player.replaces.push([37, 0, "NULL"]);
     player.replaces.push([38, 0, "NULL"]);
