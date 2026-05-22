@@ -12,8 +12,11 @@ export const DIALOGUE = {
   },
   waitUntilDialogueDone() {
     return new Promise(function (res) {
-      setInterval(function () {
-        if (DIALOGUE.conversation == 0) res(true);
+      let q = setInterval(function () {
+        if (DIALOGUE.conversation == 0) {
+          clearInterval(q);
+          res(true);
+        }
       }, 100);
     });
   },
