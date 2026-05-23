@@ -17,7 +17,6 @@ import { TextDrawer, type Align, type VerticialAlign } from "./text";
 import { upgradeComponent } from "./generator-upgrades";
 import { getBlock } from "./collision";
 import { map } from "./map";
-import { gamegTime } from "./gamegTime";
 import { TIME_GOES_BY } from "./timeGoesBy";
 
 export function executeUI(
