@@ -95,6 +95,15 @@ document.addEventListener("keydown", (e) => {
   if (move) tryMove(move[0], move[1]);
 });
 
+document.addEventListener("wheel", function (e) {
+  if (Date.now() - lastMove < 100) return;
+  lastMove = Date.now();
+  if (e.deltaX > 0) tryMove(1, 0);
+  if (e.deltaX < 0) tryMove(-1, 0);
+  if (e.deltaY > 0) tryMove(0, 1);
+  if (e.deltaY < 0) tryMove(0, -1);
+});
+
 // 调试用
 import { player } from "./player";
 // @ts-ignore
