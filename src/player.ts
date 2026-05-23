@@ -38,6 +38,13 @@ function initialPlayer() {
       0: new Decimal(0),
     } as Record<number, Decimal>,
     changedColor: 0,
+    l_points: new Decimal(0),
+    l_ram: new Decimal(8192),
+    r_points: new Decimal(0),
+    r_ram: new Decimal(8192),
+    lstatus: false,
+    saveID: Math.floor(Math.random() * 2147483648),
+    playerID: Math.floor(Math.random() * 2147483648),
   };
 }
 

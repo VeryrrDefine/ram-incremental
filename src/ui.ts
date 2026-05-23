@@ -15,6 +15,8 @@ import { ctx } from "./render";
 import { TEMP } from "./temp";
 import { TextDrawer, type Align, type VerticialAlign } from "./text";
 import { upgradeComponent } from "./generator-upgrades";
+import { getBlock } from "./collision";
+import { map } from "./map";
 
 export function executeUI(
   x: UIopt,
@@ -80,7 +82,7 @@ export function drawUI(x: UIopt, ctx: CanvasRenderingContext2D) {
       let drawer = new TextDrawer(
         x.text(),
         x.size,
-        x.fore ?? "#ffffff",
+        (x.foreDynamic ? x.foreDynamic() : x.fore) ?? "#ffffff",
         "left",
       );
       drawer.align = typeof x.align == "string" ? x.align : x.align[0];
@@ -96,7 +98,7 @@ export function drawUI(x: UIopt, ctx: CanvasRenderingContext2D) {
       }
       break;
     case "rect":
-      ctx.fillStyle = x.fore;
+      ctx.fillStyle = x.foreDynamic ? x.foreDynamic() : x.fore;
       ctx.fillRect(x.rect.left, x.rect.top, x.rect.width, x.rect.height);
       break;
     case "image":
@@ -120,6 +122,7 @@ export type UIopt =
           rect: Rect;
           text(): string;
           fore?: string;
+          foreDynamic?(): string;
           back?: string;
           size: number;
           align: [Align, VerticialAlign] | Align;
@@ -127,6 +130,7 @@ export type UIopt =
       | {
           type: "rect";
           rect: Rect;
+          foreDynamic?(): string;
           fore: string;
         }
       | {
@@ -658,7 +662,30 @@ export const UI = [
       ];
     },
   },
-
+  {
+    type: "group",
+    condition() {
+      return player.features.includes("up1_done");
+    },
+    group() {
+      return [
+        {
+          type: "text",
+          size: 12,
+          rect: new Rect(620, 52, 100, 100),
+          foreDynamic() {
+            let bl = getBlock(player.x + 4, player.y - 4);
+            if (bl === null) return "#ffffff";
+            return "#000000";
+          },
+          align: ["right", "top"],
+          text() {
+            return `P ${displayNumber(player.points)}\nR ${displayRAM(player.ram, false)}`;
+          },
+        },
+      ];
+    },
+  },
   {
     type: "text",
     size: 21,
@@ -666,6 +693,31 @@ export const UI = [
     fore: "#008cff",
     align: ["left", "top"],
     text() {
+      let st = Math.floor(Date.now() / 3000) % 3;
+      if (st == 0) {
+        return `\
+player ${player.x},${player.y}|\
+${mouse.mouseX},${mouse.mouseY}|\
+${map.length} Blocks|\
+${canvasToWorld(
+  player.x,
+  player.y,
+  Math.floor(mouse.mouseX / 80),
+  Math.floor(mouse.mouseY / 80),
+).join(",")}`;
+      }
+      if (st == 1) {
+        return `\
+player ${player.x},${player.y}|\
+${mouse.mouseX},${mouse.mouseY}|\
+Player ID ${player.playerID.toString(8).padStart(11, "0")}|\
+${canvasToWorld(
+  player.x,
+  player.y,
+  Math.floor(mouse.mouseX / 80),
+  Math.floor(mouse.mouseY / 80),
+).join(",")}`;
+      }
       return `\
 player ${player.x},${player.y},${player.universe}|\
 ${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|\

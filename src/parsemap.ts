@@ -2,6 +2,7 @@ import Decimal from "break_eternity.js";
 import {
   Block,
   genDoor as genDoorBlock,
+  genDoorInvis,
   genEnemy,
   genEvent,
   genFeature,
@@ -49,6 +50,15 @@ export function blockDataToBlock(x: string) {
   }
   if (x.startsWith("TEXT")) {
     return writeToCache(genTextBlock(x.slice(5)), x);
+  }
+  console.log(x);
+  if (x.startsWith("DOORINVIS")) {
+    let t = x.split("?");
+    if (t[1]) {
+      return newBlockAndCache(() => {
+        return genDoorInvis(t[1]);
+      }, x);
+    }
   }
   if (x.startsWith("DOOR")) {
     return writeToCache(genDoorBlock(x.slice(5)), x);
@@ -264,6 +274,33 @@ export function blockDataToBlock(x: string) {
           return displayRAM(player.ram);
         }
         textcolor = "#ffffff";
+      })();
+    }, x);
+  }
+  if (x == "CHANGE_L_STATUS") {
+    return newBlockAndCache(() => {
+      return new (class extends Block {
+        color = "#000000";
+        contentDynamic() {
+          return "Change L\n Status\n" + (player.lstatus ? "ON" : "OFF");
+        }
+        textcolor = "#ffffff";
+        onTouch(
+          _objpos: [number, number],
+        ): [remove: boolean, replaceTo?: string] {
+          if (!player.lstatus) {
+            player.r_points = player.points;
+            player.r_ram = player.ram;
+
+            player.points = player.l_points;
+            player.ram = player.l_ram;
+          } else {
+            player.points = player.r_points;
+            player.ram = player.r_ram;
+          }
+          player.lstatus = !player.lstatus;
+          return [false];
+        }
       })();
     }, x);
   }

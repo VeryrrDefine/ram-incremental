@@ -297,22 +297,22 @@ export async function Endless_e19728_trap_5() {
     DIALOGUE.messages = [
       "- 抓到你了。",
       "+ (叉子，又被发现了...)",
-      "- 这个地方没做完，\n- 做完了之后就不会\n- 出现战斗。",
-      // "- 不对，抓错人了，蓝色的才是。",
+      // "- 这个地方没做完，\n- 做完了之后就不会\n- 出现战斗。",
+      "- 不对，抓错人了，蓝色的才是。",
     ];
     DIALOGUE.stillInteraction = true;
     DIALOGUE.startConversation();
     await DIALOGUE.waitUntilDialogueDone();
 
-    BATTLE.enemyid = 7;
-    BATTLE.startBattle();
-    return;
+    // BATTLE.enemyid = 7;
+    // BATTLE.startBattle();
+    // return;
     player.replaces.push([36, 1, "NULL"]);
-    player.replaces.push([37, 0, "NULL"]);
-    player.replaces.push([38, 0, "NULL"]);
-    player.replaces.push([38, 1, "NULL"]);
-    player.replaces.push([38, 2, "NULL"]);
-    player.replaces.push([37, 2, "NULL"]);
+    player.replaces.push([37, 0, "DOORINVIS?1"]);
+    player.replaces.push([38, 0, "DOORINVIS?1"]);
+    player.replaces.push([38, 1, "DOORINVIS?1"]);
+    player.replaces.push([38, 2, "DOORINVIS?1"]);
+    player.replaces.push([37, 2, "DOORINVIS?1"]);
     player.replaces.push([37, 1, "NULL"]);
     await delay(500);
     player.replaces.push([37, 3, "NULL"]);
@@ -323,6 +323,17 @@ export async function Endless_e19728_trap_5() {
     await delay(500);
     player.replaces.push([37, 5, "NULL"]);
     player.features.push("37_1_again");
+    await delay(2000);
+    player.features.push("key_up");
+    DIALOGUE.messages = [
+      "+ (你获得了一把钥匙。)",
+      "+ (地上有个钥匙，之前没注意到...)",
+      "+ (我需要去往那里...上面？)",
+      "+ (在达成特定目标之前，\n+ 你不能在右边深入探索。)",
+    ];
+    DIALOGUE.startConversation();
+    await DIALOGUE.waitUntilDialogueDone();
+    return;
   } else {
     DIALOGUE.messages = ["- 抓到你了。", "+ (叉子，又被发现了...)"];
     DIALOGUE.stillInteraction = true;

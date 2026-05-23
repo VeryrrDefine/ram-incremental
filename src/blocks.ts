@@ -94,6 +94,9 @@ export function genDoor(x: string) {
     if (bl.data == "RIGHT" && player.items.doorkey_1) {
       return false;
     }
+    if (bl.data == "UP" && player.features.includes("key_up")) {
+      return false;
+    }
     if (
       bl.data == "JAIL_PLAYER" &&
       player.features.includes("JAIL_PLAYER_1") &&
@@ -226,6 +229,9 @@ export function genDoor(x: string) {
     }
     if (bl.data == "RIGHT" && player.items.doorkey_1) {
       player.items.doorkey_1 = 0;
+      return [true];
+    }
+    if (bl.data == "UP" && player.features.includes("key_up")) {
       return [true];
     }
     if (bl.data == "19_-4_U0") {
@@ -565,6 +571,43 @@ export function genNPC(x: string) {
       }
     })();
   }
+  if (x == "staff_1") {
+    return new (class extends Block {
+      color = "#d300c5ff";
+      content = "Stuff 1";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (player.features.includes("staff_1_plot")) {
+          DIALOGUE.messages = [
+            "+ (编号" +
+              player.playerID.toString(8).padStart(11, "0") +
+              ",\n+ 我需要go work...)",
+          ];
+        } else {
+          DIALOGUE.messages = [
+            "+ 你好。",
+            "- 在的，什么事？",
+            "+ ...",
+            "- ......",
+            "（一阵激烈的交流后）",
+            "-......",
+            "+ ...",
+            "- 好的，\n- 这是你的森份证明\n- 和\u4ea4易设备\n- 你的编号" +
+              player.playerID.toString(8).padStart(11, "0"),
+            "+ (我需要go work...)",
+          ];
+          player.features.push("staff_1_plot");
+        }
+        DIALOGUE.startConversation();
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
 
   if (x == "Endless_e19728") {
     return new (class extends Block {
@@ -695,6 +738,29 @@ export function genEnemy(x: string) {
       return [false];
     }
     solid(): boolean {
+      return true;
+    }
+    solidInteractionable(): boolean {
+      return true;
+    }
+  })();
+}
+
+export function genDoorInvis(x: string) {
+  console.log("trygen", x);
+  return new (class extends Block {
+    color = "#ffffff00";
+    content = "2";
+    onTouch(objpos: [number, number]): [remove: boolean, replaceTo?: string] {
+      if (x == "1" && player.features.includes("up1_done")) {
+        return [true];
+      }
+      return [false];
+    }
+    solid(): boolean {
+      if (x == "1" && player.features.includes("up1_done")) {
+        return false;
+      }
       return true;
     }
     solidInteractionable(): boolean {

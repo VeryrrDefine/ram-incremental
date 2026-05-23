@@ -1,6 +1,7 @@
 import Decimal from "break_eternity.js";
-import { dimLoop } from "./dimension";
+import { dimensionMult, dimLoop } from "./dimension";
 import { player } from "./player";
+import { pL, ramL } from "./raml_pl";
 
 export function ramGain(): Decimal {
   let base = new Decimal(0);
@@ -11,11 +12,12 @@ export function ramGain(): Decimal {
     base = base.add(player.upgrades["17_7"] ?? 0);
   }
   if (player.upgrades["19_7"]) {
-    base = base.add(player.points.pow(0.5));
+    base = base.add(pL().pow(0.5));
   }
   if (player.upgrades["20_7"]) {
-    base = base.add(player.ram.div(1024).pow(0.3).clampMin(1));
+    base = base.add(ramL().div(1024).pow(0.3).clampMin(1));
   }
+  base = base.add(player.dimensions[0][0].mul(dimensionMult(0)));
   return base;
 }
 
@@ -28,7 +30,7 @@ export function pointGain(): Decimal {
     base = base.add(player.upgrades["17_7"] ?? 0);
   }
   if (player.upgrades["20_8"]) {
-    base = base.mul(player.ram.clampMin(1).log10().clampMin(1));
+    base = base.mul(ramL().clampMin(1).log10().clampMin(1));
     // base *= Math.max(1, Math.log10(Math.max(player.ram, 1)));
   }
   return base;
@@ -42,11 +44,15 @@ export function loop() {
   }
   if (player.upgrades["16_7"] || player.upgrades["17_7"]) {
     let pGain = pointGain();
-    player.points = player.points.add(pGain.mul(ticks));
+    if (player.lstatus) {
+      player.r_points = player.r_points.add(pGain.mul(ticks));
+    } else player.points = player.points.add(pGain.mul(ticks));
   }
   let gain = ramGain();
   if (gain.gt(0)) {
-    player.ram = player.ram.add(gain.mul(ticks));
+    if (player.lstatus) {
+      player.r_ram = player.r_ram.add(gain.mul(ticks));
+    } else player.ram = player.ram.add(gain.mul(ticks));
   }
   if (!player.features.includes("leave_jail_secretly")) {
     if (player.features.includes("25_1") && player.x == 26 && player.y == 1) {

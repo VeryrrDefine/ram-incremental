@@ -74,11 +74,6 @@ export function buyDimensions(x: number) {
 }
 
 export function dimLoop(seconds: number) {
-  player.ram =
-    // Math.min(
-    // 21990232555520,
-    player.ram.add(player.dimensions[0][0].mul(dimensionMult(0)).mul(seconds));
-  // );
   for (let i = 1; i < 4; i++) {
     player.dimensions[i - 1][0] = player.dimensions[i - 1][0]
       .add(player.dimensions[i][0].mul(dimensionMult(i)).mul(seconds))
