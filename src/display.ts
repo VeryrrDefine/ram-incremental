@@ -8,11 +8,14 @@ export function displayNumber(x: Decimal): string {
   if (x.eq(1 / 0)) {
     return "∞";
   }
-  if (x.gte("e1e6")) {
+  if (x.eq(0)) {
+    return "0.000";
+  }
+  if (x.gte("e1e6") || x.lt("e-1e6")) {
     let exp = x.log10();
     return `e${displayNumber(exp)}`;
   }
-  if (x.gte(1e3)) {
+  if (x.gte(1e3) || x.lt(0.01)) {
     let exp = x.log10().floor();
     let exp10 = exp.pow10();
     let mant = x.div(exp10);

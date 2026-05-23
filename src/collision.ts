@@ -4,26 +4,29 @@ import { blockDataToBlock } from "./parsemap";
 import { player } from "./gameState";
 import { getMapOfUniverse, getReplaceMapOfUniverse } from "./universe";
 
-/**
- * 获取指定坐标的方块（优先使用 replaces 中的临时替换）
- */
-export function getBlock(x: number, y: number): Block | null | undefined {
+export function getBlockData(x: number, y: number): string | undefined | null {
   // 先检查是否有临时替换（例如门被打开后替换为 NULL）
   const replaced = getReplaceMapOfUniverse(player.universe).find(
     ([rx, ry]) => rx === x && ry === y,
   );
   if (replaced) {
-    // 如果替换成 "NULL" 表示无方块
-    if (replaced[2] === "NULL") return null;
-    return blockDataToBlock(replaced[2]);
+    return replaced[2];
   }
 
   // 再查静态地图
   const mapEntry = getMapOfUniverse(player.universe).find(
     ([mx, my]) => mx === x && my === y,
   );
-  if (!mapEntry) return null;
-  return blockDataToBlock(mapEntry[2]);
+  if (!mapEntry) return "NULL";
+  return mapEntry[2];
+}
+/**
+ * 获取指定坐标的方块（优先使用 replaces 中的临时替换）
+ */
+export function getBlock(x: number, y: number): Block | null | undefined {
+  let bl = getBlockData(x, y);
+  if (!bl) return null;
+  return blockDataToBlock(bl);
 }
 
 /**

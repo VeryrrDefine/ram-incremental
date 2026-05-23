@@ -6,6 +6,7 @@ import { displayNumber } from "./display";
 import { player } from "./player";
 import { TEMP } from "./temp";
 import { stepsLinear } from "./geometry";
+import { TIME_GOES_BY } from "./timeGoesBy";
 
 export function Endless_e19728_trap() {
   DIALOGUE.messages = [
@@ -398,4 +399,24 @@ export async function Endless_e19728_trap_5() {
       BATTLE.startBattle();
     }
   }
+}
+
+export async function factorymaster_1() {
+  await delay(1000);
+  await TIME_GOES_BY.runTimeGoesBy(8 / 24);
+  player.points = player.points.add(0.00000429 * 8);
+  player.l_points = player.l_points.add(0.00000429 * 8);
+  await delay(1000);
+
+  DIALOGUE.messages = [
+    "+ (你获得了" + displayNumber(new Decimal(0.00000429 * 8)) + "点数[L]。)",
+    "- 转到你的∠易设备上了，记得查收。",
+    "+ (...)",
+  ];
+  DIALOGUE.startConversation();
+  DIALOGUE.afterConversation = function () {};
+  await DIALOGUE.waitUntilDialogueDone();
+  player.lastwork = Date.now();
+  if (!player.features.includes("workedfirst"))
+    player.features.push("workedfirst");
 }

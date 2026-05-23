@@ -8,6 +8,7 @@ import {
   Endless_e19728_trap2,
   Endless_e19728_trap4,
   Endless_e19728_trap_5,
+  factorymaster_1,
   jail_breaking_door,
   jail_breaking_door_282_40,
   leaveJailSecretly,
@@ -571,6 +572,48 @@ export function genNPC(x: string) {
       }
     })();
   }
+  if (x == "factorymaster") {
+    return new (class extends Block {
+      color = "#d300c5ff";
+      content = "Factory\nMaster";
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        if (Date.now() - player.lastwork <= 5 * 60 * 1e3) {
+          DIALOGUE.messages = [
+            "+ (等会儿...,+ 剩余" +
+              (300e3 - (Date.now() - player.lastwork)) +
+              "ms)",
+          ];
+          DIALOGUE.startConversation();
+        } else {
+          if (player.features.includes("workedfirst")) {
+            player.playerday += 1 / 24;
+            TEMP.interact = 1;
+            factorymaster_1();
+          } else {
+            DIALOGUE.messages = [
+              "+ 你好。",
+              "（一阵激烈的交流后）",
+              "- 每小时0.00000429点数。",
+              "+ (666，这么少)",
+              "+ (不管了，go work去了。)",
+              "（特别友好交流）", // 0.001 = 1000
+            ];
+            DIALOGUE.stillInteraction = true;
+            DIALOGUE.startConversation();
+            DIALOGUE.afterConversation = factorymaster_1;
+          }
+        }
+
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
   if (x == "staff_1") {
     return new (class extends Block {
       color = "#d300c5ff";
@@ -580,7 +623,7 @@ export function genNPC(x: string) {
           DIALOGUE.messages = [
             "+ (编号" +
               player.playerID.toString(8).padStart(11, "0") +
-              ",\n+ 我需要go work...)",
+              ",\n+ 我需要go work...\n+ 123, -35...)",
           ];
         } else {
           DIALOGUE.messages = [
@@ -593,7 +636,7 @@ export function genNPC(x: string) {
             "+ ...",
             "- 好的，\n- 这是你的森份证明\n- 和\u4ea4易设备\n- 你的编号" +
               player.playerID.toString(8).padStart(11, "0"),
-            "+ (我需要go work...)",
+            "+ (我需要go work...\n+ 123, -35...)",
           ];
           player.features.push("staff_1_plot");
         }
@@ -755,10 +798,16 @@ export function genDoorInvis(x: string) {
       if (x == "1" && player.features.includes("up1_done")) {
         return [true];
       }
+      if (x == "aft_staff1" && player.features.includes("staff_1_plot")) {
+        return [true];
+      }
       return [false];
     }
     solid(): boolean {
       if (x == "1" && player.features.includes("up1_done")) {
+        return false;
+      }
+      if (x == "aft_staff1" && player.features.includes("staff_1_plot")) {
         return false;
       }
       return true;

@@ -101,6 +101,9 @@ import { player } from "./player";
 window.player = player;
 // import { map } from "./map";
 import { openItem } from "./items";
+import { TIME_GOES_BY } from "./timeGoesBy";
 // @ts-ignore
 // window.map = map;
 // setTimeout(BATTLE.startBattle, 100);
+
+window.timegoesby = TIME_GOES_BY;

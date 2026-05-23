@@ -7,6 +7,7 @@ export const TEMP = {
   lastSave: 0,
   endless_e19728_animation: 0,
   battle_animation: 0,
+
   attack_ram: new Decimal(114514),
   attack_effect: [] as [x: number, y: number, date: number][],
   battle_tips:

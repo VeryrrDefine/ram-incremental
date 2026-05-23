@@ -27,6 +27,7 @@ function initialPlayer() {
     thief_rams: new Decimal(0),
     playername: "Player",
     generatorOpen: false,
+    lastwork: 0,
     // 0: Current, 1: Bought
     dimensions: [
       [new Decimal(0), new Decimal(0)],
@@ -45,6 +46,7 @@ function initialPlayer() {
     lstatus: false,
     saveID: Math.floor(Math.random() * 2147483648),
     playerID: Math.floor(Math.random() * 2147483648),
+    playerday: 0,
   };
 }
 
@@ -52,6 +54,7 @@ export let player = initialPlayer();
 const SAVE_ID = "test-game-2";
 export function save(info?: string) {
   if (TEMP.interact == 1 && info !== "force") return;
+  player.features = [...new Set(player.features)];
   localStorage.setItem(SAVE_ID, JSON.stringify(player));
   TEMP.lastSave = Date.now();
 }

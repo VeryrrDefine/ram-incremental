@@ -1,6 +1,6 @@
 // render.ts
 import { canvasToWorld, GRIDSIZE, isInRect, worldToCanvas } from "./geometry";
-import { getBlock } from "./collision"; // 后面会定义
+import { getBlock, getBlockData } from "./collision"; // 后面会定义
 import { player } from "./gameState";
 import { Block, genTextBlock, PLAYERBLOCK, PLAYERBLOCK2 } from "./blocks";
 import { FONT } from "./font";
@@ -88,6 +88,9 @@ export function renderGame() {
 
       const block = getBlock(wx, wy);
       if (block) {
+        // let q = getBlockData(wx, wy);
+
+        // drawText(i * GRIDSIZE, j * GRIDSIZE, q ?? "NULL", "#ffffff");
         drawBlock(block, i * GRIDSIZE, j * GRIDSIZE);
         for (let q = 0; q < TEMP.attack_effect.length; q++) {
           if (

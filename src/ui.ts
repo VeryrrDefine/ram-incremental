@@ -17,6 +17,8 @@ import { TextDrawer, type Align, type VerticialAlign } from "./text";
 import { upgradeComponent } from "./generator-upgrades";
 import { getBlock } from "./collision";
 import { map } from "./map";
+import { gamegTime } from "./gamegTime";
+import { TIME_GOES_BY } from "./timeGoesBy";
 
 export function executeUI(
   x: UIopt,
@@ -545,6 +547,44 @@ export const UI = [
           onClick() {
             BATTLE.winBattle();
           },
+        },
+      ];
+    },
+  },
+  {
+    type: "group",
+    condition() {
+      return TIME_GOES_BY.time_goes_by_animation > 0;
+    },
+    group(): UIopt[] {
+      return [
+        {
+          type: "rect",
+          fore: `rgba(0, 0, 0, ${TIME_GOES_BY.time_goes_by_animation / 100})`,
+          rect: new Rect(0, 0, 720, 720),
+          onClick() {},
+        },
+        {
+          type: "text",
+          fore: `rgba(255,255,255,${TIME_GOES_BY.time_goes_by_animation / 100})`,
+
+          rect: new Rect(0, 0, 720, 720),
+          size: 50,
+          text() {
+            return "Time Goes By ...";
+          },
+          align: ["center", "middle"],
+        },
+        {
+          type: "text",
+          fore: `rgba(255,255,255,${TIME_GOES_BY.time_goes_by_animation / 100})`,
+
+          rect: new Rect(0, 436, 720, 284),
+          size: 50,
+          text() {
+            return TIME_GOES_BY.getDateDisplay();
+          },
+          align: ["center", "middle"],
         },
       ];
     },
