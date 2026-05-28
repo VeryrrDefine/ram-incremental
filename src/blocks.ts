@@ -98,6 +98,9 @@ export function genDoor(x: string) {
     if (bl.data == "UP" && player.features.includes("key_up")) {
       return false;
     }
+    if (bl.data == "78_-66" && player.features.includes("78_-66")) {
+      return false;
+    }
     if (
       bl.data == "JAIL_PLAYER" &&
       player.features.includes("JAIL_PLAYER_1") &&
@@ -233,6 +236,9 @@ export function genDoor(x: string) {
       return [true];
     }
     if (bl.data == "UP" && player.features.includes("key_up")) {
+      return [true];
+    }
+    if (bl.data == "78_-66" && player.features.includes("78_-66")) {
       return [true];
     }
     if (bl.data == "19_-4_U0") {
@@ -580,12 +586,13 @@ export function genNPC(x: string) {
       color = "#d300c5ff";
       content = "Factory\nMaster";
       onTouch(): [remove: boolean, replaceTo?: string] {
-        if (Date.now() - player.lastwork <= 5 * 60 * 1e3) {
-          DIALOGUE.messages = [
-            "+ (等会儿...,+ 剩余" +
-              (300e3 - (Date.now() - player.lastwork)) +
-              "ms)",
-          ];
+        if (player.worked) {
+          DIALOGUE.messages = ["+ (明天再来...)"];
+          // DIALOGUE.messages = [
+          //   "+ (等会儿...,+ 剩余" +
+          //     (300e3 - (Date.now() - player.lastwork)) +
+          //     "ms)",
+          // ];
           DIALOGUE.startConversation();
         } else {
           if (player.features.includes("workedfirst")) {
@@ -622,7 +629,18 @@ export function genNPC(x: string) {
       color = "#d300c5ff";
       content = "Stuff 1";
       onTouch(): [remove: boolean, replaceTo?: string] {
-        if (player.features.includes("staff_1_plot")) {
+        if (player.features.includes("78_-66")) {
+          DIALOGUE.messages = ["+ (78, -69...)"];
+        } else if (player.features.includes("workedfirst")) {
+          DIALOGUE.messages = [
+            "+ 话说？？有安排我一套house吗？",
+            "- 应该有的，忘记跟你说了。",
+            "(...)",
+            "- 你的House在78,-69那边。",
+            "+ (你获得了1个钥匙。)",
+          ];
+          player.features.push("78_-66");
+        } else if (player.features.includes("staff_1_plot")) {
           DIALOGUE.messages = [
             "+ (编号" +
               player.playerID.toString(8).padStart(11, "0") +

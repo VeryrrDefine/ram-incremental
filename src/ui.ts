@@ -704,7 +704,7 @@ export const UI = [
   {
     type: "group",
     condition() {
-      return player.features.includes("up1_done");
+      return player.features.includes("up1_done") && !TEMP.setDeath;
     },
     group() {
       return [
@@ -721,6 +721,22 @@ export const UI = [
           text() {
             return `P ${displayNumber(player.points)}\nR ${displayRAM(player.ram, false)}`;
           },
+        },
+      ];
+    },
+  },
+  {
+    type: "group",
+    condition() {
+      return TEMP.thunderKilling.animation > 0;
+    },
+    group(): UIopt[] {
+      return [
+        {
+          type: "rect",
+          fore: `rgba(255, 255, 255, ${TEMP.thunderKilling.animation / 100})`,
+          rect: new Rect(0, 0, 720, 720),
+          onClick() {},
         },
       ];
     },

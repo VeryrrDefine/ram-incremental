@@ -1,6 +1,7 @@
 import Decimal from "break_eternity.js";
 import type { GameMap } from "./map";
 import { TEMP } from "./temp";
+import { isInRect } from "./rect";
 
 function initialPlayer() {
   return {
@@ -47,6 +48,7 @@ function initialPlayer() {
     saveID: Math.floor(Math.random() * 2147483648),
     playerID: Math.floor(Math.random() * 2147483648),
     playerday: 0,
+    worked: false,
   };
 }
 
@@ -95,6 +97,16 @@ export function load() {
   } else {
     deepCopyProps(JSON.parse(target), player);
     // Object.assign(player, JSON.parse(target));
+  }
+  if (
+    isInRect(player.x, player.y, 37, -74, 250, 89) &&
+    player.universe == -1 &&
+    !isInRect(player.x, player.y, 37, -2, 42, 5) &&
+    player.lstatus == false &&
+    !TEMP.lstatus_check.detected
+  ) {
+    player.x = 37;
+    player.y = 1;
   }
 }
 

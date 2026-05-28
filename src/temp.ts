@@ -18,4 +18,12 @@ export const TEMP = {
     y: 0,
   },
   setDeath: false,
+  lstatus_check: {
+    detected: false,
+  },
+  thunderKilling: {
+    acting: false,
+    goal: [0, 0] as [number, number],
+    animation: 0,
+  },
 };

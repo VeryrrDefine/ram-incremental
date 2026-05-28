@@ -181,6 +181,34 @@ export function bed1_dreaming_1(into = true) {
     }, 570 * 4);
   }, 5700);
 }
+export function bed2_dreaming_1(into = true) {
+  fadein();
+  setTimeout(function () {
+    TEMP.endless_e19728_animation = 4;
+    if (into) {
+      player.x = -524288;
+      player.y = -524288;
+    } else {
+      player.x = 77;
+      player.y = -71;
+      player.playerday = 1;
+      player.worked = false;
+    }
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 3;
+    }, 570 * 1);
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 2;
+    }, 570 * 2);
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 1;
+    }, 570 * 3);
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 0;
+      TEMP.interact = 0;
+    }, 570 * 4);
+  }, 5700);
+}
 export function Endless_e19728_trap3() {
   fadein();
   setTimeout(function () {
@@ -412,6 +440,8 @@ export async function factorymaster_1() {
     "+ (你获得了" + displayNumber(new Decimal(0.00000429 * 8)) + "点数[L]。)",
     "- 转到你的∠易设备上了，记得查收。",
     "+ (...)",
+    "- 我记得？？给每个人安排了一个\n- 房子，你应该也有，问一下\n 左上角的Staff。",
+    "- 明天再来。",
   ];
   DIALOGUE.startConversation();
   DIALOGUE.afterConversation = function () {};
@@ -419,4 +449,19 @@ export async function factorymaster_1() {
   player.lastwork = Date.now();
   if (!player.features.includes("workedfirst"))
     player.features.push("workedfirst");
+  player.worked = true;
+}
+
+export async function thunderKilling1() {
+  await delay(1000);
+  await stepsLinear((x) => (TEMP.thunderKilling.animation = x), 0, 100, 200);
+  TEMP.player_move_withoutcontrol.active = true;
+  TEMP.player_move_withoutcontrol.x = Infinity;
+  TEMP.player_move_withoutcontrol.y = Infinity;
+  TEMP.setDeath = true;
+  await delay(100);
+
+  await stepsLinear((x) => (TEMP.thunderKilling.animation = x), 100, 0, 5000);
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
+  location.reload();
 }

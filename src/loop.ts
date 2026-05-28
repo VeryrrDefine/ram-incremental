@@ -3,6 +3,8 @@ import { dimensionMult, dimLoop } from "./dimension";
 import { player } from "./player";
 import { pL, ramL } from "./raml_pl";
 import { TEMP } from "./temp";
+import { isInRect } from "./rect";
+import { thunderKilling1 } from "./plot";
 
 export function ramGain(): Decimal {
   let base = new Decimal(0);
@@ -85,5 +87,19 @@ export function loop() {
   }
   dimLoop(ticks);
   if (!TEMP.setDeath) player.ram = player.ram.clampMin(8192);
+  if (
+    isInRect(player.x, player.y, 37, -74, 250, 89) &&
+    player.universe == -1 &&
+    !isInRect(player.x, player.y, 37, -2, 42, 5) &&
+    player.lstatus == false &&
+    !TEMP.lstatus_check.detected
+  ) {
+    console.log("Not log");
+    TEMP.lstatus_check.detected = true;
+    TEMP.interact = 1;
+    TEMP.thunderKilling.acting = true;
+    TEMP.thunderKilling.goal = [player.x, player.y];
+    thunderKilling1();
+  }
   player.lastTick = Date.now();
 }

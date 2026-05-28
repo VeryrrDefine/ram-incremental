@@ -16,8 +16,9 @@ import {
 import { DIALOGUE } from "./dialogue";
 import { displayNumber, displayRAM } from "./display";
 import { hardReset, player } from "./player";
-import { bed1_dreaming_1 } from "./plot";
+import { bed1_dreaming_1, bed2_dreaming_1 as bed2_dreaming_1 } from "./plot";
 import { UPGRADES } from "./upgrades";
+import { TEMP } from "./temp";
 
 const blockDataCache: Map<string, Block | null> = new Map();
 
@@ -159,6 +160,45 @@ export function blockDataToBlock(x: string) {
               DIALOGUE.afterConversation = function () {
                 bed1_dreaming_1();
               };
+              return [false];
+            }
+          })();
+        }, x);
+      }
+      if (t[2] == "bed2") {
+        return newBlockAndCache(() => {
+          return new (class extends Block {
+            color = "#00ffffff";
+            content = t[1];
+            textcolor = "#000000";
+            onTouch(): [remove: boolean] {
+              if (player.features.includes("bed2_dreaming")) return [false];
+              DIALOGUE.stillInteraction = true;
+              DIALOGUE.messages = ["+ 睡觉..."];
+              DIALOGUE.startConversation();
+              player.features.push("bed2_dreaming");
+              DIALOGUE.afterConversation = function () {
+                bed2_dreaming_1();
+              };
+              return [false];
+            }
+          })();
+        }, x);
+      }
+      //bed2_exit
+      if (t[2] == "bed2_exit") {
+        return newBlockAndCache(() => {
+          return new (class extends Block {
+            color = "#00ffffff";
+            content = "?????";
+            textcolor = "#000000";
+            onTouch(): [remove: boolean] {
+              TEMP.interact = 1;
+              bed2_dreaming_1(false);
+              // DIALOGUE.stillInteraction = true;
+              // DIALOGUE.startConversation();
+              // DIALOGUE.afterConversation = function () {
+              // };
               return [false];
             }
           })();
