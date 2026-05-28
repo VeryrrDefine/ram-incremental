@@ -6,7 +6,7 @@ import { player } from "./player";
 import { TEMP } from "./temp";
 export const battle_tips = [
   "当你攻击敌人时，你有15%的概率会施展暴击。\n这会帮你赢得这场战斗。",
-  "当你攻击敌人时，你有10%的概率会施展暴击。\n这会帮你输掉这场战斗。",
+  "当敌人攻击你时，敌人有10%的概率会施展暴击。\n这会帮你输掉这场战斗。",
   "当你失败时，你不会被硬重置，只需要重新加载游戏。",
 ];
 export const enemies = [

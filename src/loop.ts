@@ -2,6 +2,7 @@ import Decimal from "break_eternity.js";
 import { dimensionMult, dimLoop } from "./dimension";
 import { player } from "./player";
 import { pL, ramL } from "./raml_pl";
+import { TEMP } from "./temp";
 
 export function ramGain(): Decimal {
   let base = new Decimal(0);
@@ -83,5 +84,6 @@ export function loop() {
     }
   }
   dimLoop(ticks);
+  if (!TEMP.setDeath) player.ram = player.ram.clampMin(8192);
   player.lastTick = Date.now();
 }

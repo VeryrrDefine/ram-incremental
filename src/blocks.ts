@@ -367,7 +367,9 @@ export function genEvent(x: string) {
       textcolor: string = "#ffffff";
       content = "Who am I?";
       onTouch(): [remove: boolean, replaceTo?: string] {
+        TEMP.interact = 1;
         let mynameis = prompt("My name is...", "Player");
+        TEMP.interact = 0;
         if (!mynameis) return [false];
         if (!validateName(mynameis)) return [false];
         player.playername = mynameis;
@@ -385,6 +387,7 @@ export function genEvent(x: string) {
       }
       onTouch(): [remove: boolean, replaceTo?: string] {
         if (player.playername === "Player") return [false];
+        TEMP.interact = 1;
         bed1_dreaming_1(false);
         return [false];
       }

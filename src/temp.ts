@@ -17,4 +17,5 @@ export const TEMP = {
     x: 0,
     y: 0,
   },
+  setDeath: false,
 };
