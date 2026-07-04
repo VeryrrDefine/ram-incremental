@@ -26,8 +26,9 @@ export function useItem2(item: string) {
       if (confirm("确实要硬重置！？？？")) hardReset();
   }
   if (item == "generator") {
-    player.generatorOpen = true;
     TEMP.interact = 0;
+    if (player.lstatus) return;
+    player.generatorOpen = true;
     TEMP.openeditem = false;
   }
   if (item == "newspaper") {

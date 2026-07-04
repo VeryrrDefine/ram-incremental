@@ -19,6 +19,7 @@ import { hardReset, player } from "./player";
 import { bed1_dreaming_1, bed2_dreaming_1 as bed2_dreaming_1 } from "./plot";
 import { UPGRADES } from "./upgrades";
 import { TEMP } from "./temp";
+import { lstatus } from "./raml_pl";
 
 const blockDataCache: Map<string, Block | null> = new Map();
 
@@ -328,17 +329,7 @@ export function blockDataToBlock(x: string) {
         onTouch(
           _objpos: [number, number],
         ): [remove: boolean, replaceTo?: string] {
-          if (!player.lstatus) {
-            player.r_points = player.points;
-            player.r_ram = player.ram;
-
-            player.points = player.l_points;
-            player.ram = player.l_ram;
-          } else {
-            player.points = player.r_points;
-            player.ram = player.r_ram;
-          }
-          player.lstatus = !player.lstatus;
+          lstatus();
           return [false];
         }
       })();
