@@ -21,6 +21,7 @@ export function Endless_e19728_trap() {
       displayNumber(player.points) +
       " 点数了。",
     "- 什么？ 马上斩杀！",
+    "- 别忘了，你那些点数是无效的。",
     // "%STILL INTERACTION",
   ];
   DIALOGUE.stillInteraction = true;
@@ -61,7 +62,7 @@ export function seeing_Endless_e19728() {
       "+ 什么？",
       "- AntiDim19728怀疑你\n- 在黑市买了东西。",
       "+ 什么黑市？",
-      "- 有没有遇见两个人？\n- 其中一个要100 TB 什么的？",
+      "- 有没有遇见两个人？\n- 其中一个要 100 TB 什么的？",
       "+ 啊？那是黑市？",
       "- 由于你在黑市买了东西，\n- 你已经被关押在监狱里。",
       "- 要等NaN年后才能出来。",
@@ -70,7 +71,7 @@ export function seeing_Endless_e19728() {
       "+ 我也不知道那是什么黑市啊？",
       "- 我说黑市就是黑市，少废话。",
       "+ (...)\n+ (不行，必须对付这个\n+ Endless_e19728...)",
-      "+ (啥时候多了8GB RAM...?)\n- 怎么，不服气？",
+      "+ (啥时候多了 8 GB RAM...?)\n- 怎么，不服气？",
       "+ (有了...)\n+ (把Endless_e19728鲨了...)",
       `+ 我的名字是${player.playername}。`,
       "- 怎么，你知道你名字了？",
@@ -109,13 +110,13 @@ export function jail_breaking_door_282_40() {
   setTimeout(function () {
     player.replaces.push([282, 40, "NULL"]);
     player.ram = player.ram.sub(31457280);
-    player.points = player.points.add(3.4e8 + 0.0001);
+    player.points = player.points.add(3.4e8);
     DIALOGUE.messages = [
       "+ 你获得了 3.400e8 点数.\n+ 你消耗了 30.00 MB RAM.",
       "- 你把门拆了？那么强？谢谢。",
       "+ 不用谢。我把抓我的\n+ Endless_e19728解决掉了。",
       "- 我要报答你！",
-      "+ (你获得了 0.0001 点数.)",
+      "+ (你获得了 0 点数.)",
     ];
     setTimeout(function () {
       DIALOGUE.startConversation();

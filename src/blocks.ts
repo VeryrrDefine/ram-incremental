@@ -104,7 +104,7 @@ export function genDoor(x: string) {
     if (
       bl.data == "JAIL_PLAYER" &&
       player.features.includes("JAIL_PLAYER_1") &&
-      player.ram.gte(153600)
+      player.ram.gte(51200)
     ) {
       return false;
     }
@@ -210,7 +210,7 @@ export function genDoor(x: string) {
       if (!player.features.includes("JAIL_PLAYER_1")) {
         DIALOGUE.messages = [
           "+ 这个门太难开了。",
-          "+ 我至少需要150 KB才能破开...",
+          "+ 我至少需要50 KB才能破开...",
           "- 又有人被抓进去了？",
           "+ 谁？",
           "- 我是John Baixie。",
@@ -219,13 +219,13 @@ export function genDoor(x: string) {
           "+ ......",
         ];
         player.features.push("JAIL_PLAYER_1");
-      } else if (player.ram.lte(153600)) {
+      } else if (player.ram.lte(51200)) {
         DIALOGUE.messages = [
           "+ 这个门太难开了。",
-          "+ 我至少需要150 KB才能破开...",
+          "+ 我至少需要50 KB才能破开...",
         ];
       } else {
-        player.ram = player.ram.sub(145408);
+        player.ram = player.ram.sub(43008);
         return [true];
       }
       DIALOGUE.startConversation();
@@ -741,10 +741,9 @@ export function genNPC(x: string) {
         ) {
           DIALOGUE.messages = [
             "- 谢谢你...",
-            "+ (你获得了0.001 点数。)\n+ 这NPC身价这么低？",
+            "+ (你获得了 0 点数。)\n+ 这NPC身价这么低？",
           ];
           DIALOGUE.startConversation();
-          player.points = player.points.add(0.001);
           player.features.push("19_-4_U0_OPENED_2");
         } else {
           DIALOGUE.messages = [
