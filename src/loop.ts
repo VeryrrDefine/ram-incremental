@@ -92,13 +92,17 @@ export function loop() {
     player.universe == -1 &&
     !isInRect(player.x, player.y, 37, -2, 42, 5) &&
     player.lstatus == false &&
-    !TEMP.lstatus_check.detected
+    !TEMP.lstatus_check.detected &&
+    (Date.now()-player.lastThunderKilling) >= 12000
   ) {
     console.log("Not log");
     TEMP.lstatus_check.detected = true;
-    TEMP.interact = 1;
+    if (player.ram.lt('1e55')){
+      TEMP.interact = 1;
+    }
     TEMP.thunderKilling.acting = true;
     TEMP.thunderKilling.goal = [player.x, player.y];
+    player.lastThunderKilling=Date.now();
     thunderKilling1();
   }
   player.lastTick = Date.now();

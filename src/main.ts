@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(() => save(), 1000);
   setInterval(() => loop(), 50);
 });
-
+console.log(displayRAM(new Decimal(2**126)))
 function nextConversation() {
   if (!(DIALOGUE.conversation && Date.now() - DIALOGUE.UItick >= 600)) return;
   if (DIALOGUE.conversation + 1 > DIALOGUE.messages.length) {
@@ -111,6 +111,8 @@ window.player = player;
 // import { map } from "./map";
 import { openItem } from "./items";
 import { TIME_GOES_BY } from "./timeGoesBy";
+import { displayRAM } from "./display";
+import Decimal from "break_eternity.js";
 // @ts-ignore
 // window.map = map;
 // setTimeout(BATTLE.startBattle, 100);

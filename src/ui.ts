@@ -5,11 +5,11 @@ import { configurations } from "./configurations";
 import { DIALOGUE } from "./dialogue";
 import { buyDimensions, dimensionCost, dimensionMult } from "./dimension";
 import { displayNumber, displayRAM } from "./display";
-import { canvasToWorld } from "./geometry";
+import { canvasToWorld, GRIDSIZE } from "./geometry";
 import { removeArrayElement, tryMove } from "./interaction";
 import { informations, ITEMS, useItem1 } from "./items";
 import { mouse } from "./mouse";
-import { player } from "./player";
+import { autosaveEnabled, player } from "./player";
 import { Rect } from "./rect";
 import { ctx } from "./render";
 import { TEMP } from "./temp";
@@ -18,6 +18,41 @@ import { upgradeComponent } from "./generator-upgrades";
 import { getBlock } from "./collision";
 import { map } from "./map";
 import { TIME_GOES_BY } from "./timeGoesBy";
+
+function getModeInfo() {
+  if (BATTLE.inBattle) {
+    return [
+      `battle|${BATTLE.interact?"Uncontrollable": "Controllable"}`
+    ]
+  } 
+  // 鼠标坐标转换系数
+  const MOUSE_TO_WORLD_SCALE = GRIDSIZE;
+  const mouseGridX = Math.floor(mouse.mouseX / MOUSE_TO_WORLD_SCALE);
+  const mouseGridY = Math.floor(mouse.mouseY / MOUSE_TO_WORLD_SCALE);
+  const worldCoords = canvasToWorld(player.x, player.y, mouseGridX, mouseGridY).join(",");
+  const playerBase = `${player.x},${player.y}`;
+  const mousePos = `${mouse.mouseX},${mouse.mouseY}`;
+  return [
+    `player ${playerBase}|${mousePos}|${map.length} Blocks|${worldCoords}`,
+    `player ${playerBase}|${mousePos}|Player ID ${player.playerID.toString(8).padStart(11, "0")}|${worldCoords}`,
+    `player ${playerBase},${player.universe}|${mousePos}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|${worldCoords}`
+  ];
+}
+
+function debuggingInformation(): string {
+  // 每3秒切换一次调试信息显示模式
+  const DEBUG_MODE_INTERVAL = 3000;
+  
+  
+  const modeInfo = getModeInfo()
+  
+  const mode = Math.floor(Date.now() / DEBUG_MODE_INTERVAL) % modeInfo.length;
+
+  let firstrow = modeInfo[mode]
+
+  let secondrow = `${displayRAM(player.ram,false)}, ${displayNumber(player.points)}`
+  return `${firstrow}\n${secondrow}`;
+}
 
 export function executeUI(
   x: UIopt,
@@ -334,7 +369,7 @@ export const UI = [
         {
           type: "group",
           condition() {
-            return !player.features.includes("JOHN_BAIXIE_VISITED");
+            return !player.features.includes("JOHN_BAIXIE_VISITED") || player.features.includes("User1987_intro1");
           },
           group(): UIopt[] {
             return [
@@ -355,8 +390,8 @@ export const UI = [
           type: "group",
           condition() {
             return (
-              player.features.includes("JOHN_BAIXIE_VISITED") &&
-              !player.features.includes("REAL_3")
+              player.features.includes("JOHN_BAIXIE_VISITED")
+              && !player.features.includes("REAL_3")
             );
           },
           group(): UIopt[] {
@@ -394,7 +429,7 @@ export const UI = [
         {
           type: "group",
           condition() {
-            return player.features.includes("REAL_3");
+            return player.features.includes("REAL_3")  && !player.features.includes("User1987_intro1");
           },
           group(): UIopt[] {
             let res: UIopt[] = [];
@@ -748,40 +783,9 @@ export const UI = [
     fore: "#008cff",
     align: ["left", "top"],
     text() {
-      let st = Math.floor(Date.now() / 3000) % 3;
-      if (st == 0) {
-        return `\
-player ${player.x},${player.y}|\
-${mouse.mouseX},${mouse.mouseY}|\
-${map.length} Blocks|\
-${canvasToWorld(
-  player.x,
-  player.y,
-  Math.floor(mouse.mouseX / 80),
-  Math.floor(mouse.mouseY / 80),
-).join(",")}`;
-      }
-      if (st == 1) {
-        return `\
-player ${player.x},${player.y}|\
-${mouse.mouseX},${mouse.mouseY}|\
-Player ID ${player.playerID.toString(8).padStart(11, "0")}|\
-${canvasToWorld(
-  player.x,
-  player.y,
-  Math.floor(mouse.mouseX / 80),
-  Math.floor(mouse.mouseY / 80),
-).join(",")}`;
-      }
-      return `\
-player ${player.x},${player.y},${player.universe}|\
-${mouse.mouseX},${mouse.mouseY}|${TEMP.interact}|${DIALOGUE.conversation}|${DIALOGUE.UItick}|\
-${canvasToWorld(
-  player.x,
-  player.y,
-  Math.floor(mouse.mouseX / 80),
-  Math.floor(mouse.mouseY / 80),
-).join(",")}`;
+      return debuggingInformation()
     },
   },
 ] as const satisfies UIopt[];
+
+

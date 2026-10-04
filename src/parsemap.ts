@@ -16,7 +16,7 @@ import {
 import { DIALOGUE } from "./dialogue";
 import { displayNumber, displayRAM } from "./display";
 import { hardReset, player } from "./player";
-import { bed1_dreaming_1, bed2_dreaming_1 as bed2_dreaming_1 } from "./plot";
+import { bed1_dreaming_1, bed2_dreaming_1 as bed2_dreaming_1, bed3_dreaming_1 } from "./plot";
 import { UPGRADES } from "./upgrades";
 import { TEMP } from "./temp";
 import { lstatus } from "./raml_pl";
@@ -173,14 +173,25 @@ export function blockDataToBlock(x: string) {
             content = t[1];
             textcolor = "#000000";
             onTouch(): [remove: boolean] {
-              if (player.features.includes("bed2_dreaming")) return [false];
-              DIALOGUE.stillInteraction = true;
-              DIALOGUE.messages = ["+ 睡觉..."];
-              DIALOGUE.startConversation();
-              player.features.push("bed2_dreaming");
-              DIALOGUE.afterConversation = function () {
-                bed2_dreaming_1();
-              };
+              if (0<=player.playerday && player.playerday < 1 && player.features.includes("bed2_dreaming")) return [false];
+              if (0<=player.playerday && player.playerday < 1){
+                DIALOGUE.stillInteraction = true;
+                DIALOGUE.messages = ["+ 睡觉..."];
+                DIALOGUE.startConversation();
+                player.features.push("bed2_dreaming");
+                DIALOGUE.afterConversation = function () {
+                  bed2_dreaming_1();
+                };
+              }
+              if (1<=player.playerday && player.playerday < 2 && player.features.includes("bed3_sleepable") && !player.features.includes("bed3_dreaming")){
+                DIALOGUE.stillInteraction = true;
+                DIALOGUE.messages = ["+ 睡觉..."];
+                DIALOGUE.startConversation();
+                player.features.push("bed3_dreaming");
+                DIALOGUE.afterConversation = function () {
+                  bed3_dreaming_1();
+                };
+              }
               return [false];
             }
           })();

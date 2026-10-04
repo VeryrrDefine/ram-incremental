@@ -49,13 +49,19 @@ function initialPlayer() {
     playerID: Math.floor(Math.random() * 2147483648),
     playerday: 0,
     worked: false,
+    lastThunderKilling: 0,
   };
 }
 
 export let player = initialPlayer();
 const SAVE_ID = "test-game-2";
+
+export function autosaveEnabled () {
+  return TEMP.interact !== 1;
+}
+
 export function save(info?: string) {
-  if (TEMP.interact == 1 && info !== "force") return;
+  if (!autosaveEnabled() && info !== "force") return;
   player.features = [...new Set(player.features)];
   localStorage.setItem(SAVE_ID, JSON.stringify(player));
   TEMP.lastSave = Date.now();

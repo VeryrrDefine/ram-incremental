@@ -7,12 +7,14 @@ import {
   Endless_e19728_trap,
   Endless_e19728_trap2,
   Endless_e19728_trap4,
+  Endless_e19728_trap6,
   Endless_e19728_trap_5,
   factorymaster_1,
   jail_breaking_door,
   jail_breaking_door_282_40,
   leaveJailSecretly,
   seeing_Endless_e19728,
+  User1987_intro1,
 } from "./plot";
 import { TEMP } from "./temp";
 
@@ -566,6 +568,40 @@ export function genNPC(x: string) {
       }
     })();
   }
+  if (x == "plc1") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      contentDynamic(): string {
+        return player.features.includes("known2plcs") ? "井×1" : "???"
+      }
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
+  if (x == "plc2") {
+    return new (class extends Block {
+      color = "#fff700ff";
+      contentDynamic(): string {
+        return player.features.includes("known2plcs") ? "井×2" : "???"
+      }
+      onTouch(): [remove: boolean, replaceTo?: string] {
+        return [false];
+      }
+      solid(): boolean {
+        return true;
+      }
+      solidInteractionable(): boolean {
+        return true;
+      }
+    })();
+  }
   if (x == "AntiDim19728") {
     return new (class extends Block {
       color = "#fff700ff";
@@ -587,7 +623,48 @@ export function genNPC(x: string) {
       content = "Factory\nMaster";
       onTouch(): [remove: boolean, replaceTo?: string] {
         if (player.worked) {
-          DIALOGUE.messages = ["+ (明天再来...)"];
+          if (2 <= player.playerday && player.playerday < 3 && player.features.includes("TheSecondFactoryMasterComing")) {
+            
+            DIALOGUE.messages = [
+              "- 今天是2085年4月21日。",
+              "- 没什么事可以聊。",
+            ];
+            DIALOGUE.stillInteraction = true;
+            DIALOGUE.afterConversation = User1987_intro1;
+
+          }
+          else if (1 <= player.playerday && player.playerday < 2 && player.features.includes("TheSecondFactoryMasterComing")) {
+            
+            DIALOGUE.messages = [
+              "+ 你怎么还在这？",
+              "- 刚才是我的替身术。",
+              "- 井局左边的FactoryMaster是假的。",
+              "+ 那么强？",
+              "- 你安心睡觉去吧，我不会有事。",
+            ];
+            player.features.push("bed3_sleepable");
+          }
+          else if (1 <= player.playerday && player.playerday< 2 && !player.features.includes("TheSecondFactoryMasterComing")) {
+            DIALOGUE.messages = [
+              "+ (明天再来...)",
+              "- 但是，我们所处的地方在\n- 两千零三年被 \n- AntiDim 一九七二八 占领",
+              "- 他实行了严厉的律法，",
+              "(Factory Master)\n- 英雄的候选者将被意外地\n- 被 AntiDim 一九七二八镇压下去",
+              "(???)\n- 你刚才在说什么！",
+              "(???)\n- 禁止诬蔑AntiDim19728!",
+              "(Factory Master)\n- Oh no, they are coming——",
+              "+ 发生啥了？",
+              "(Factory Master)\n- 😈 => ☢ Us, since 🤬 ❌\n+ (这是在打手语？)",
+              "(???)\n- 速速跟我们走！",
+              "(???)\n- 那个，人，也要！",
+              "+ (怎么扯上我了)",
+            ];
+            DIALOGUE.stillInteraction = true;
+            DIALOGUE.afterConversation = Endless_e19728_trap6;
+          } else {
+            DIALOGUE.messages = ["+ (明天再来...)"];
+
+          }
           // DIALOGUE.messages = [
           //   "+ (等会儿...,+ 剩余" +
           //     (300e3 - (Date.now() - player.lastwork)) +
@@ -595,11 +672,13 @@ export function genNPC(x: string) {
           // ];
           DIALOGUE.startConversation();
         } else {
-          if (player.features.includes("workedfirst")) {
-            player.playerday += 1 / 24;
-            TEMP.interact = 1;
-            factorymaster_1();
-          } else {
+          DIALOGUE.messages = ["1"]
+          // if (player.features.includes("workedfirst")) {
+          //   player.playerday += 1 / 24;
+          //   TEMP.interact = 1;
+          //   factorymaster_1();
+          // } else {
+          if (player.playerday === 0){
             DIALOGUE.messages = [
               "+ 你好。",
               "（一阵激烈的交流后）",
@@ -608,10 +687,44 @@ export function genNPC(x: string) {
               "+ (不管了，go work去了。)",
               "（特别友好交流）", // 0.001 = 1000
             ];
+          } else if (player.playerday === 1) {
+            DIALOGUE.messages = [
+              "+ 你好，我是来go work的。",
+              "- 欢迎欢迎。",
+              "- 这个地方的老（？）人常讲，",
+              "- 从前有一个魔王，",
+              "- 在十九世纪(1801-1900)来临。",
+              "- 祂杀死了许多人，",
+              "- 并获得了大量的随机存储器(RAM)\n- 和点数。",
+              "- 祂直到现在仍在祸害整个世界。",
+              "- 祂妄图统治整个世界，\n- 将所有人作为祂的奴隶...",
+              "- 祂的实力之强\n- 以至于没人能击败祂。",
+              "- 然而——",
+              "- 据说——",
+              "- 在两千零八十五年四月十九日，\n- (2085/04/19)",
+              "- 会出现一位英雄，",
+              "- 他将来会将魔王击败。",
+              "- 不知他会不会出现呢？",
+              "+ 魔王与英雄的传说。",
+              "- 如果他昨天确实出现了...\n- 但是昨天有很多人出现。",
+              "- 如果这个传说是真的，那么...",
+              ["* (你是英雄。)","* (You are the hero.)","* (Vous es le héros.)"][Math.floor(Math.random()*3)],
+              ["* (你将拯救全世界。)","* (You will save all the world.)","* (Vous sauveras le monde entier.)"][Math.floor(Math.random()*3)],
+              "+ (???)",
+              "+ (啥意思？)",
+              "- 你刚才怎么发呆呢,",
+              "- 快点去工作吧！😊",
+            ]
+          }
+          if (DIALOGUE.messages.length == 1) {
+            TEMP.interact = 1;
+            factorymaster_1()
+          } else {
             DIALOGUE.stillInteraction = true;
             DIALOGUE.startConversation();
             DIALOGUE.afterConversation = factorymaster_1;
           }
+          // }
         }
 
         return [false];

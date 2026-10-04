@@ -7,6 +7,7 @@ import { player } from "./player";
 import { TEMP } from "./temp";
 import { stepsLinear } from "./geometry";
 import { TIME_GOES_BY } from "./timeGoesBy";
+import { lstatus } from "./raml_pl";
 
 export function Endless_e19728_trap() {
   DIALOGUE.messages = [
@@ -28,7 +29,22 @@ export function Endless_e19728_trap() {
   DIALOGUE.startConversation();
   DIALOGUE.afterConversation = Endless_e19728_trap3;
 }
-
+function fadeout() {
+  TEMP.endless_e19728_animation = 4;
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 3;
+    }, 570 * 1);
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 2;
+    }, 570 * 2);
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 1;
+    }, 570 * 3);
+    setTimeout(function () {
+      TEMP.endless_e19728_animation = 0;
+      TEMP.interact = 0;
+    }, 570 * 4);
+}
 function fadein() {
   setTimeout(function () {
     TEMP.endless_e19728_animation = 1;
@@ -209,6 +225,13 @@ export function bed2_dreaming_1(into = true) {
       TEMP.interact = 0;
     }, 570 * 4);
   }, 5700);
+}
+export function bed3_dreaming_1() {
+  fadein();
+  setTimeout(function(){
+    fadeout()
+  player.playerday = 2
+player.worked=false;}, 5700)
 }
 export function Endless_e19728_trap3() {
   fadein();
@@ -453,16 +476,146 @@ export async function factorymaster_1() {
   player.worked = true;
 }
 
+export async function Endless_e19728_trap6 () {
+  await delay(200);
+  player.replaces.push([132,-40,"NPC?plc1"])
+  await delay(200);
+  player.replaces.push([132,-40,"NPC?plc2"])
+  player.replaces.push([133,-40,"NPC?plc1"])
+  await delay(200);
+  player.replaces.push([132,-40,"NULL"])
+  player.replaces.push([133,-40,"NPC?plc2"])
+  player.replaces.push([134,-40,"NPC?plc1"])
+  await delay(200);
+  player.replaces.push([133,-40,"NULL"])
+  player.replaces.push([134,-40,"NPC?plc2"])
+  player.replaces.push([135,-40,"NPC?plc1"])
+  await delay(200);
+  player.replaces.push([134,-40,"NULL"])
+  player.replaces.push([135,-40,"NPC?plc2"])
+  player.replaces.push([136,-40,"NPC?plc1"])
+  await delay(200);
+  DIALOGUE.messages = [
+    "(??? & ???)\n- 走，你们两个。",
+    "+ (...)",
+  ];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
+  player.features.push("known2plcs");
+  player.x=258
+  player.y=-71
+  player.replaces.push([253,-73,"NPC?plc1"])
+  player.replaces.push([258,-73,"NPC?plc2"])
+  player.replaces.push([253,-71,"NPC?factorymaster"])
+  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 5, 0, 2000);
+  DIALOGUE.messages = [
+    "+ (左边是刚才的\n+ Factory Master)",
+    "(井×1)\n- 说，刚才说什么了？",
+    "(Factory Master)\n- 谈论一个传说。",
+    "(井×1)\n- 怎么说着说着谈到19728了？",
+    "(井×1 & Factory Master)\n- (鸟语花香)",
+    "(井×2)\n- 鉴于Factory Master说出了\n- 违禁言论——",
+    "(井×2)\n- 你最好不要再提AntiDim19728。",
+    "(井×2)\n- 否则下场和他一样",
+    "(井×1)\n- 鉴于你的行为严重\n- 你将暂时关进小嘿屋。",
+    "(井×1)\n- 这个事情会被上报到阀⚪。",
+  ];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  await delay(5000);
+  player.replaces.push([253,-73,"NULL"])
+  player.replaces.push([253,-71,"NULL"])
+  player.replaces.push([137,-41,"NPC?factorymaster"])
+  player.replaces.push([135,-40,"NULL"])
+  player.replaces.push([136,-40,"NULL"])
+  player.replaces.push([255,-66,"NULL"])
+  player.replaces.push([256,-66,"NULL"])
+  player.features.push("TheSecondFactoryMasterComing")
+  DIALOGUE.messages = [
+    "- 你可以走了。",
+    "+ ......",
+  ];
+  DIALOGUE.startConversation();
+}
+
 export async function thunderKilling1() {
   await delay(1000);
   await stepsLinear((x) => (TEMP.thunderKilling.animation = x), 0, 100, 200);
-  TEMP.player_move_withoutcontrol.active = true;
-  TEMP.player_move_withoutcontrol.x = Infinity;
-  TEMP.player_move_withoutcontrol.y = Infinity;
-  TEMP.setDeath = true;
-  await delay(100);
+  if (player.ram.gte(2**126)) {
+    player.ram = player.ram.sub(2**126);
+    await delay(100);
+    await stepsLinear((x) => (TEMP.thunderKilling.animation = x), 100, 0, 5000);
+    
+    TEMP.lstatus_check.detected = false;
+    TEMP.thunderKilling.acting = false;
+  } else {
+    TEMP.player_move_withoutcontrol.active = true;
+    TEMP.player_move_withoutcontrol.x = Infinity;
+    TEMP.player_move_withoutcontrol.y = Infinity;
+    TEMP.setDeath = true;
+    await delay(100);
 
-  await stepsLinear((x) => (TEMP.thunderKilling.animation = x), 100, 0, 5000);
-  await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
-  location.reload();
+    await stepsLinear((x) => (TEMP.thunderKilling.animation = x), 100, 0, 5000);
+    await stepsLinear((x) => (TEMP.endless_e19728_animation = x), 0, 5, 5000);
+    location.reload();
+  }
+}
+
+
+export async function User1987_intro1() {
+
+  await delay(1000);
+  DIALOGUE.messages = [
+    "* (player.ram = \n* new Decimal(2**128))",
+    "* (Change L Status)"
+  ];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+
+  player.points = player.r_points;
+  player.ram = player.r_ram;
+  player.lstatus = false;
+
+  player.ram = new Decimal(2**128);
+  await delay(10000);
+  player.r_points = player.points;
+  player.r_ram = player.ram;
+
+  player.points = player.l_points;
+  player.ram = player.l_ram;
+  player.lstatus = true;
+
+  DIALOGUE.messages = [
+    "+ (你消耗了 8.507e37 B RAM.)\n+ 不二，刚才是啥情况？",
+    "- 有个雷劈了你。",
+    "+ 那刚才？",
+    "* (player.ram = \n*new Decimal('1e100'))",
+    "* (Change L Status)",
+  ];
+  DIALOGUE.stillInteraction = true;
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+  player.points = player.r_points;
+  player.ram = player.r_ram;
+  player.lstatus = false;
+  player.ram = new Decimal(1e100);
+  player.features.push("User1987_intro1")
+  await delay(10000);
+  player.replaces.push([13,-20,"NULL"])
+  player.replaces.push([12,-21,"WALL"])
+  player.replaces.push([12,-22,"WALL"])
+  player.replaces.push([12,-23,"WALL"])
+  player.replaces.push([14,-21,"WALL"])
+  player.replaces.push([14,-22,"WALL"])
+  player.replaces.push([14,-23,"WALL"])
+  DIALOGUE.messages = [
+    "* (You are safe now)\n* (Go to left IMMEDIATELY)",
+  ];
+  DIALOGUE.startConversation();
+  await DIALOGUE.waitUntilDialogueDone();
+
 }

@@ -54,6 +54,7 @@ export const BATTLE = {
   interact: 0,
   win: false,
   failed: false,
+  inBattle: false,
   afterBattle() {},
   async winBattle() {
     if (BATTLE.win) {
@@ -62,10 +63,12 @@ export const BATTLE = {
       TEMP.battle_animation = 0;
       BATTLE.interact = 0;
       TEMP.interact = 0;
+      BATTLE.inBattle = false;
       BATTLE.afterBattle();
     }
   },
   async startBattle() {
+    BATTLE.inBattle = true;
     TEMP.interact = 1;
     TEMP.newspapercontent = 0;
     player.generatorOpen = false;
